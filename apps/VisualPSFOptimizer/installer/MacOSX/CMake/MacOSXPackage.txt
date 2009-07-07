@@ -1,0 +1,67 @@
+# Qt frameworks
+SET( QT_FRAMEWORKS
+  QtCore
+  QtGui
+  QtSql
+  QtSvg
+  QtXml
+)
+
+FOREACH( FRAMEWORK ${QT_FRAMEWORKS} )
+  INSTALL( FILES
+    "${QT_LIBRARY_DIR}/${FRAMEWORK}.framework/Versions/4/${FRAMEWORK}"
+    DESTINATION ../Frameworks/${FRAMEWORK}.framework/Versions/4/
+  )
+ENDFOREACH( FRAMEWORK )
+
+# Miscellaneous Qt resources.
+INSTALL( DIRECTORY
+  "${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib"
+  DESTINATION ../Frameworks/QtGui.framework/Resources/
+)
+
+# Include all imageformat plugins from Qt.
+FILE( GLOB QT_IMAGEFORMAT_PLUGINS "/Developer/Applications/Qt/plugins/imageformats/*.dylib" )
+FOREACH( PLUGIN ${QT_IMAGEFORMAT_PLUGINS} )
+  INSTALL( FILES
+    "${PLUGIN}"
+    DESTINATION ../PlugIns/imageformats
+  )
+ENDFOREACH( PLUGIN )
+
+INSTALL( FILES
+  "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/qt.conf"
+  DESTINATION ./
+)
+
+# Include all dynamic libraries from VTK.
+FILE( GLOB VTK_LIBRARIES ${VTK_LIBRARY_DIRS}/*.dylib )
+FOREACH( LIBRARY ${VTK_LIBRARIES} )	
+  INSTALL( FILES
+     "${LIBRARY}"
+     DESTINATION lib
+  )
+ENDFOREACH( LIBRARY )
+
+# This is a GPL library dependency. Newer versions of VTK should not have this dependency,
+# so remove this in the future.
+FILE( GLOB HISTORY_LIBS /usr/local/lib/libhistory*.dylib )
+FOREACH( LIBRARY ${HISTORY_LIBS} )
+  INSTALL( FILES
+    "${LIBRARY}"
+    DESTINATION lib
+  )
+ENDFOREACH( LIBRARY )
+
+
+SET( CPACK_GENERATOR "Bundle" )
+SET( CPACK_BUNDLE_PLIST "${VisualPSFOptimizer_BINARY_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/Info.plist" )
+SET( VisualPSFOptimizer_PROGRAM_NAME_WITH_VERSION "VisualPSFOptimizer ${VisualPSFOptimizer_VERSION_STRING}" )
+CONFIGURE_FILE( "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/Info.plist" 
+  "${CPACK_BUNDLE_PLIST}" )
+SET( CPACK_BUNDLE_STARTUP_COMMAND "VisualPSFOptimizer" )
+SET( CPACK_BUNDLE_ICON "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/VisualPSFOptimizer.icns" )
+SET( CPACK_BUNDLE_STARTUP_COMMAND "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/startup.sh" )
+SET( CPACK_BUNDLE_NAME "VisualPSFOptimizer ${VisualPSFOptimizer_VERSION_STRING}" )
+
+SET( CPACK_PACKAGE_ICON "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/VisualPSFOptimizer.icns" )

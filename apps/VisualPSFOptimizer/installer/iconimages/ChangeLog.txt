@@ -1,0 +1,4 @@
+2009-07-02  Cory Quammen <cquammen@cs.unc.edu>
+
+   * Initial check-in. You should replace IconImage128.png, IconImage256.png, IconImage512.png
+   with your own icon images.

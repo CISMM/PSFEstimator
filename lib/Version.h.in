@@ -1,0 +1,5 @@
+// Specifies version number of VisualPSFOptimizer library and program.
+
+#define VisualPSFOptimizer_MAJOR_NUMBER @VisualPSFOptimizer_MAJOR_NUMBER@
+#define VisualPSFOptimizer_MINOR_NUMBER @VisualPSFOptimizer_MINOR_NUMBER@
+#define VisualPSFOptimizer_REVISION_NUMBER @VisualPSFOptimizer_REVISION_NUMBER@

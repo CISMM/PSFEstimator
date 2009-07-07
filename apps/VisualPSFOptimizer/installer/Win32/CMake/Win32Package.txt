@@ -1,0 +1,70 @@
+# Qt files
+INSTALL( FILES
+  "${QT_LIBRARY_DIR}/QtCore${DESIRED_QT_VERSION}.dll"
+  "${QT_LIBRARY_DIR}/QtGui${DESIRED_QT_VERSION}.dll"
+  "${QT_LIBRARY_DIR}/QtNetwork${DESIRED_QT_VERSION}.dll"
+  "${QT_LIBRARY_DIR}/QtSql${DESIRED_QT_VERSION}.dll"
+  "${VTK_LIBRARY_DIRS}/release/QVTK.dll"
+  DESTINATION bin
+)
+
+# This should work, but seems to prevent other files from being written 
+# into the bin directory in the installation tree.
+#SET(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${VTK_BINARY_DIR};VTK;ALL;/")
+
+# VTK files
+INSTALL( FILES
+  "${VTK_LIBRARY_DIRS}/release/vtkCommon.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkDICOMParser.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkexoIIc.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkexpat.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkFiltering.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkfreetype.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkftgl.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkGenericFiltering.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkGraphics.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkHybrid.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkImaging.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkInfovis.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkIO.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkjpeg.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtklibxml2.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkmetaio.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkNetCDF.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkParallel.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkpng.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkRendering.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtksys.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtktiff.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkverdict.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkViews.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkVolumeRendering.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkWidgets.dll"
+  "${VTK_LIBRARY_DIRS}/release/vtkzlib.dll"
+  DESTINATION bin
+)
+
+# Cg files (need to escape backslashes twice - once for CMake and once for NSIS program).
+SET( CG_DLL_DIR "C:\\\\Program Files\\\\NVIDIA Corporation\\\\Cg\\\\bin")
+INSTALL( FILES
+  "${CG_DLL_DIR}/cg.dll"
+  "${CG_DLL_DIR}/cgGL.dll"
+  DESTINATION bin
+)
+
+# Change the default installation directory. To make this work you MUST replace
+# all occurences of $PROGRAMFILES with @CPACK_INSTALL_DIRECTORY@ in
+# C:\Program Files\CMake 2.6\share\cmake-2.6\Modules\NSIS.template.in.
+SET( CPACK_INSTALL_DIRECTORY "C:\\\\NSRG\\\\bin" )
+
+# Save time by just using the NSIS generator
+SET( CPACK_GENERATOR "NSIS" )
+
+# Installer-specific things
+SET( CPACK_NSIS_URL_INFO_ABOUT "http://www.cismm.org" )
+SET( CPACK_NSIS_CONTACT "cquammen@cs.unc.edu" )
+
+# Both of these need to be set or neither of them is set.
+SET( CPACK_NSIS_MUI_ICON "${VisualPSFOptimizer_SOURCE_DIR}/installer/Win32/Win32Icon.ico" )
+SET( CPACK_NSIS_MUI_UNIICON "${VisualPSFOptimizer_SOURCE_DIR}/installer/Win32/ModernUninstallFull.ico" )
+SET( CPACK_NSIS_INSTALLED_ICON_NAME "BIN\\\\VisualPSFOptimizer.exe" )
