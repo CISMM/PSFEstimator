@@ -471,11 +471,11 @@ VisualPSFOptimizer
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   value = item->text().toFloat();
-  m_DataModel->SetGLDesignPointSourceDistanceFromBackFocalPlane(value);
+  m_DataModel->SetGLDesignDistanceFromBackFocalPlaneToDetector(value);
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   value = item->text().toFloat();
-  m_DataModel->SetGLActualPointSourceDistanceFromBackFocalPlane(value);
+  m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(value);
 
   m_DataModel->UpdateGibsonLanniPSFImage();
 
@@ -599,9 +599,9 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->item(13, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualPointSourceDepthInSpecimenLayer()));
   m_GibsonLanniPSFSettingsTableModel->item(14, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignPointSourceDistanceFromBackFocalPlane()));
+    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignDistanceFromBackFocalPlaneToDetector()));
   m_GibsonLanniPSFSettingsTableModel->item(15, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualPointSourceDistanceFromBackFocalPlane()));
+    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector()));
   
 
   ///////////////// Update visualization stuff /////////////////
