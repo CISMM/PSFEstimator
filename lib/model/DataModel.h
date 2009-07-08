@@ -152,14 +152,14 @@ public:
   float GetGLActualPointSourceDepthInSpecimenLayer() {
     return m_GibsonLanniPSFSource->GetActualPointSourceDepthInSpecimenLayer(); }
 
-  void  SetGLDesignPointSourceDistanceFromBackFocalPlane(float distance) {
-    m_GibsonLanniPSFSource->SetDesignPointSourceDistanceFromBackFocalPlane(distance); }
-  float GetGLDesignPointSourceDistanceFromBackFocalPlane() {
-    return m_GibsonLanniPSFSource->GetDesignPointSourceDistanceFromBackFocalPlane(); }
-  void  SetGLActualPointSourceDistanceFromBackFocalPlane(float distance) {
-    m_GibsonLanniPSFSource->SetActualPointSourceDistanceFromBackFocalPlane(distance); }
-  float GetGLActualPointSourceDistanceFromBackFocalPlane() {
-    return m_GibsonLanniPSFSource->GetActualPointSourceDistanceFromBackFocalPlane(); }
+  void  SetGLDesignDistanceFromBackFocalPlaneToDetector(float distance) {
+    m_GibsonLanniPSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance); }
+  float GetGLDesignDistanceFromBackFocalPlaneToDetector() {
+    return m_GibsonLanniPSFSource->GetDesignDistanceFromBackFocalPlaneToDetector(); }
+  void  SetGLActualDistanceFromBackFocalPlaneToDetector(float distance) {
+    m_GibsonLanniPSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance); }
+  float GetGLActualDistanceFromBackFocalPlaneToDetector() {
+    return m_GibsonLanniPSFSource->GetActualDistanceFromBackFocalPlaneToDetector(); }
 
 protected:
   std::string m_ImageFileName;

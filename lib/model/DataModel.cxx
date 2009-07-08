@@ -50,12 +50,12 @@ DataModel
   
 #if 1
   float spacing[3];
-  spacing[0] = 65.0f; spacing[1] = 65.0f; spacing[2] = 200.0f;
+  spacing[0] = 65.0f; spacing[1] = 65.0f; spacing[2] = 100.0f;
   m_GibsonLanniPSFSource->SetSpacing(spacing);
 
   float origin[3];
   origin[0] = -spacing[0]*63*0.5;
-  origin[1] = -spacing[1]*63*0.5;
+  origin[1] = -spacing[1]*0*0.5;
   origin[2] = -spacing[2]*63*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
   m_GibsonLanniPSFSource->Update();
