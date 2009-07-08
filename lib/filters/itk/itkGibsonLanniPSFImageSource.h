@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/07 19:31:30 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/07/08 18:55:48 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -147,7 +147,7 @@ public:
   /** Specify the design immersion oil thickness (in micrometers). */
   itkSetMacro(DesignImmersionOilThickness,float);
 
-  /** Get the actual immersion oil refractive index (unitless). */
+  /** Get the actual immersion oil refractive index (in micrometers). */
   itkGetMacro(DesignImmersionOilThickness,float);
 
   /** Specify the design specimen layer refractive index (unitless). */
@@ -168,17 +168,17 @@ public:
   /** Get the actual point source depth in the specimen layer (in nanometers). */
   itkGetMacro(ActualPointSourceDepthInSpecimenLayer,float);
 
-  /** Specify the design point source distance from the back focal plane (in millimeters). */
-  itkSetMacro(DesignPointSourceDistanceFromBackFocalPlane,float);
+  /** Specify the design distance from the back focal plane to the detector (in millimeters). */
+  itkSetMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
 
-  /** Get the design point source distance from the back focal plane (in millimeters). */
-  itkGetMacro(DesignPointSourceDistanceFromBackFocalPlane,float);
+  /** Get the design distance from the back focal plane to the detector (in millimeters). */
+  itkGetMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
 
-  /** Specify the actual point source distance from the back focal plane (in millimeters). */
-  itkSetMacro(ActualPointSourceDistanceFromBackFocalPlane,float);
+  /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
+  itkSetMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
 
-  /** Get the actual point source distance from the back focal plane (in millimeters). */
-  itkGetMacro(ActualPointSourceDistanceFromBackFocalPlane,float);
+  /** Get the actual distance from the back focal plane to the detector (in millimeters). */
+  itkGetMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
 
   static float BesselFunctionZeroOrderFirstKind(float x);
 
@@ -227,8 +227,8 @@ private:
   float m_DesignSpecimenLayerRefractiveIndex;
   float m_ActualSpecimenLayerRefractiveIndex;
   float m_ActualPointSourceDepthInSpecimenLayer;
-  float m_DesignPointSourceDistanceFromBackFocalPlane;
-  float m_ActualPointSourceDistanceFromBackFocalPlane;
+  float m_DesignDistanceFromBackFocalPlaneToDetector;
+  float m_ActualDistanceFromBackFocalPlaneToDetector;
 
 };
 

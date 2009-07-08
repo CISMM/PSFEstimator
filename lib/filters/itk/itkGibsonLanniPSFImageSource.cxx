@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/07 19:31:30 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/07/08 18:55:48 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -42,17 +42,18 @@ template <class TOutputImage>
 GibsonLanniPSFImageSource<TOutputImage>
 ::GibsonLanniPSFImageSource()
 {
-  m_Size = new unsigned long [TOutputImage::GetImageDimension()];
+  m_Size    = new unsigned long [TOutputImage::GetImageDimension()];
   m_Spacing = new float [TOutputImage::GetImageDimension()];
-  m_Origin = new float [TOutputImage::GetImageDimension()];  
+  m_Origin  = new float [TOutputImage::GetImageDimension()];  
 
-  //Initial image is 64 wide in each direction.
+  //Initial image is 63 wide in each direction.
   for (unsigned int i=0; i<TOutputImage::GetImageDimension(); i++)
     {
-    m_Size[i] = 64;
+    m_Size[i] = 63;
     m_Spacing[i] = 65.0;
     m_Origin[i] = 0.0;
     }
+  m_Size[1] = 1;
 
   // Set default PSF model parameters.
   m_EmissionWavelength   = 550.0f; // in nanometers
@@ -68,13 +69,14 @@ GibsonLanniPSFImageSource<TOutputImage>
   m_ActualImmersionOilRefractiveIndex = 1.515f; // unitless
   m_DesignImmersionOilThickness       = 100.0f; // in micrometers
 
-  m_DesignSpecimenLayerRefractiveIndex          =  1.33f; // unitless
-  m_ActualSpecimenLayerRefractiveIndex          =  1.33f; // unitless
-  m_ActualPointSourceDepthInSpecimenLayer       =   0.0f; // in micrometers
-  m_DesignPointSourceDistanceFromBackFocalPlane = 170.0f; // in millimeters
-  m_ActualPointSourceDistanceFromBackFocalPlane = 170.0f; // in millimeters
+  m_DesignSpecimenLayerRefractiveIndex         =  1.33f; // unitless
+  m_ActualSpecimenLayerRefractiveIndex         =  1.33f; // unitless
+  m_ActualPointSourceDepthInSpecimenLayer      =   0.0f; // in micrometers
+  m_DesignDistanceFromBackFocalPlaneToDetector = 170.0f; // in millimeters
+  m_ActualDistanceFromBackFocalPlaneToDetector = 170.0f; // in millimeters
 
 }
+
 
 template <class TOutputImage>
 GibsonLanniPSFImageSource<TOutputImage>
@@ -150,7 +152,7 @@ GibsonLanniPSFImageSource<TOutputImage>
     {
     os << m_Spacing[i] << ", ";
     }
-  os << m_Spacing[i] << "]" << std::endl;
+  os << m_Spacing[i] << "] (nanometers)" << std::endl;
 
   os << indent << "Size: [";
   for (i=0; i < TOutputImage::ImageDimension - 1; i++)
@@ -158,6 +160,55 @@ GibsonLanniPSFImageSource<TOutputImage>
     os << m_Size[i] << ", ";
     }
   os << m_Size[i] << "]" << std::endl;
+  
+  os << indent << "EmissionWavelength (nanometers): "
+     << m_EmissionWavelength << std::endl;
+  
+  os << indent << "NumericalAperture: "
+     << m_NumericalAperture << std::endl;
+
+  os << indent << "Magnification: "
+     << m_Magnification << std::endl;
+
+  os << indent << "MechanicalTubeLength (millimeters): "
+     << m_MechanicalTubeLength << std::endl;
+
+  os << indent << "DesignCoverSlipRefractiveIndex: "
+     << m_DesignCoverSlipRefractiveIndex << std::endl;
+
+  os << indent << "ActualCoverSlipRefractiveIndex: "
+     << m_ActualCoverSlipRefractiveIndex << std::endl;
+
+  os << indent << "DesignCoverSlipThickness (micrometers): "
+     << m_DesignCoverSlipThickness << std::endl;
+
+  os << indent << "ActualCoverSlipThickness (micrometers): "
+     << m_ActualCoverSlipThickness << std::endl;
+
+  os << indent << "DesignImmersionOilRefractiveIndex: "
+     << m_DesignImmersionOilRefractiveIndex << std::endl;
+
+  os << indent << "ActualImmersionOilRefractiveIndex: "
+     << m_ActualImmersionOilRefractiveIndex << std::endl;
+
+  os << indent << "DesignImmersionOilThickness (micrometers): "
+     << m_DesignImmersionOilThickness << std::endl;
+
+  os << indent << "DesignSpecimenLayerRefractiveIndex: "
+     << m_DesignSpecimenLayerRefractiveIndex << std::endl;
+
+  os << indent << "ActualSpecimenLayerRefractiveIndex: "
+     << m_ActualSpecimenLayerRefractiveIndex << std::endl;
+
+  os << indent << "ActualPointSourceDepthInSpecimenLayer (nanometers): "
+     << m_ActualPointSourceDepthInSpecimenLayer << std::endl;
+
+  os << indent << "DesignDistanceFromBackFocalPlaneToDetector (millimeters): "
+     << m_DesignDistanceFromBackFocalPlaneToDetector << std::endl;
+
+  os << indent << "ActualDistanceFromBackFocalPlaneToDetector (millimeters): "
+     << m_ActualDistanceFromBackFocalPlaneToDetector << std::endl;
+
 }
 
 //----------------------------------------------------------------------------
@@ -235,9 +286,9 @@ GibsonLanniPSFImageSource<TOutputImage>
   sq1 = sqrt(sq1);
 
   complex_t sq2(1.0f - NA_rho_over_n_oil_sq);
-  sq2 = sqrt(sq2) * -n_oil_over_n_sq;
+  sq2 = n_oil_over_n_sq * sqrt(sq2);
 
-  complex_t result = n*t*(sq1 + sq2);
+  complex_t result = n*t*(sq1 - sq2);
   return result;
 }
 
@@ -250,17 +301,17 @@ GibsonLanniPSFImageSource<TOutputImage>
   float n_oil_d = m_DesignImmersionOilRefractiveIndex;
   float n_oil   = m_ActualImmersionOilRefractiveIndex;
   float t_oil_d = m_DesignImmersionOilThickness;
-  float z_d_d   = m_DesignPointSourceDistanceFromBackFocalPlane;
-  float z_d     = m_ActualPointSourceDistanceFromBackFocalPlane;
+  float z_d_d   = m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
+  float z_d     = m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
   float n_s     = m_ActualSpecimenLayerRefractiveIndex;
-  float t_s     = m_ActualPointSourceDepthInSpecimenLayer;
+  float t_s     = m_ActualPointSourceDepthInSpecimenLayer * 1e-9;
   float n_g_d   = m_DesignCoverSlipRefractiveIndex;
   float n_g     = m_ActualCoverSlipRefractiveIndex;
-  float t_g_d   = m_DesignCoverSlipThickness;
-  float t_g     = m_ActualCoverSlipThickness;
+  float t_g_d   = m_DesignCoverSlipThickness * 1e-6;
+  float t_g     = m_ActualCoverSlipThickness * 1e-6;
 
   float r = n_oil *
-    (delta_z + ((z_d_d - z_d)*a*a*n_oil) / (z_d_d*z_d*NA*NA));
+    (delta_z + (((z_d_d - z_d)*a*a*n_oil) / (z_d_d*z_d*NA*NA)));
 
   complex_t c1(1.0f - ((NA*NA*rho*rho)/(n_oil*n_oil)));
   c1 = sqrt(c1);
@@ -288,13 +339,12 @@ GibsonLanniPSFImageSource<TOutputImage>
   float h = 1.0f / static_cast<float>(INTEGRATE_N-1);
   float NA = m_NumericalAperture;
   float mag = m_Magnification;
-  float z_d = m_ActualPointSourceDistanceFromBackFocalPlane * 1e-3;
-  float a = (z_d*NA) / sqrt(mag*mag - NA*NA);
+  float z_d_d = m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
+  float a = (z_d_d*NA) / sqrt(mag*mag - NA*NA);
 
   for (int i = 0; i < INTEGRATE_N; i++) {
     float rho = static_cast<float>(i)*h;
-    complex_t opd = OPD(rho, z_o, a);
-    complex_t W = opd * K;
+    complex_t W = OPD(rho, z_o, a) * K;
     complex_t I(0.0f, 1.0f);
     opdCache[i] = exp(I*W);
   }
@@ -311,7 +361,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   float rho = static_cast<float>(rhoIndex)*h;
   float bessel = BesselFunctionZeroOrderFirstKind(K*a*rho*r_o/z_d);
 
-  return opdCache[rhoIndex]*bessel*rho;
+  return bessel*opdCache[rhoIndex]*rho;
 }
 
 
@@ -330,7 +380,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   float K = 2.0f*M_PI / (m_EmissionWavelength * 1e-9);
   float NA = m_NumericalAperture;
   float mag = m_Magnification;
-  float z_d = m_ActualPointSourceDistanceFromBackFocalPlane * 1e-3;
+  float z_d = m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
   float a = (z_d*NA) / sqrt(mag*mag - NA*NA);
 
   // We have to convert to coordinates of the detector points

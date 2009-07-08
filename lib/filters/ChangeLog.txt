@@ -1,3 +1,9 @@
+2009-07-08  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniPSFImageSource.h: Changed name of two parameters to more
+   accurately reflect what they are, as well as their getters/setters. Added
+   all member variables to the PrintSelf method. Added proper unit conversion.
+
 2009-07-05  Cory Quammen <cquammen@cs.unc.edu>
 
    * Initial check-in.
