@@ -75,14 +75,19 @@ public:
   double GetImageDataMinimum();
   double GetImageDataMaximum();
 
-  void GetDimensions(int dimensions[3]);
+  void SetPSFDimensions(int dimensions[3]);
+  void SetPSFDimension(int index, int dimension);
+  void SetPSFXDimension(int dimension);
+  void SetPSFYDimension(int dimension);
+  void SetPSFZDimension(int dimension);
+  void GetPSFDimensions(int dimensions[3]);
 
-  void SetVoxelSpacing(double spacing[3]);
-  void SetVoxelSpacing(int dimension, double spacing);
-  void SetVoxelXSpacing(double spacing);
-  void SetVoxelYSpacing(double spacing);
-  void SetVoxelZSpacing(double spacing);
-  void GetVoxelSpacing(double spacing[3]);
+  void SetPSFVoxelSpacing(double spacing[3]);
+  void SetPSFVoxelSpacing(int dimension, double spacing);
+  void SetPSFVoxelXSpacing(double spacing);
+  void SetPSFVoxelYSpacing(double spacing);
+  void SetPSFVoxelZSpacing(double spacing);
+  void GetPSFVoxelSpacing(double spacing[3]);
 
   void UpdateGibsonLanniPSFImage();
 
@@ -100,11 +105,6 @@ public:
     m_GibsonLanniPSFSource->SetMagnification(magnification); }
   float GetGLMagnification() {
     return m_GibsonLanniPSFSource->GetMagnification(); }
-
-  void  SetGLMechanicalTubeLength(float mtl) {
-    m_GibsonLanniPSFSource->SetMechanicalTubeLength(mtl); }
-  float GetGLMechanicalTubeLength() {
-    return m_GibsonLanniPSFSource->GetMechanicalTubeLength(); }
 
   void  SetGLDesignCoverSlipRefractiveIndex(float ri) {
     m_GibsonLanniPSFSource->SetDesignCoverSlipRefractiveIndex(ri); }

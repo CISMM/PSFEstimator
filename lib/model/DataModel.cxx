@@ -18,7 +18,25 @@ DataModel
   
   m_GibsonLanniPSFSource = GibsonLanniPSFImageSourceType::New();
 
+  float spacing[3];
+  spacing[0] = 65.0f; spacing[1] = 65.0f; spacing[2] = 100.0f;
+  m_GibsonLanniPSFSource->SetSpacing(spacing);
+
+  unsigned long size[3];
+  size[0] = 63; size[1] = 63; size[2] = 63;
+  m_GibsonLanniPSFSource->SetSize(size);
+
+  float origin[3];
+  origin[0] = -spacing[0]*static_cast<float>(size[0])*0.5;
+  origin[1] = -spacing[1]*static_cast<float>(size[1])*0.5;
+  origin[2] = -spacing[2]*static_cast<float>(size[2])*0.5;
+  m_GibsonLanniPSFSource->SetOrigin(origin);
+  m_GibsonLanniPSFSource->Update();
+
   m_MinMaxFilter = MinMaxType::New();
+  m_MinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());  
+  m_MinMaxFilter->Compute();
+
   m_InputImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
 
   // ITK will detect the number of cores on the system and set it by default.
@@ -30,6 +48,11 @@ DataModel
     if (numberOfThreads > 0)
       SetNumberOfThreads(numberOfThreads);
   }
+
+  SetImageData(m_GibsonLanniPSFSource->GetOutput());
+
+  m_InputImageITKToVTKFilter->Modified();
+  m_InputImageITKToVTKFilter->Update();
 }
 
 
@@ -48,23 +71,8 @@ DataModel
   reader->Update();
   SetImageData(reader->GetOutput());
   
-#if 1
-  float spacing[3];
-  spacing[0] = 65.0f; spacing[1] = 65.0f; spacing[2] = 100.0f;
-  m_GibsonLanniPSFSource->SetSpacing(spacing);
-
-  float origin[3];
-  origin[0] = -spacing[0]*63*0.5;
-  origin[1] = -spacing[1]*0*0.5;
-  origin[2] = -spacing[2]*63*0.5;
-  m_GibsonLanniPSFSource->SetOrigin(origin);
-  m_GibsonLanniPSFSource->Update();
-  SetImageData(m_GibsonLanniPSFSource->GetOutput());
-#endif
-
   // Connect this image data to the various pipelines.
-  //m_MinMaxFilter->SetImage(m_ImageData);
-  m_MinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
+  m_MinMaxFilter->SetImage(m_ImageData);
   m_MinMaxFilter->Compute();
   
   m_InputImageITKToVTKFilter->Modified();
@@ -151,11 +159,56 @@ DataModel
 
 void
 DataModel
-::GetDimensions(int dimensions[3]) {
+::SetPSFDimensions(int dimensions[3]) {
+  unsigned long ulDimensions[3];
+  for (int i = 0; i < 3; i++)
+    ulDimensions[i] = static_cast<unsigned long>(dimensions[i]);
+
+  m_GibsonLanniPSFSource->SetSize(ulDimensions);
+}
+
+
+void
+DataModel
+::SetPSFDimension(int index, int dimension) {
+  int dimensions[3];
+  GetPSFDimensions(dimensions);
+  if (index >= 0 && index <= 2) {
+    dimensions[index] = dimension;
+    SetPSFDimensions(dimensions);  
+  }
+
+  m_InputImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
+}
+
+
+void
+DataModel
+::SetPSFXDimension(int dimension) {
+  SetPSFDimension(0, dimension);
+}
+
+
+void
+DataModel
+::SetPSFYDimension(int dimension) {
+  SetPSFDimension(1, dimension);
+}
+
+
+void
+DataModel
+::SetPSFZDimension(int dimension) {
+  SetPSFDimension(2, dimension);
+}
+
+
+void
+DataModel
+::GetPSFDimensions(int dimensions[3]) {
   if (!GetImageData()) {
-    dimensions[0] = 0;
-    dimensions[1] = 0;
-    dimensions[2] = 0;
+    for (int i = 0; i < 3; i++)
+      dimensions[i] = 0;
     return;
   }
 
@@ -163,19 +216,23 @@ DataModel
       = GetImageData()->GetLargestPossibleRegion();
   itk::Size<3> size = region.GetSize();
 
-  dimensions[0] = size[0];
-  dimensions[1] = size[1];
-  dimensions[2] = size[2];
+  for (int i = 0; i < 3; i++)
+    dimensions[i] = size[i];
 }
 
 
 void
 DataModel
-::SetVoxelSpacing(double spacing[3]) {
+::SetPSFVoxelSpacing(double spacing[3]) {
   if (!m_ImageData)
     return;
 
-  m_ImageData->SetSpacing(spacing);
+  //m_ImageData->SetSpacing(spacing);
+  float floatSpacing[3];
+  for (int i = 0; i < 3; i++)
+    floatSpacing[i] = static_cast<float>(spacing[i]);
+
+  m_GibsonLanniPSFSource->SetSpacing(floatSpacing);
 
   m_InputImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
@@ -183,13 +240,20 @@ DataModel
 
 void
 DataModel
-::SetVoxelSpacing(int dimension, double spacing) {
+::SetPSFVoxelSpacing(int dimension, double spacing) {
   if (!m_ImageData)
     return;
-
+  
   TImage::SpacingType currentSpacing = m_ImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
-  m_ImageData->SetSpacing(currentSpacing);
+
+  double doubleSpacing[3];
+  for (int i = 0; i < 3; i++)
+    doubleSpacing[i] = currentSpacing[i];
+
+  SetPSFVoxelSpacing(doubleSpacing);
+
+  //m_ImageData->SetSpacing(currentSpacing);
 
   m_InputImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
@@ -197,28 +261,28 @@ DataModel
 
 void
 DataModel
-::SetVoxelXSpacing(double spacing) {
-  SetVoxelSpacing(0, spacing); 
+::SetPSFVoxelXSpacing(double spacing) {
+  SetPSFVoxelSpacing(0, spacing); 
 }
 
 
 void
 DataModel
-::SetVoxelYSpacing(double spacing) {
-  SetVoxelSpacing(1, spacing); 
+::SetPSFVoxelYSpacing(double spacing) {
+  SetPSFVoxelSpacing(1, spacing); 
 }
 
 
 void
 DataModel
-::SetVoxelZSpacing(double spacing) {
-  SetVoxelSpacing(2, spacing); 
+::SetPSFVoxelZSpacing(double spacing) {
+  SetPSFVoxelSpacing(2, spacing); 
 }
 
 
 void
 DataModel
-::GetVoxelSpacing(double spacing[3]) {
+::GetPSFVoxelSpacing(double spacing[3]) {
   if (!GetImageData()) {
     spacing[0] = 0;
     spacing[1] = 0;
