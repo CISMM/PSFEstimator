@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/08 18:55:48 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/07/09 15:43:25 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -101,12 +101,6 @@ public:
 
   /** Get the magnification (unitless). */
   itkGetMacro(Magnification,float);
-
-  /** Specify the mechanical tube length (in millimeters). */
-  itkSetMacro(MechanicalTubeLength,float);
-  
-  /** Get the mechanical tube length (in millimeters). */
-  itkGetMacro(MechanicalTubeLength,float);
 
   /** Specify the design cover slip refractive index (unitless). */
   itkSetMacro(DesignCoverSlipRefractiveIndex,float);
@@ -216,7 +210,6 @@ private:
   float m_EmissionWavelength;
   float m_NumericalAperture;
   float m_Magnification;
-  float m_MechanicalTubeLength;
   float m_DesignCoverSlipRefractiveIndex;
   float m_ActualCoverSlipRefractiveIndex;
   float m_DesignCoverSlipThickness;

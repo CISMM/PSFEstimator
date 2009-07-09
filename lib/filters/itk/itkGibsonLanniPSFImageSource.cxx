@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/08 18:55:48 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/07/09 15:43:25 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -53,13 +53,11 @@ GibsonLanniPSFImageSource<TOutputImage>
     m_Spacing[i] = 65.0;
     m_Origin[i] = 0.0;
     }
-  m_Size[1] = 1;
 
   // Set default PSF model parameters.
   m_EmissionWavelength   = 550.0f; // in nanometers
   m_NumericalAperture    = 1.4f;   // unitless
   m_Magnification        = 60.0f;  // unitless
-  m_MechanicalTubeLength = 160.0f; // in millimeters
 
   m_DesignCoverSlipRefractiveIndex    = 1.522f; // unitless
   m_ActualCoverSlipRefractiveIndex    = 1.522f; // unitless
@@ -169,9 +167,6 @@ GibsonLanniPSFImageSource<TOutputImage>
 
   os << indent << "Magnification: "
      << m_Magnification << std::endl;
-
-  os << indent << "MechanicalTubeLength (millimeters): "
-     << m_MechanicalTubeLength << std::endl;
 
   os << indent << "DesignCoverSlipRefractiveIndex: "
      << m_DesignCoverSlipRefractiveIndex << std::endl;
@@ -300,7 +295,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   float NA      = m_NumericalAperture;
   float n_oil_d = m_DesignImmersionOilRefractiveIndex;
   float n_oil   = m_ActualImmersionOilRefractiveIndex;
-  float t_oil_d = m_DesignImmersionOilThickness;
+  float t_oil_d = m_DesignImmersionOilThickness * 1e-6;
   float z_d_d   = m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
   float z_d     = m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
   float n_s     = m_ActualSpecimenLayerRefractiveIndex;
