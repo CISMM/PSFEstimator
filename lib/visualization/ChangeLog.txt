@@ -1,3 +1,10 @@
+2009-07-09  Cory Quammen <cquammen@cs.unc.edu>
+
+   * Visualization.h,.cxx: Added vtkRenderer member variable and changed
+   AddToRenderer method so that it adds the visualization pipelines to the
+   member variable instead of taking a vtkRenderer as an argument. Added
+   methods to set canonical camera views. Added an  Update method.
+
 2009-07-05  Cory Quammen <cquammen@cs.unc.edu>
 
    * Initial check-in.

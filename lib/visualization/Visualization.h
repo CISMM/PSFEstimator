@@ -13,8 +13,15 @@ public:
   Visualization();
   virtual ~Visualization();
 
+  void SetRenderer(vtkRenderer* renderer) {
+    m_Renderer = renderer;
+  }
+  vtkRenderer* GetRenderer() {
+    return m_Renderer;
+  }
+
   void SetImageInputConnection(vtkAlgorithmOutput* input);
-  void AddToRenderer(vtkRenderer* renderer);
+  void AddToRenderer();
 
   void SetShowOutline(bool show);
   bool GetShowOutline();
@@ -40,8 +47,19 @@ public:
   void   SetImagePlanesWhiteValue(double value);
   double GetImagePlanesWhiteValue();
 
+  void ResetView();
+  void SetViewToXPlus();
+  void SetViewToXMinus();
+  void SetViewToYPlus();
+  void SetViewToYMinus();
+  void SetViewToZPlus();
+  void SetViewToZMinus();
+
+  void Update();
+
 protected:
 
+  vtkRenderer* m_Renderer;
   OutlineVisualizationPipeline* m_OutlineVisualization;
   ImagePlaneVisualizationPipeline* m_XPlane;
   ImagePlaneVisualizationPipeline* m_YPlane;

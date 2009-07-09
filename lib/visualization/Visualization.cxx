@@ -1,5 +1,8 @@
 #include "Visualization.h"
 
+#include <vtkCamera.h>
+
+
 Visualization
 ::Visualization() {
   m_OutlineVisualization = new OutlineVisualizationPipeline();
@@ -43,11 +46,11 @@ Visualization
 
 void
 Visualization
-::AddToRenderer(vtkRenderer* renderer) {
-  m_OutlineVisualization->AddToRenderer(renderer);
-  m_XPlane->AddToRenderer(renderer);
-  m_YPlane->AddToRenderer(renderer);
-  m_ZPlane->AddToRenderer(renderer);
+::AddToRenderer() {
+  m_OutlineVisualization->AddToRenderer(m_Renderer);
+  m_XPlane->AddToRenderer(m_Renderer);
+  m_YPlane->AddToRenderer(m_Renderer);
+  m_ZPlane->AddToRenderer(m_Renderer);
 }
 
 
@@ -192,4 +195,77 @@ double
 Visualization
 ::GetImagePlanesWhiteValue() {
   return m_XPlane->GetMapsToWhite();
+}
+
+
+void
+Visualization
+::ResetView() {
+  vtkCamera* camera = m_Renderer->GetActiveCamera();
+  camera->SetFocalPoint(0, 0, 0);
+  camera->SetPosition(0, 0, 1);
+  camera->SetViewUp(0, 1, 0);
+  m_Renderer->ResetCamera();
+}
+
+
+void 
+Visualization
+::SetViewToXPlus() {
+  ResetView();
+  vtkCamera* camera = m_Renderer->GetActiveCamera();
+  camera->Azimuth(-90.0);
+}
+
+
+void
+Visualization
+::SetViewToXMinus() {
+  ResetView();
+  vtkCamera* camera = m_Renderer->GetActiveCamera();
+  camera->Azimuth(90.0);
+}
+
+
+void
+Visualization
+::SetViewToYPlus() {
+  ResetView();
+  vtkCamera* camera = m_Renderer->GetActiveCamera();
+  camera->Elevation(-90.0);
+}
+
+
+void
+Visualization
+::SetViewToYMinus() {
+  ResetView();
+  vtkCamera* camera = m_Renderer->GetActiveCamera();
+  camera->Elevation(90.0);
+}
+
+
+void
+Visualization
+::SetViewToZPlus() {
+  ResetView();
+  vtkCamera* camera = m_Renderer->GetActiveCamera();
+  camera->Azimuth(180.0);
+}
+
+
+void
+Visualization
+::SetViewToZMinus() {
+  ResetView();
+  // No rotation needed.
+}
+
+
+void
+Visualization
+::Update() {
+  m_XPlane->Update();
+  m_YPlane->Update();
+  m_ZPlane->Update();
 }
