@@ -140,9 +140,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-296</y>
+          <y>-423</y>
           <width>297</width>
-          <height>522</height>
+          <height>566</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -407,6 +407,96 @@
           </widget>
          </item>
          <item>
+          <widget class="QGroupBox" name="cameraGroupBox">
+           <property name="title">
+            <string>Camera</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="margin">
+             <number>3</number>
+            </property>
+            <item>
+             <widget class="QToolButton" name="xPlusButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>X+</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="xMinusButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>X-</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="yPlusButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Y+</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="yMinusButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Y-</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="zPlusButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Z+</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="zMinusButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Z-</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="applyButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -594,18 +684,6 @@
           </attribute>
           <attribute name="verticalHeaderDefaultSectionSize">
            <number>14</number>
-          </attribute>
-          <attribute name="verticalHeaderHighlightSections">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderDefaultSectionSize">
-           <number>14</number>
-          </attribute>
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>false</bool>

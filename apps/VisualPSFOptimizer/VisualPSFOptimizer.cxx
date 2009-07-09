@@ -35,6 +35,7 @@ VisualPSFOptimizer
   
   // Instantiate m_Visualization pipelines.
   m_Visualization = new Visualization();
+  m_Visualization->SetRenderer(m_Renderer);
   
   // Set application information
   QCoreApplication::setOrganizationName("CISMM");
@@ -71,7 +72,7 @@ VisualPSFOptimizer
     QStandardItem* item = new QStandardItem(tr(""));
 
     // Allow editing of voxel spacing.
-    if (i < 5)
+    if (i < 1)
       item->setEditable(false);
     m_ImageInformationTableModel->setItem(i, RIGHT_COLUMN, item);
   }
@@ -88,55 +89,54 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->setHeaderData(1, Qt::Horizontal, tr("Value"));
   m_GibsonLanniPSFSettingsTableModel->setHeaderData(2, Qt::Horizontal, tr("Units"));
 
-  QStandardItem* psfPropertyItems[16];
-  QStandardItem* unitItems[16];
-  psfPropertyItems[ 0] = new QStandardItem(tr("Emission Wavelength"));
-  unitItems[ 0] = new QStandardItem(tr("nanometers"));
+  QStandardItem* psfPropertyItems[15];
+  QStandardItem* unitItems[15];
 
-  psfPropertyItems[ 1] = new QStandardItem(tr("Numerical Aperture"));
-  unitItems[ 1] = new QStandardItem(tr("unitless"));
+  int item = 0;
+  psfPropertyItems[item] = new QStandardItem(tr("Emission Wavelength"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
 
-  psfPropertyItems[ 2] = new QStandardItem(tr("Magnification"));
-  unitItems[ 2] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Numerical Aperture"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[ 3] = new QStandardItem(tr("Mechanical Tube Length"));
-  unitItems[ 3] = new QStandardItem(tr("millimeters"));
+  psfPropertyItems[item] = new QStandardItem(tr("Magnification"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[ 4] = new QStandardItem(tr("Design Cover Slip Refractive Index"));
-  unitItems[ 4] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Cover Slip Refractive Index"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[ 5] = new QStandardItem(tr("Actual Cover Slip Refractive Index"));
-  unitItems[ 5] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Cover Slip Refractive Index"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[ 6] = new QStandardItem(tr("Design Cover Slip Thickness"));
-  unitItems[ 6] = new QStandardItem(tr("micrometers"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Cover Slip Thickness"));
+  unitItems[item++] = new QStandardItem(tr("micrometers"));
 
-  psfPropertyItems[ 7] = new QStandardItem(tr("Actual Cover Slip Thickness"));
-  unitItems[ 7] = new QStandardItem(tr("micrometers"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Cover Slip Thickness"));
+  unitItems[item++] = new QStandardItem(tr("micrometers"));
 
-  psfPropertyItems[ 8] = new QStandardItem(tr("Design Immersion Oil Refractive Index"));
-  unitItems[ 8] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Immersion Oil Refractive Index"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[ 9] = new QStandardItem(tr("Actual Immersion Oil Refractive Index"));
-  unitItems[ 9] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Immersion Oil Refractive Index"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[10] = new QStandardItem(tr("Design Immersion Oil Thickness"));
-  unitItems[10] = new QStandardItem(tr("micrometers"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Immersion Oil Thickness"));
+  unitItems[item++] = new QStandardItem(tr("micrometers"));
 
-  psfPropertyItems[11] = new QStandardItem(tr("Design Specimen Layer Refractive Index"));
-  unitItems[11] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Specimen Layer Refractive Index"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[12] = new QStandardItem(tr("Actual Specimen Layer Refractive Index"));
-  unitItems[12] = new QStandardItem(tr("unitless"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Specimen Layer Refractive Index"));
+  unitItems[item++] = new QStandardItem(tr("unitless"));
 
-  psfPropertyItems[13] = new QStandardItem(tr("Actual Point Source Depth in Specimen Layer"));
-  unitItems[13] = new QStandardItem(tr("micrometers"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Point Source Depth in Specimen Layer"));
+  unitItems[item++] = new QStandardItem(tr("micrometers"));
 
-  psfPropertyItems[14] = new QStandardItem(tr("Design Point Source Distance from Back Focal Plane"));
-  unitItems[14] = new QStandardItem(tr("millimeters"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Point Source Distance from Back Focal Plane"));
+  unitItems[item++] = new QStandardItem(tr("millimeters"));
 
-  psfPropertyItems[15] = new QStandardItem(tr("Actual Point Source Distance from Back Focal Plane"));
-  unitItems[15] = new QStandardItem(tr("millimeters"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Point Source Distance from Back Focal Plane"));
+  unitItems[item++] = new QStandardItem(tr("millimeters"));
 
   for (unsigned int i = 0; i < sizeof(psfPropertyItems) / sizeof(QStandardItem*); i++) {
 
@@ -157,6 +157,26 @@ VisualPSFOptimizer
 
   connect(m_GibsonLanniPSFSettingsTableModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handle_GibsonLanniPSFSettingsTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
 
+  // Set up m_Visualization pipeline.
+  m_Visualization->SetImageInputConnection(m_DataModel->GetImageOutputPort());
+  m_Visualization->SetXPlane(0);
+  m_Visualization->SetYPlane(0);
+  m_Visualization->SetZPlane(0);
+
+  // Set the contrast values
+  double min = m_DataModel->GetImageDataMinimum();
+  double max = m_DataModel->GetImageDataMaximum();
+  m_Visualization->SetImagePlanesBlackValue(min);
+  m_Visualization->SetImagePlanesWhiteValue(max);
+
+  // Refresh the UI
+  RefreshUI();
+
+  // Reset camera
+  m_Renderer->ResetCamera();
+  
+  // Render
+  qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -273,14 +293,6 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_showDataOutlineCheckBox_toggled(bool show) {
-  m_Visualization->SetShowOutline(show);
-  qvtkWidget->GetRenderWindow()->Render();
-}
-
-
-void
-VisualPSFOptimizer
 ::on_showXPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowXPlane(show);
   qvtkWidget->GetRenderWindow()->Render();
@@ -301,7 +313,7 @@ VisualPSFOptimizer
 ::on_xPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
-  m_DataModel->GetDimensions(dims);
+  m_DataModel->GetPSFDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[0]) {
     xPlaneSlider->setValue(value);
@@ -333,7 +345,7 @@ VisualPSFOptimizer
 ::on_yPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
-  m_DataModel->GetDimensions(dims);
+  m_DataModel->GetPSFDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[1]) {
     yPlaneSlider->setValue(value);
@@ -365,7 +377,7 @@ VisualPSFOptimizer
 ::on_zPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
-  m_DataModel->GetDimensions(dims);
+  m_DataModel->GetPSFDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[2]) {
     zPlaneSlider->setValue(value);
@@ -407,6 +419,62 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
+::on_showDataOutlineCheckBox_toggled(bool show) {
+  m_Visualization->SetShowOutline(show);
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
+::on_xPlusButton_clicked() {
+  m_Visualization->SetViewToXPlus();
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
+::on_xMinusButton_clicked() {
+  m_Visualization->SetViewToXMinus();
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
+::on_yPlusButton_clicked() {
+  m_Visualization->SetViewToYPlus();
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
+::on_yMinusButton_clicked() {
+  m_Visualization->SetViewToYMinus();
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
+::on_zPlusButton_clicked() {
+  m_Visualization->SetViewToZPlus();
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
+::on_zMinusButton_clicked() {
+  m_Visualization->SetViewToZMinus();
+  qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+void
+VisualPSFOptimizer
 ::on_applyButton_clicked() {
   float value = 0.0f;
   int itemRow = 0;
@@ -424,10 +492,6 @@ VisualPSFOptimizer
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   value = item->text().toFloat();
   m_DataModel->SetGLMagnification(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLMechanicalTubeLength(value);
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   value = item->text().toFloat();
@@ -477,7 +541,8 @@ VisualPSFOptimizer
   value = item->text().toFloat();
   m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(value);
 
-  m_DataModel->UpdateGibsonLanniPSFImage();
+  //m_DataModel->UpdateGibsonLanniPSFImage();
+  m_Visualization->Update();
 
   RefreshUI();
 }
@@ -493,18 +558,28 @@ VisualPSFOptimizer
   }
   
   QStandardItem* item = m_ImageInformationTableModel->item(topLeft.row(), topLeft.column());
-  double value = item->text().toDouble();
+  double doubleValue = item->text().toDouble();
+  double intValue    = item->text().toInt();
 
   int itemIndex = topLeft.row();
-  if (itemIndex == 5) {
-    m_DataModel->SetVoxelXSpacing(value);
+  if (itemIndex == 2) {
+    m_DataModel->SetPSFXDimension(intValue);
+  } else if (itemIndex == 3) {
+    m_DataModel->SetPSFYDimension(intValue);
+  } else if (itemIndex == 4) {
+    m_DataModel->SetPSFZDimension(intValue);
+  } else if (itemIndex == 5) {
+    m_DataModel->SetPSFVoxelXSpacing(doubleValue);
   } else if (itemIndex == 6) {
-    m_DataModel->SetVoxelYSpacing(value);
+    m_DataModel->SetPSFVoxelYSpacing(doubleValue);
   } else if (itemIndex == 7) {
-    m_DataModel->SetVoxelZSpacing(value);
+    m_DataModel->SetPSFVoxelZSpacing(doubleValue);
   }
 
-  qvtkWidget->GetRenderWindow()->Render();
+  m_DataModel->UpdateGibsonLanniPSFImage();
+  m_Visualization->Update();
+
+  //qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -526,7 +601,7 @@ VisualPSFOptimizer
   
   ///////////////// Image planes stuff /////////////////
   int dim[3];
-  m_DataModel->GetDimensions(dim);
+  m_DataModel->GetPSFDimensions(dim);
   
   showXPlaneCheckBox->setChecked(m_Visualization->GetShowXPlane());
   xPlaneSlider->setMinimum(1);
@@ -550,7 +625,7 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->item(1, 1)->setText(dataMax);
   
   int dims[3];
-  m_DataModel->GetDimensions(dims);
+  m_DataModel->GetPSFDimensions(dims);
   QString xDim = QString().sprintf(intFormat, dims[0]);
   m_ImageInformationTableModel->item(2, 1)->setText(xDim);
   QString yDim = QString().sprintf(intFormat, dims[1]);
@@ -559,7 +634,7 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->item(4, 1)->setText(zDim);
 
   double spacing[3];
-  m_DataModel->GetVoxelSpacing(spacing);
+  m_DataModel->GetPSFVoxelSpacing(spacing);
   QString xSpacing = QString().sprintf(decimalFormat, spacing[0]);
   m_ImageInformationTableModel->item(5, 1)->setText(xSpacing);
 
@@ -570,37 +645,36 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->item(7, 1)->setText(zSpacing);
 
   ///////////////// PSF settings update /////////////////
-  m_GibsonLanniPSFSettingsTableModel->item(0, 1)->
+  int item = 0;
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLEmissionWavelength()));
-  m_GibsonLanniPSFSettingsTableModel->item(1, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLNumericalAperture()));
-  m_GibsonLanniPSFSettingsTableModel->item(2, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLMagnification()));
-  m_GibsonLanniPSFSettingsTableModel->item(3, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLMechanicalTubeLength()));
-  m_GibsonLanniPSFSettingsTableModel->item(4, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignCoverSlipRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(5, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualCoverSlipRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(6, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignCoverSlipThickness()));
-  m_GibsonLanniPSFSettingsTableModel->item(7, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualCoverSlipThickness()));
-  m_GibsonLanniPSFSettingsTableModel->item(8, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignImmersionOilRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(9, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualImmersionOilRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(10, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignImmersionOilThickness()));
-  m_GibsonLanniPSFSettingsTableModel->item(11, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignSpecimenLayerRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(12, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualSpecimenLayerRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(13, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualPointSourceDepthInSpecimenLayer()));
-  m_GibsonLanniPSFSettingsTableModel->item(14, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignDistanceFromBackFocalPlaneToDetector()));
-  m_GibsonLanniPSFSettingsTableModel->item(15, 1)->
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector()));
   
 
@@ -609,7 +683,7 @@ VisualPSFOptimizer
 
   if (m_DataModel->GetImageData()) {
     m_Visualization->SetImageInputConnection(m_DataModel->GetImageOutputPort());
-    m_Visualization->AddToRenderer(m_Renderer);
+    m_Visualization->AddToRenderer();
   }
 
   qvtkWidget->GetRenderWindow()->Render();

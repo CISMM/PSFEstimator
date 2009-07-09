@@ -1,3 +1,13 @@
+2009-07-09  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.ui: Added buttons for setting canonical camera views
+   aligned with the x, y, and z axes.
+   
+   * VisualPSFOptimizer.h,.cxx: Updated to work with changes to Visualization
+   class. Made PSF dimension entries in image information table editable and
+   connected them to the Gibson-Lanni PSF generator class. Added handlers for
+   canonical camera view buttons. 
+
 2009-07-08  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: Changed method calls to match method renaming.

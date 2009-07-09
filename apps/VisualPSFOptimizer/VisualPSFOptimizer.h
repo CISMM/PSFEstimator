@@ -38,8 +38,6 @@ public slots:
   
   virtual void on_actionAboutApplication_triggered();
   
-  virtual void on_showDataOutlineCheckBox_toggled(bool show);
-  
   virtual void on_showXPlaneCheckBox_toggled(bool show);
   virtual void on_xPlaneSlider_sliderMoved(int value);
   virtual void on_xPlaneEdit_textEdited(QString text);
@@ -54,6 +52,15 @@ public slots:
   
   virtual void on_mapsToBlackSlider_sliderMoved(int value);
   virtual void on_mapsToWhiteSlider_sliderMoved(int value);
+
+  virtual void on_showDataOutlineCheckBox_toggled(bool show);
+
+  virtual void on_xPlusButton_clicked();
+  virtual void on_xMinusButton_clicked();
+  virtual void on_yPlusButton_clicked();
+  virtual void on_yMinusButton_clicked();
+  virtual void on_zPlusButton_clicked();
+  virtual void on_zMinusButton_clicked();
 
   virtual void on_applyButton_clicked();
   
