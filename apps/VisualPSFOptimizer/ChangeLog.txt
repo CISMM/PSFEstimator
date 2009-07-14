@@ -1,3 +1,11 @@
+2009-07-14  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.cxx: Added button to recenter the origin of an image
+   after the voxel spacings have been changed. Removed handler for updates to
+   image settings and now read settings only when the Apply button is clicked.
+   
+   * VisualPSFOptimizer.ui: Added Recenter PSF Origin button.
+
 2009-07-09  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.ui: Added buttons for setting canonical camera views

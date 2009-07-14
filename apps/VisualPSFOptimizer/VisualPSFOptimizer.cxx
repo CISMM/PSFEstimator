@@ -55,24 +55,27 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->setHeaderData(LEFT_COLUMN,  Qt::Horizontal, tr("Property"));
   m_ImageInformationTableModel->setHeaderData(RIGHT_COLUMN, Qt::Horizontal, tr("Value"));
   
-  QStandardItem* labelItems[8];
-  labelItems[0] = new QStandardItem(tr("Intensity minimum"));
-  labelItems[1] = new QStandardItem(tr("Intensity maximum"));
-  labelItems[2] = new QStandardItem(tr("X dimension (pixels)"));
-  labelItems[3] = new QStandardItem(tr("Y dimension (pixels)"));
-  labelItems[4] = new QStandardItem(tr("Z dimension (slices)"));
-  labelItems[5] = new QStandardItem(tr("X pixel size (nm)"));
-  labelItems[6] = new QStandardItem(tr("Y pixel size (nm)"));
-  labelItems[7] = new QStandardItem(tr("Z slice spacing (nm)"));
-  
+  QStandardItem* labelItems[11];
+  labelItems[ 0] = new QStandardItem(tr("Intensity minimum"));
+  labelItems[ 1] = new QStandardItem(tr("Intensity maximum"));
+  labelItems[ 2] = new QStandardItem(tr("X dimension (pixels)"));
+  labelItems[ 3] = new QStandardItem(tr("Y dimension (pixels)"));
+  labelItems[ 4] = new QStandardItem(tr("Z dimension (slices)"));
+  labelItems[ 5] = new QStandardItem(tr("X pixel size (nm)"));
+  labelItems[ 6] = new QStandardItem(tr("Y pixel size (nm)"));
+  labelItems[ 7] = new QStandardItem(tr("Z slice spacing (nm)"));
+  labelItems[ 8] = new QStandardItem(tr("X origin (nm)"));
+  labelItems[ 9] = new QStandardItem(tr("Y origin (nm)"));
+  labelItems[10] = new QStandardItem(tr("Z origin (nm)"));
+ 
   for (unsigned int i = 0; i < sizeof(labelItems) / sizeof(QStandardItem*); i++) {
     labelItems[i]->setEditable(false);
     m_ImageInformationTableModel->setItem(i, LEFT_COLUMN, labelItems[i]);
 
     QStandardItem* item = new QStandardItem(tr(""));
 
-    // Allow editing of voxel spacing.
-    if (i < 1)
+    // Allow editing of voxel spacing and origin.
+    if (i < 5)
       item->setEditable(false);
     m_ImageInformationTableModel->setItem(i, RIGHT_COLUMN, item);
   }
@@ -157,18 +160,6 @@ VisualPSFOptimizer
 
   connect(m_GibsonLanniPSFSettingsTableModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handle_GibsonLanniPSFSettingsTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
 
-  // Set up m_Visualization pipeline.
-  m_Visualization->SetImageInputConnection(m_DataModel->GetImageOutputPort());
-  m_Visualization->SetXPlane(0);
-  m_Visualization->SetYPlane(0);
-  m_Visualization->SetZPlane(0);
-
-  // Set the contrast values
-  double min = m_DataModel->GetImageDataMinimum();
-  double max = m_DataModel->GetImageDataMaximum();
-  m_Visualization->SetImagePlanesBlackValue(min);
-  m_Visualization->SetImagePlanesWhiteValue(max);
-
   // Refresh the UI
   RefreshUI();
 
@@ -203,14 +194,14 @@ VisualPSFOptimizer
   OpenFile(fileName.toStdString());
   
   // Set up m_Visualization pipeline.
-  m_Visualization->SetImageInputConnection(m_DataModel->GetImageOutputPort());
+  m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
   m_Visualization->SetXPlane(0);
   m_Visualization->SetYPlane(0);
   m_Visualization->SetZPlane(0);
 
   // Set the contrast values
-  double min = m_DataModel->GetImageDataMinimum();
-  double max = m_DataModel->GetImageDataMaximum();
+  double min = m_DataModel->GetPSFImageDataMinimum();
+  double max = m_DataModel->GetPSFImageDataMaximum();
   m_Visualization->SetImagePlanesBlackValue(min);
   m_Visualization->SetImagePlanesWhiteValue(max);
 
@@ -313,7 +304,7 @@ VisualPSFOptimizer
 ::on_xPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
-  m_DataModel->GetPSFDimensions(dims);
+  m_DataModel->GetMeasuredImageDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[0]) {
     xPlaneSlider->setValue(value);
@@ -345,7 +336,7 @@ VisualPSFOptimizer
 ::on_yPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
-  m_DataModel->GetPSFDimensions(dims);
+  m_DataModel->GetMeasuredImageDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[1]) {
     yPlaneSlider->setValue(value);
@@ -377,7 +368,7 @@ VisualPSFOptimizer
 ::on_zPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
-  m_DataModel->GetPSFDimensions(dims);
+  m_DataModel->GetMeasuredImageDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[2]) {
     zPlaneSlider->setValue(value);
@@ -390,8 +381,8 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_mapsToBlackSlider_sliderMoved(int value) {
-  double dataMin = m_DataModel->GetImageDataMinimum();
-  double dataMax = m_DataModel->GetImageDataMaximum();
+  double dataMin = m_DataModel->GetPSFImageDataMinimum();
+  double dataMax = m_DataModel->GetPSFImageDataMaximum();
   double dd = dataMax - dataMin;
   double sliderMax = static_cast<double>(mapsToBlackSlider->maximum());
   double dvalue = static_cast<double>(value);
@@ -405,10 +396,10 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_mapsToWhiteSlider_sliderMoved(int value) {
-  double dataMin = m_DataModel->GetImageDataMinimum();
-  double dataMax = m_DataModel->GetImageDataMaximum();
+  double dataMin = m_DataModel->GetPSFImageDataMinimum();
+  double dataMax = m_DataModel->GetPSFImageDataMaximum();
   double dd = dataMax - dataMin;
-  double sliderMax = static_cast<double>(mapsToBlackSlider->maximum());
+  double sliderMax = static_cast<double>(mapsToWhiteSlider->maximum());
   double dvalue = static_cast<double>(value);
   double mapped = (dvalue/sliderMax) * dd + dataMin;
   m_Visualization->SetImagePlanesWhiteValue(mapped);
@@ -541,10 +532,78 @@ VisualPSFOptimizer
   value = item->text().toFloat();
   m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(value);
 
-  //m_DataModel->UpdateGibsonLanniPSFImage();
+  // General image parameters
+  COLUMN = 1;
+  itemRow = 5;
+  double dValue = 0.0;
+
+  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
+  dValue = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelXSpacing(dValue);
+  m_DataModel->SetPSFImageVoxelXSpacing(dValue);
+
+  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
+  dValue = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelYSpacing(dValue);
+  m_DataModel->SetPSFImageVoxelYSpacing(dValue);
+
+  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
+  dValue = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelZSpacing(dValue);
+  m_DataModel->SetPSFImageVoxelZSpacing(dValue);
+
+  double origin[3];
+  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
+  origin[0] = item->text().toDouble();
+  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
+  origin[1] = item->text().toDouble();
+  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
+  origin[2] = item->text().toDouble();
+  m_DataModel->SetPSFImageOrigin(origin);
+
+  // Now update
+  m_DataModel->UpdateGibsonLanniPSFImage();
+  
+  m_Visualization->SetImagePlanesBlackValue(m_DataModel->GetPSFImageDataMinimum());
+  m_Visualization->SetImagePlanesWhiteValue(m_DataModel->GetPSFImageDataMaximum());
   m_Visualization->Update();
 
+  mapsToBlackSlider->setSliderPosition(mapsToBlackSlider->minimum());
+  mapsToWhiteSlider->setSliderPosition(mapsToWhiteSlider->maximum());
+
   RefreshUI();
+}
+
+
+void
+VisualPSFOptimizer
+::on_recenterPSFOriginButton_clicked() {
+  // Recenter the PSF origin parameters so that it is in the middle of the
+  // image whose voxel spacings are specified in the GUI. Usage model:
+  // user specifies voxel spacing and updates the PSF to recenter it
+  // according to that new spacing.
+  double spacing[3];
+  spacing[0] = m_ImageInformationTableModel->item(5, 1)->text().toDouble();
+  spacing[1] = m_ImageInformationTableModel->item(6, 1)->text().toDouble();
+  spacing[2] = m_ImageInformationTableModel->item(7, 1)->text().toDouble();
+
+  // Go to the data model for this info (it is immutable).
+  int size[3];
+  m_DataModel->GetPSFImageDimensions(size);
+  
+  double origin[3];
+  for (int i = 0; i < 3; i++)
+    origin[i] = -spacing[i]*static_cast<double>(size[i]-1)*0.5;
+
+  char *decimalFormat = "%.3f";
+  QString xOrigin = QString().sprintf(decimalFormat, origin[0]);
+  m_ImageInformationTableModel->item(8, 1)->
+    setText(QString().sprintf(decimalFormat, origin[0]));
+  m_ImageInformationTableModel->item(9, 1)->
+    setText(QString().sprintf(decimalFormat, origin[1]));
+  m_ImageInformationTableModel->item(10, 1)->
+    setText(QString().sprintf(decimalFormat, origin[2]));
+
 }
 
 
@@ -562,22 +621,9 @@ VisualPSFOptimizer
   double intValue    = item->text().toInt();
 
   int itemIndex = topLeft.row();
-  if (itemIndex == 2) {
-    m_DataModel->SetPSFXDimension(intValue);
-  } else if (itemIndex == 3) {
-    m_DataModel->SetPSFYDimension(intValue);
-  } else if (itemIndex == 4) {
-    m_DataModel->SetPSFZDimension(intValue);
-  } else if (itemIndex == 5) {
-    m_DataModel->SetPSFVoxelXSpacing(doubleValue);
-  } else if (itemIndex == 6) {
-    m_DataModel->SetPSFVoxelYSpacing(doubleValue);
-  } else if (itemIndex == 7) {
-    m_DataModel->SetPSFVoxelZSpacing(doubleValue);
-  }
 
-  m_DataModel->UpdateGibsonLanniPSFImage();
-  m_Visualization->Update();
+  //m_DataModel->UpdateGibsonLanniPSFImage();
+  //m_Visualization->Update();
 
   //qvtkWidget->GetRenderWindow()->Render();
 }
@@ -588,7 +634,7 @@ VisualPSFOptimizer
 ::RefreshUI() {
 
   ///////////////// Update window title /////////////////
-  QFileInfo fileInfo(m_DataModel->GetImageFileName().c_str());
+  QFileInfo fileInfo(m_DataModel->GetMeasuredImageFileName().c_str());
   QString windowTitle("VisualPSFOptimizer");
   if (fileInfo.fileName() != "")
     windowTitle.append(tr(" - '").append(fileInfo.fileName()).append("'"));
@@ -601,7 +647,7 @@ VisualPSFOptimizer
   
   ///////////////// Image planes stuff /////////////////
   int dim[3];
-  m_DataModel->GetPSFDimensions(dim);
+  m_DataModel->GetMeasuredImageDimensions(dim);
   
   showXPlaneCheckBox->setChecked(m_Visualization->GetShowXPlane());
   xPlaneSlider->setMinimum(1);
@@ -619,13 +665,13 @@ VisualPSFOptimizer
   zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
   
   ///////////////// Image information update /////////////////
-  QString dataMin = QString().sprintf(decimalFormat, m_DataModel->GetImageDataMinimum());
+  QString dataMin = QString().sprintf(decimalFormat, m_DataModel->GetPSFImageDataMinimum());
   m_ImageInformationTableModel->item(0, 1)->setText(dataMin);
-  QString dataMax = QString().sprintf(decimalFormat, m_DataModel->GetImageDataMaximum());
+  QString dataMax = QString().sprintf(decimalFormat, m_DataModel->GetPSFImageDataMaximum());
   m_ImageInformationTableModel->item(1, 1)->setText(dataMax);
   
   int dims[3];
-  m_DataModel->GetPSFDimensions(dims);
+  m_DataModel->GetMeasuredImageDimensions(dims);
   QString xDim = QString().sprintf(intFormat, dims[0]);
   m_ImageInformationTableModel->item(2, 1)->setText(xDim);
   QString yDim = QString().sprintf(intFormat, dims[1]);
@@ -634,7 +680,7 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->item(4, 1)->setText(zDim);
 
   double spacing[3];
-  m_DataModel->GetPSFVoxelSpacing(spacing);
+  m_DataModel->GetMeasuredImageVoxelSpacing(spacing);
   QString xSpacing = QString().sprintf(decimalFormat, spacing[0]);
   m_ImageInformationTableModel->item(5, 1)->setText(xSpacing);
 
@@ -643,6 +689,17 @@ VisualPSFOptimizer
 
   QString zSpacing = QString().sprintf(decimalFormat, spacing[2]);
   m_ImageInformationTableModel->item(7, 1)->setText(zSpacing);
+
+  double origin[3];
+  m_DataModel->GetPSFImageOrigin(origin);
+  QString xOrigin = QString().sprintf(decimalFormat, origin[0]);
+  m_ImageInformationTableModel->item(8, 1)->setText(xOrigin);
+
+  QString yOrigin = QString().sprintf(decimalFormat, origin[1]);
+  m_ImageInformationTableModel->item(9, 1)->setText(yOrigin);
+
+  QString zOrigin = QString().sprintf(decimalFormat, origin[2]);
+  m_ImageInformationTableModel->item(10, 1)->setText(zOrigin);
 
   ///////////////// PSF settings update /////////////////
   int item = 0;
@@ -681,8 +738,8 @@ VisualPSFOptimizer
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();
 
-  if (m_DataModel->GetImageData()) {
-    m_Visualization->SetImageInputConnection(m_DataModel->GetImageOutputPort());
+  if (m_DataModel->GetMeasuredImageData()) {
+    m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
     m_Visualization->AddToRenderer();
   }
 

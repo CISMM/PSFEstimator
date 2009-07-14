@@ -63,6 +63,8 @@ public slots:
   virtual void on_zMinusButton_clicked();
 
   virtual void on_applyButton_clicked();
+
+  virtual void on_recenterPSFOriginButton_clicked();
   
   virtual void handle_imageInformationTableModel_dataChanged(const QModelIndex& topLeft,
     const QModelIndex& bottomRight);
