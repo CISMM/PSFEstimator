@@ -41,6 +41,8 @@ public:
   void   SetMapsToWhite(double value);
   double GetMapsToWhite();
 
+  void Update();
+
 protected:
   int    m_PlaneDimension;
   bool   m_AutoScalingOn;

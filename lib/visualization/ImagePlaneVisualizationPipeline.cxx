@@ -45,7 +45,7 @@ ImagePlaneVisualizationPipeline
   inputAlgorithm->SetInputConnection(input);
 
     // Update shift/scale filter automatically if auto-rescaling is on.
-  double scalarRange[3];
+  double scalarRange[2];
   if (m_AutoScalingOn) {
     // Gotta be a better way to do this.
     input->GetProducer()->Update();
@@ -185,4 +185,11 @@ double
 ImagePlaneVisualizationPipeline
 ::GetMapsToWhite() {
   return m_MapsToWhite;
+}
+
+
+void
+ImagePlaneVisualizationPipeline
+::Update() {
+  m_ShiftScaler->Modified();
 }
