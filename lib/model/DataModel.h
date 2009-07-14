@@ -18,6 +18,7 @@
 // This is the data model for the Fibrin Analysis library.
 class DataModel {
 
+public:
   typedef float FloatPixelType;
   static const unsigned int Dimension3 = 3;
   typedef itk::Image<FloatPixelType, Dimension3> 
@@ -53,41 +54,63 @@ class DataModel {
   typedef itk::ImageFileWriter<TIFFOutputImageType>
     TIFFWriterType;
 
-public:
-
   DataModel();
   virtual ~DataModel();
 
   void LoadImageFile(std::string fileName);
   void SavePSFImageFile(std::string fileName);
 
-  std::string GetImageFileName();
+  std::string GetMeasuredImageFileName();
 
+  // Number of threads to run for all the multithreaded ITK algorithms
   void SetNumberOfThreads(int threads);
   int  GetNumberOfThreads();
 
-  void SetImageData(TImage::Pointer image);
-  TImage::Pointer GetImageData();
+  void SetMeasuredImageData(TImage::Pointer image);
+  TImage::Pointer GetMeasuredImageData();
+
+  TImage::Pointer GetPSFImageData();
 
   // Returns the VTK output port for the original scalar image data.
-  vtkAlgorithmOutput* GetImageOutputPort();
+  vtkAlgorithmOutput* GetMeasuredImageOutputPort();
 
-  double GetImageDataMinimum();
-  double GetImageDataMaximum();
+  // Returns the VTK output port for the generated PSF image data.
+  vtkAlgorithmOutput* GetPSFImageOutputPort();
 
-  void SetPSFDimensions(int dimensions[3]);
-  void SetPSFDimension(int index, int dimension);
-  void SetPSFXDimension(int dimension);
-  void SetPSFYDimension(int dimension);
-  void SetPSFZDimension(int dimension);
-  void GetPSFDimensions(int dimensions[3]);
+  double GetMeasuredImageDataMinimum();
+  double GetMeasuredImageDataMaximum();
 
-  void SetPSFVoxelSpacing(double spacing[3]);
-  void SetPSFVoxelSpacing(int dimension, double spacing);
-  void SetPSFVoxelXSpacing(double spacing);
-  void SetPSFVoxelYSpacing(double spacing);
-  void SetPSFVoxelZSpacing(double spacing);
-  void GetPSFVoxelSpacing(double spacing[3]);
+  void GetMeasuredImageDimensions(int dimensions[3]);
+
+  void SetMeasuredImageVoxelSpacing(double spacing[3]);
+  void SetMeasuredImageVoxelSpacing(int dimension, double spacing);
+  void SetMeasuredImageVoxelXSpacing(double spacing);
+  void SetMeasuredImageVoxelYSpacing(double spacing);
+  void SetMeasuredImageVoxelZSpacing(double spacing);
+  void GetMeasuredImageVoxelSpacing(double spacing[3]);
+
+  double GetPSFImageDataMinimum();
+  double GetPSFImageDataMaximum();
+
+  void SetPSFImageDimensions(int dimensions[3]);
+  void SetPSFImageDimension(int index, int dimension);
+  void SetPSFImageXDimension(int dimension);
+  void SetPSFImageYDimension(int dimension);
+  void SetPSFImageZDimension(int dimension);
+  void GetPSFImageDimensions(int dimensions[3]);
+
+  void SetPSFImageVoxelSpacing(double spacing[3]);
+  void SetPSFImageVoxelSpacing(int dimension, double spacing);
+  void SetPSFImageVoxelXSpacing(double spacing);
+  void SetPSFImageVoxelYSpacing(double spacing);
+  void SetPSFImageVoxelZSpacing(double spacing);
+  void GetPSFImageVoxelSpacing(double spacing[3]);
+
+  void SetPSFImageOrigin(double origin[3]);
+  void GetPSFImageOrigin(double origin[3]);
+
+  // Recenters the PSF image origin to the center of the image bounds.
+  void RecenterPSFImageOrigin();
 
   void UpdateGibsonLanniPSFImage();
 
@@ -164,14 +187,14 @@ public:
 protected:
   std::string m_ImageFileName;
 
-  TImage::Pointer m_ImageData;
+  TImage::Pointer m_MeasuredImageData;
 
   GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
 
-  MinMaxType::Pointer m_MinMaxFilter;
+  MinMaxType::Pointer m_MeasuredImageMinMaxFilter;
+  MinMaxType::Pointer m_PSFImageMinMaxFilter;
 
-  ITKImageToVTKImage<TImage>* m_InputImageITKToVTKFilter;
-
+  ITKImageToVTKImage<TImage>* m_MeasuredImageITKToVTKFilter;
   ITKImageToVTKImage<TImage>* m_PSFImageITKToVTKFilter;
 
 };

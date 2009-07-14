@@ -1,3 +1,11 @@
+2009-07-14  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added methods/variables for generated PSF image, renamed
+   methods/variables rlated to measured PSF image. PSF is not generated until
+   after measured PSF is loaded. Fixed bug in min/max calculation of image by
+   explicitly setting the requested region for the filter to the largest possible
+   size. Added method for setting generated PSF origin. 
+
 2009-07-09  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Removed setter/getter for mechanical tube length variable.
