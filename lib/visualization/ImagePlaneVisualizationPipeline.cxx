@@ -134,7 +134,16 @@ ImagePlaneVisualizationPipeline
 int
 ImagePlaneVisualizationPipeline
 ::GetSliceNumber() {
-  return m_ImageActor->GetZSlice();
+  int slice = 0;
+  if (m_PlaneDimension == X_PLANE) {
+    slice = m_ImageActor->GetDisplayExtent()[0];
+  } else if (m_PlaneDimension == Y_PLANE) {
+    slice = m_ImageActor->GetDisplayExtent()[2];
+  } else {
+    slice = m_ImageActor->GetDisplayExtent()[4];
+  }
+
+  return slice;
 }
 
 
