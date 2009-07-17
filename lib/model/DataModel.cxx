@@ -24,6 +24,10 @@ DataModel
   m_MeasuredImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
   m_PSFImageITKToVTKFilter   = new ITKImageToVTKImage<TImage>();
 
+  m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
+  m_CostFunction = ParameterizedCostFunctionType::New();
+  m_CostFunction->SetImageToImageMetric(m_ImageToImageCostFunction);
+
   // ITK will detect the number of cores on the system and set it by default.
   // Here we can override that setting if the proper environment variable is
   // set.
@@ -77,6 +81,7 @@ DataModel
     origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
   m_GibsonLanniPSFSource->Update();
+  m_MeasuredImageData->SetOrigin(origin);
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
@@ -87,6 +92,11 @@ DataModel
   m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
   m_PSFImageITKToVTKFilter->Modified();
   m_PSFImageITKToVTKFilter->Update();
+
+  // Set up cost function
+  m_CostFunction->SetFixedImage(m_MeasuredImageData);
+  m_CostFunction->SetMovingImageSource(m_GibsonLanniPSFSource);
+
 }
 
 
@@ -262,6 +272,22 @@ DataModel
   itk::Vector<double> thisSpacing = GetMeasuredImageData()->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
+}
+
+
+void
+DataModel
+::SetMeasuredImageOrigin(double origin[3]) {
+  m_MeasuredImageData->SetOrigin(origin);
+}
+
+
+void
+DataModel
+::GetMeasuredImageOrigin(double origin[3]) {
+  for (int i = 0; i < 3; i++) {
+    origin[i] = m_MeasuredImageData->GetOrigin()[i];
+  }
 }
 
 
@@ -462,6 +488,13 @@ DataModel
   double min = GetPSFImageDataMinimum();
   double max = GetPSFImageDataMaximum();
   std::cout << "Min: " << min << ", " << max << std::endl;
+}
+
+
+double
+DataModel
+::GetImageComparisonMetric() {
+  return m_CostFunction->GetValue(m_GibsonLanniPSFSource->GetParameters());
 }
 
 #endif // _DATA_MODEL_CXX_

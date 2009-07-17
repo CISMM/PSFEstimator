@@ -1,3 +1,11 @@
+2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added references to new class
+   ImageToParameterizedImageSourceMetric. Added methods to set the origin on the
+   measured image (typical use case: match the measured image origin to that of
+   the calculated image origin). Added NormalizedCorrelationImageToImageMetric
+   as the delegate metric for the ImageToParameterizedImageSourceMetric.
+
 2009-07-14  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added methods/variables for generated PSF image, renamed

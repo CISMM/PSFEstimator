@@ -3,13 +3,14 @@
 
 #include <string>
 
-#include <itkCastImageFilter.h>
 #include <itkGibsonLanniPSFImageSource.h>
-#include <itkImage.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkShiftScaleImageFilter.h>
+
+#include <itkNormalizedCorrelationImageToImageMetric.h>
+#include <itkImageToParameterizedImageSourceMetric.h>
 
 #include <vtkAlgorithmOutput.h>
 
@@ -54,6 +55,12 @@ public:
   typedef itk::ImageFileWriter<TIFFOutputImageType>
     TIFFWriterType;
 
+  // Types for optimization.
+  typedef itk::ImageToParameterizedImageSourceMetric<TImage, GibsonLanniPSFImageSourceType>
+    ParameterizedCostFunctionType;
+  typedef itk::NormalizedCorrelationImageToImageMetric<TImage, TImage>
+    ImageToImageCostFunctionType;
+
   DataModel();
   virtual ~DataModel();
 
@@ -88,6 +95,9 @@ public:
   void SetMeasuredImageVoxelYSpacing(double spacing);
   void SetMeasuredImageVoxelZSpacing(double spacing);
   void GetMeasuredImageVoxelSpacing(double spacing[3]);
+
+  void SetMeasuredImageOrigin(double origin[3]);
+  void GetMeasuredImageOrigin(double origin[3]);
 
   double GetPSFImageDataMinimum();
   double GetPSFImageDataMaximum();
@@ -184,6 +194,8 @@ public:
   float GetGLActualDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniPSFSource->GetActualDistanceFromBackFocalPlaneToDetector(); }
 
+  double GetImageComparisonMetric();
+
 protected:
   std::string m_ImageFileName;
 
@@ -197,6 +209,8 @@ protected:
   ITKImageToVTKImage<TImage>* m_MeasuredImageITKToVTKFilter;
   ITKImageToVTKImage<TImage>* m_PSFImageITKToVTKFilter;
 
+  ParameterizedCostFunctionType::Pointer m_CostFunction;
+  ImageToImageCostFunctionType::Pointer  m_ImageToImageCostFunction;
 };
 
 // _DATA_MODEL_H_
