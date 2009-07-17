@@ -1,3 +1,8 @@
+2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
+
+  * ChangeLog.txt: Added itkParameterizedImageSource.cxx and
+  itkImageToParameterizedImageSourceMetric.cxx to list of sources.
+
 2009-07-09  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniPSFImageSource.h,.cxx: Removed MechanicalTubeLength
