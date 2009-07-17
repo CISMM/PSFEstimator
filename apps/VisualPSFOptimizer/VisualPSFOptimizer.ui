@@ -140,12 +140,53 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-423</y>
+          <y>0</y>
           <width>297</width>
-          <height>566</height>
+          <height>634</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <widget class="QGroupBox" name="imageGroupBox">
+           <property name="title">
+            <string>Image</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="margin">
+             <number>3</number>
+            </property>
+            <item>
+             <widget class="QRadioButton" name="measuredPSFRadioButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>Show the loaded, measured PSF.</string>
+              </property>
+              <property name="text">
+               <string>Measured PSF</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="calculatedPSFRadioButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>Show the calculated PSF.</string>
+              </property>
+              <property name="text">
+               <string>Calculated PSF</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
          <item>
           <widget class="QGroupBox" name="imagePlaneGroupBox">
            <property name="sizePolicy">
@@ -557,7 +598,7 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_12">
      <item>
-      <widget class="QGroupBox" name="measuredPSFImageInformationGroupBox">
+      <widget class="QGroupBox" name="imageInformationGroupBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -571,7 +612,7 @@
         </size>
        </property>
        <property name="title">
-        <string>Measured PSF Image Information</string>
+        <string>Image Information</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <property name="bottomMargin">
@@ -643,7 +684,7 @@
    <property name="minimumSize">
     <size>
      <width>340</width>
-     <height>263</height>
+     <height>275</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -701,6 +742,13 @@
          <widget class="QPushButton" name="applyButton2">
           <property name="text">
            <string>Apply</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="optimizePSFParametersButton">
+          <property name="text">
+           <string>Optimize PSF Parameters</string>
           </property>
          </widget>
         </item>

@@ -7,10 +7,10 @@
 
 #include "ui_VisualPSFOptimizer.h"
 
-#include "DataModel.h"
-#include "Visualization.h"
-
 // Forward class declarations
+class DataModel;
+class Visualization;
+
 class vtkRenderer;
 
 class VisualPSFOptimizer : public QMainWindow, private Ui_MainWindow {
@@ -22,11 +22,6 @@ public:
   VisualPSFOptimizer(QWidget* parent=0);
   virtual ~VisualPSFOptimizer();
   
-protected:
-
-  void writeProgramSettings();
-  void readProgramSettings();
-  
 public slots:
 
   // Use Qt's auto-connect magic to tie GUI widgets to slots.
@@ -37,6 +32,9 @@ public slots:
   virtual void on_actionExit_triggered();
   
   virtual void on_actionAboutApplication_triggered();
+
+  virtual void on_measuredPSFRadioButton_clicked(bool state);
+  virtual void on_calculatedPSFRadioButton_clicked(bool state);
   
   virtual void on_showXPlaneCheckBox_toggled(bool show);
   virtual void on_xPlaneSlider_sliderMoved(int value);
@@ -63,6 +61,7 @@ public slots:
   virtual void on_zMinusButton_clicked();
 
   virtual void on_applyButton_clicked();
+  virtual void on_optimizePSFParametersButton_clicked();
 
   virtual void on_recenterPSFOriginButton_clicked();
   
@@ -71,6 +70,8 @@ public slots:
 
 
 protected:
+  typedef enum { MEASURED_PSF_IMAGE, CALCULATED_PSF_IMAGE } DisplayImageType;
+
   DataModel* m_DataModel;
   
   Visualization* m_Visualization;
@@ -79,9 +80,23 @@ protected:
 
   QStandardItemModel* m_GibsonLanniPSFSettingsTableModel;
   
+  DisplayImageType m_DisplayedImage;
+
   void OpenFile(std::string fileName);
   
+  void SetDisplayedImageToMeasuredPSF();
+  void SetDisplayedImageToCalculatedPSF();
+
   void RefreshUI();
+
+  double GetDisplayedImageDataMinimum();
+  double GetDisplayedImageDataMaximum();
+
+  void SetMapsToBlackValueFromSliderPosition(int position);
+  void SetMapsToWhiteValueFromSliderPosition(int position);
+
+  void writeProgramSettings();
+  void readProgramSettings();
 
 protected slots:
 

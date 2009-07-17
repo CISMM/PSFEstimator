@@ -1,3 +1,16 @@
+2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Added ITKNumerics library dependency.
+   
+   * VisualPSFOptimizer.h,.cxx: Added handlers for radio buttons controlling
+   which image (measured or calculated) is displayed. Added handler for new
+   "make it better" button in the GUI. Refactored some code to better deal with
+   switching which image is displayed.
+   
+   * VisualPSFOptimizer.ui: Added radio buttons for picking which image is
+   displayed (easier to flip back and forth with these than a pop-up menu).
+   Added "make it better" button.
+
 2009-07-14  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.h,.cxx: Added button to recenter the origin of an image

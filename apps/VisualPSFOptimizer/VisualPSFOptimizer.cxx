@@ -7,6 +7,9 @@
 #pragma warning( disable : 4996 )
 #endif
 
+#include "DataModel.h"
+#include "Visualization.h"
+
 #include <qapplication.h>
 #include <qfiledialog.h>
 #include <qsettings.h>
@@ -191,19 +194,19 @@ VisualPSFOptimizer
     return;
   }
 
+  // Should probably report if opening the image failed.
   OpenFile(fileName.toStdString());
   
   // Set up m_Visualization pipeline.
-  m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
+  m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
   m_Visualization->SetXPlane(0);
   m_Visualization->SetYPlane(0);
   m_Visualization->SetZPlane(0);
 
-  // Set the contrast values
-  double min = m_DataModel->GetPSFImageDataMinimum();
-  double max = m_DataModel->GetPSFImageDataMaximum();
-  m_Visualization->SetImagePlanesBlackValue(min);
-  m_Visualization->SetImagePlanesWhiteValue(max);
+  SetDisplayedImageToMeasuredPSF();
+
+  measuredPSFRadioButton->setEnabled(true);
+  calculatedPSFRadioButton->setEnabled(true);
 
   // Refresh the UI
   RefreshUI();
@@ -279,6 +282,46 @@ VisualPSFOptimizer
   text.append("Developed by:\n");
   text.append("Cory Quammen");
   QMessageBox::about(this, title, text);
+}
+
+
+void
+VisualPSFOptimizer
+::on_measuredPSFRadioButton_clicked(bool state) {
+  SetDisplayedImageToMeasuredPSF();
+}
+
+
+void
+VisualPSFOptimizer
+::on_calculatedPSFRadioButton_clicked(bool state) {
+  SetDisplayedImageToCalculatedPSF();
+}
+
+
+void
+VisualPSFOptimizer
+::SetDisplayedImageToMeasuredPSF() {
+  m_DisplayedImage = MEASURED_PSF_IMAGE;
+  m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
+  on_mapsToBlackSlider_sliderMoved(mapsToBlackSlider->sliderPosition());
+  on_mapsToWhiteSlider_sliderMoved(mapsToWhiteSlider->sliderPosition());
+  m_Visualization->Update();
+
+  RefreshUI();
+}
+
+
+void
+VisualPSFOptimizer
+::SetDisplayedImageToCalculatedPSF() {
+  m_DisplayedImage = CALCULATED_PSF_IMAGE;
+  m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
+  on_mapsToBlackSlider_sliderMoved(mapsToBlackSlider->sliderPosition());
+  on_mapsToWhiteSlider_sliderMoved(mapsToWhiteSlider->sliderPosition());
+  m_Visualization->Update();
+
+  RefreshUI();
 }
 
 
@@ -381,14 +424,7 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_mapsToBlackSlider_sliderMoved(int value) {
-  double dataMin = m_DataModel->GetPSFImageDataMinimum();
-  double dataMax = m_DataModel->GetPSFImageDataMaximum();
-  double dd = dataMax - dataMin;
-  double sliderMax = static_cast<double>(mapsToBlackSlider->maximum());
-  double dvalue = static_cast<double>(value);
-  double mapped = (dvalue/sliderMax) * dd + dataMin;
-  m_Visualization->SetImagePlanesBlackValue(mapped);
-
+  SetMapsToBlackValueFromSliderPosition(value);
   qvtkWidget->GetRenderWindow()->Render();  
 }
 
@@ -396,14 +432,7 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_mapsToWhiteSlider_sliderMoved(int value) {
-  double dataMin = m_DataModel->GetPSFImageDataMinimum();
-  double dataMax = m_DataModel->GetPSFImageDataMaximum();
-  double dd = dataMax - dataMin;
-  double sliderMax = static_cast<double>(mapsToWhiteSlider->maximum());
-  double dvalue = static_cast<double>(value);
-  double mapped = (dvalue/sliderMax) * dd + dataMin;
-  m_Visualization->SetImagePlanesWhiteValue(mapped);
-
+  SetMapsToWhiteValueFromSliderPosition(value);
   qvtkWidget->GetRenderWindow()->Render();
 }
 
@@ -559,19 +588,24 @@ VisualPSFOptimizer
   origin[1] = item->text().toDouble();
   item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
   origin[2] = item->text().toDouble();
+  m_DataModel->SetMeasuredImageOrigin(origin);
   m_DataModel->SetPSFImageOrigin(origin);
 
   // Now update
   m_DataModel->UpdateGibsonLanniPSFImage();
   
-  m_Visualization->SetImagePlanesBlackValue(m_DataModel->GetPSFImageDataMinimum());
-  m_Visualization->SetImagePlanesWhiteValue(m_DataModel->GetPSFImageDataMaximum());
-  m_Visualization->Update();
-
-  mapsToBlackSlider->setSliderPosition(mapsToBlackSlider->minimum());
-  mapsToWhiteSlider->setSliderPosition(mapsToWhiteSlider->maximum());
+  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
+}
+
+
+void
+VisualPSFOptimizer
+::on_optimizePSFParametersButton_clicked() {
+  std::cout << "Metric: " << m_DataModel->GetImageComparisonMetric()
+	    << std::endl;
 }
 
 
@@ -616,16 +650,6 @@ VisualPSFOptimizer
     return;
   }
   
-  QStandardItem* item = m_ImageInformationTableModel->item(topLeft.row(), topLeft.column());
-  double doubleValue = item->text().toDouble();
-  double intValue    = item->text().toInt();
-
-  int itemIndex = topLeft.row();
-
-  //m_DataModel->UpdateGibsonLanniPSFImage();
-  //m_Visualization->Update();
-
-  //qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -642,7 +666,7 @@ VisualPSFOptimizer
   
   const char* decimalFormat = "%.3f";
   const char* intFormat = "%d";
-  
+
   showDataOutlineCheckBox->setChecked(m_Visualization->GetShowOutline());
   
   ///////////////// Image planes stuff /////////////////
@@ -665,9 +689,9 @@ VisualPSFOptimizer
   zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
   
   ///////////////// Image information update /////////////////
-  QString dataMin = QString().sprintf(decimalFormat, m_DataModel->GetPSFImageDataMinimum());
+  QString dataMin = QString().sprintf(decimalFormat, GetDisplayedImageDataMinimum());
   m_ImageInformationTableModel->item(0, 1)->setText(dataMin);
-  QString dataMax = QString().sprintf(decimalFormat, m_DataModel->GetPSFImageDataMaximum());
+  QString dataMax = QString().sprintf(decimalFormat, GetDisplayedImageDataMaximum());
   m_ImageInformationTableModel->item(1, 1)->setText(dataMax);
   
   int dims[3];
@@ -734,16 +758,64 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector()));
   
-
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();
 
   if (m_DataModel->GetMeasuredImageData()) {
-    m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
     m_Visualization->AddToRenderer();
   }
 
   qvtkWidget->GetRenderWindow()->Render();
+}
+
+
+double
+VisualPSFOptimizer
+::GetDisplayedImageDataMinimum() {
+  if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
+    return m_DataModel->GetMeasuredImageDataMinimum();
+  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
+    return m_DataModel->GetPSFImageDataMinimum();
+  }
+  return 0.0;
+}
+
+
+double
+VisualPSFOptimizer
+::GetDisplayedImageDataMaximum() {
+  if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
+    return m_DataModel->GetMeasuredImageDataMaximum();
+  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
+    return m_DataModel->GetPSFImageDataMaximum();
+  }
+  return 0.0;
+}
+
+
+void
+VisualPSFOptimizer
+::SetMapsToBlackValueFromSliderPosition(int position) {
+  double dataMin = GetDisplayedImageDataMinimum();
+  double dataMax = GetDisplayedImageDataMaximum();
+  double dd = dataMax - dataMin;
+  double sliderMax = static_cast<double>(mapsToBlackSlider->maximum());
+  double dvalue = static_cast<double>(position);
+  double mapped = (dvalue/sliderMax) * dd + dataMin;
+  m_Visualization->SetImagePlanesBlackValue(mapped);
+}
+
+
+void
+VisualPSFOptimizer
+::SetMapsToWhiteValueFromSliderPosition(int position) {
+  double dataMin = GetDisplayedImageDataMinimum();
+  double dataMax = GetDisplayedImageDataMaximum();
+  double dd = dataMax - dataMin;
+  double sliderMax = static_cast<double>(mapsToWhiteSlider->maximum());
+  double dvalue = static_cast<double>(position);
+  double mapped = (dvalue/sliderMax) * dd + dataMin;
+  m_Visualization->SetImagePlanesWhiteValue(mapped);
 }
 
 
