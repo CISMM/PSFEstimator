@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/09 15:43:25 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2009/07/17 16:10:19 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,7 +22,7 @@
 
 #include <complex.h>
 
-#include "itkImageSource.h"
+#include "itkParameterizedImageSource.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -42,29 +42,36 @@ namespace itk
  * \ingroup DataSources Multithreaded
  */
 template <typename TOutputImage>
-class ITK_EXPORT GibsonLanniPSFImageSource : public ImageSource<TOutputImage>
+class ITK_EXPORT GibsonLanniPSFImageSource : 
+  public ParameterizedImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
   typedef GibsonLanniPSFImageSource         Self;
-  typedef ImageSource<TOutputImage> Superclass;
+  typedef ParameterizedImageSource<TOutputImage> Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
   /** Typedef for the output image PixelType. */
-  typedef typename TOutputImage::PixelType OutputImagePixelType;
+  typedef TOutputImage                        OutputImageType;
+  typedef typename OutputImageType::PixelType PixelType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
-  /** Typedef to describe the output image region type. */
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  itkStaticConstMacro(ImageDimension,
+		      unsigned int,
+		      TOutputImage::ImageDimension);
 
   /** Typedef for complex type. */
-  typedef complex<OutputImagePixelType> complex_t;
+  typedef complex<PixelType> complex_t;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GibsonLanniPSFImageSource,ImageSource);
+  itkTypeMacro(GibsonLanniPSFImageSource,ParameterizedImageSource);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  typedef typename Superclass::ParametersValueType ParametersValueType;
+  typedef typename Superclass::ParametersType      ParametersType;
   
   /** Specify the size of the output image. */
   itkSetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
@@ -88,91 +95,96 @@ public:
   itkSetMacro(EmissionWavelength,float);
 
   /** Get the emission wavelength (in nanometers). */
-  itkGetMacro(EmissionWavelength,float);
+  itkGetConstMacro(EmissionWavelength,float);
 
   /** Specify the numerical aperture (unitless). */
   itkSetMacro(NumericalAperture,float);
 
   /** Get the numerical aperture (unitless). */
-  itkGetMacro(NumericalAperture,float);
+  itkGetConstMacro(NumericalAperture,float);
 
   /** Specify the magnification (unitless). */
   itkSetMacro(Magnification,float);
 
   /** Get the magnification (unitless). */
-  itkGetMacro(Magnification,float);
+  itkGetConstMacro(Magnification,float);
 
   /** Specify the design cover slip refractive index (unitless). */
   itkSetMacro(DesignCoverSlipRefractiveIndex,float);
 
   /** Get the design cover slip refractive index (unitless). */
-  itkGetMacro(DesignCoverSlipRefractiveIndex,float);
+  itkGetConstMacro(DesignCoverSlipRefractiveIndex,float);
 
   /** Specify the actual cover slip refractive index (unitless). */
   itkSetMacro(ActualCoverSlipRefractiveIndex,float);
 
   /** Get the actual cover slip refractive index (unitless). */
-  itkGetMacro(ActualCoverSlipRefractiveIndex,float);
+  itkGetConstMacro(ActualCoverSlipRefractiveIndex,float);
 
   /** Specify the design cover slip thickness (in micrometers). */
   itkSetMacro(DesignCoverSlipThickness,float);
 
   /** Get the design cover slip thickness (in micrometers). */
-  itkGetMacro(DesignCoverSlipThickness,float);
+  itkGetConstMacro(DesignCoverSlipThickness,float);
 
   /** Specify the actual cover slip thickness (in micrometers). */
   itkSetMacro(ActualCoverSlipThickness,float);
 
   /** Get the actual cover slip thickness (in micrometers). */
-  itkGetMacro(ActualCoverSlipThickness,float);
+  itkGetConstMacro(ActualCoverSlipThickness,float);
 
   /** Specify the design immersion oil refractive index (unitless). */
   itkSetMacro(DesignImmersionOilRefractiveIndex,float);
 
   /** Get the design immersion oil refractive index (unitless). */
-  itkGetMacro(DesignImmersionOilRefractiveIndex,float);
+  itkGetConstMacro(DesignImmersionOilRefractiveIndex,float);
 
   /** Specify the actual immersion oil refractive index (unitless). */
   itkSetMacro(ActualImmersionOilRefractiveIndex,float);
 
   /** Get the actual immersion oil refractive index (unitless). */
-  itkGetMacro(ActualImmersionOilRefractiveIndex,float);
+  itkGetConstMacro(ActualImmersionOilRefractiveIndex,float);
 
   /** Specify the design immersion oil thickness (in micrometers). */
   itkSetMacro(DesignImmersionOilThickness,float);
 
   /** Get the actual immersion oil refractive index (in micrometers). */
-  itkGetMacro(DesignImmersionOilThickness,float);
+  itkGetConstMacro(DesignImmersionOilThickness,float);
 
   /** Specify the design specimen layer refractive index (unitless). */
   itkSetMacro(DesignSpecimenLayerRefractiveIndex,float);
 
   /** Get the design specimen layer refractive index (unitless). */
-  itkGetMacro(DesignSpecimenLayerRefractiveIndex,float);
+  itkGetConstMacro(DesignSpecimenLayerRefractiveIndex,float);
 
   /** Specify the actual specimen layer refractive index (unitless). */
   itkSetMacro(ActualSpecimenLayerRefractiveIndex,float);
 
   /** Get the actual specimen layer refractive index (unitless). */
-  itkGetMacro(ActualSpecimenLayerRefractiveIndex,float);
+  itkGetConstMacro(ActualSpecimenLayerRefractiveIndex,float);
 
   /** Specify the actual point source depth in the specimen layer (in nanometers). */
   itkSetMacro(ActualPointSourceDepthInSpecimenLayer,float);
 
   /** Get the actual point source depth in the specimen layer (in nanometers). */
-  itkGetMacro(ActualPointSourceDepthInSpecimenLayer,float);
+  itkGetConstMacro(ActualPointSourceDepthInSpecimenLayer,float);
 
   /** Specify the design distance from the back focal plane to the detector (in millimeters). */
   itkSetMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
 
   /** Get the design distance from the back focal plane to the detector (in millimeters). */
-  itkGetMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
+  itkGetConstMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
 
   /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
   itkSetMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
 
   /** Get the actual distance from the back focal plane to the detector (in millimeters). */
-  itkGetMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
+  itkGetConstMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
+
+  /** Parameter-related methods. */
+  virtual void SetParameters(const ParametersType& parameters);
+  virtual unsigned int GetNumberOfParameters() const;
+  virtual ParametersType GetParameters() const;
 
   static float BesselFunctionZeroOrderFirstKind(float x);
 

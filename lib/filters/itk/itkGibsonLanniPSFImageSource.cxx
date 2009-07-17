@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/09 15:43:25 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2009/07/17 16:10:19 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -72,7 +72,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   m_ActualPointSourceDepthInSpecimenLayer      =   0.0f; // in micrometers
   m_DesignDistanceFromBackFocalPlaneToDetector = 170.0f; // in millimeters
   m_ActualDistanceFromBackFocalPlaneToDetector = 170.0f; // in millimeters
-
 }
 
 
@@ -83,6 +82,99 @@ GibsonLanniPSFImageSource<TOutputImage>
   delete [] m_Size;
   delete [] m_Spacing;
   delete [] m_Origin;
+}
+
+
+template <class TOutputImage>
+void
+GibsonLanniPSFImageSource<TOutputImage>
+::SetParameters(const ParametersType& parameters) {
+  Array<float> floatParams(GetNumberOfParameters());
+  for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
+    floatParams[i] = static_cast<float>(parameters[i]);
+  }
+
+  int index = 0;
+  float spacing[3];
+  spacing[0] = floatParams[index++];
+  spacing[1] = floatParams[index++];
+  spacing[2] = floatParams[index++];
+  SetSpacing(spacing);
+
+  float origin[3];
+  origin[0] = floatParams[index++];
+  origin[1] = floatParams[index++];
+  origin[2] = floatParams[index++];
+  SetOrigin(origin);
+
+  SetEmissionWavelength(floatParams[index++]);
+  SetNumericalAperture(floatParams[index++]);
+  SetMagnification(floatParams[index++]);
+
+  SetDesignCoverSlipRefractiveIndex(floatParams[index++]);
+  SetActualCoverSlipRefractiveIndex(floatParams[index++]);
+  SetDesignCoverSlipThickness(floatParams[index++]);
+  SetActualCoverSlipThickness(floatParams[index++]);
+  SetDesignImmersionOilRefractiveIndex(floatParams[index++]);
+  SetActualImmersionOilRefractiveIndex(floatParams[index++]);
+  SetDesignImmersionOilThickness(floatParams[index++]);
+
+  SetDesignSpecimenLayerRefractiveIndex(floatParams[index++]);
+  SetActualSpecimenLayerRefractiveIndex(floatParams[index++]);
+  SetActualPointSourceDepthInSpecimenLayer(floatParams[index++]);
+  SetDesignDistanceFromBackFocalPlaneToDetector(floatParams[index++]);
+  SetActualDistanceFromBackFocalPlaneToDetector(floatParams[index++]);
+}
+
+
+template <class TOutputImage>
+typename GibsonLanniPSFImageSource<TOutputImage>::ParametersType
+GibsonLanniPSFImageSource<TOutputImage>
+::GetParameters() const {
+  Array<float> floatParams(GetNumberOfParameters());
+
+  int index = 0;
+  floatParams[index++] = GetSpacing()[0];
+  floatParams[index++] = GetSpacing()[1];
+  floatParams[index++] = GetSpacing()[2];
+
+  float* origin = GetOrigin();
+  floatParams[index++] = origin[0];
+  floatParams[index++] = origin[1];
+  floatParams[index++] = origin[2];
+
+  floatParams[index++] = GetEmissionWavelength();
+  floatParams[index++] = GetNumericalAperture();
+  floatParams[index++] = GetMagnification();
+
+  floatParams[index++] = GetDesignCoverSlipRefractiveIndex();
+  floatParams[index++] = GetActualCoverSlipRefractiveIndex();
+  floatParams[index++] = GetDesignCoverSlipThickness();
+  floatParams[index++] = GetActualCoverSlipThickness();
+  floatParams[index++] = GetDesignImmersionOilRefractiveIndex();
+  floatParams[index++] = GetActualImmersionOilRefractiveIndex();
+  floatParams[index++] = GetDesignImmersionOilThickness();
+
+  floatParams[index++] = GetDesignSpecimenLayerRefractiveIndex();
+  floatParams[index++] = GetActualSpecimenLayerRefractiveIndex();
+  floatParams[index++] = GetActualPointSourceDepthInSpecimenLayer();
+  floatParams[index++] = GetDesignDistanceFromBackFocalPlaneToDetector();
+  floatParams[index++] = GetActualDistanceFromBackFocalPlaneToDetector();
+
+  ParametersType parameters(GetNumberOfParameters());
+  for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
+    parameters[i] = static_cast<double>(floatParams[i]);
+  }
+
+  return parameters;
+}
+
+
+template <class TOutputImage>
+unsigned int
+GibsonLanniPSFImageSource<TOutputImage>
+::GetNumberOfParameters() const {
+  return 21;
 }
 
 

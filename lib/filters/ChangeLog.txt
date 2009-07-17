@@ -1,5 +1,25 @@
 2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itkGibsonLanniPSFImageSource.h,.cxx: Made this a subclass of
+   itkParameterizedImageSource so that it will work with the
+   itkImageToParameterizedImageSourceMetric. Made all the getters be const
+   methods (callable from const instances, that is). Implemented methods
+   SetParameters(), GetParameters, and GetNumberOfParameters() all required by
+   the abstract superclass.
+   
+   * itkImageToParameterizedImageSourceMetric.h,.cxx: New class that enables
+   application of ImageToImageMetrics to a fixed, unchanging reference image
+   (e.g., measured PSF image) to a moving, changing image produced by a
+   ParameterizedImageSource (e.g. GibsonLanniPSFImageSource). This enables
+   optimization of the PSF generator parameters via ITK's optimization framework.
+   
+   * itkParameterizedImageSource.h,.cxx: Subclass of ImageSource that specifies
+   abstract methods SetParameters(), GetParameters, and GetNumberOfParameters().
+   These parameters are not restricted to spatial transform parameters, as seems
+   to be the case in most of ITK's registration framework.
+
+2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
+
   * ChangeLog.txt: Added itkParameterizedImageSource.cxx and
   itkImageToParameterizedImageSourceMetric.cxx to list of sources.
 
