@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/17 16:10:19 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/07/20 13:41:35 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,7 +39,7 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   m_ImageToImageMetric    = 0; // has to be provided by the user.
   m_Transform             = TransformType::New();
   m_Interpolator          = InterpolatorType::New();
-  m_NumberOfPixelsCounted = 0; // initialize to zero
+  m_ParametersMask        = ParametersMaskType(0);
 }
 
 /**
@@ -50,6 +50,48 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 ::~ImageToParameterizedImageSourceMetric()
 {
 
+}
+
+
+/**
+ * Set the moving image source.
+ */
+template <class TFixedImage, class TMovingImageSource>
+void
+ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+::SetMovingImageSource(MovingImageSourceType* source) {
+  itkDebugMacro("setting MovingImageSource to " << source );
+  if (this->m_MovingImageSource != source) {
+    this->m_MovingImageSource = source;
+    this->Modified();
+    
+    // Now reinitialize the parameter mask array to match the number
+    // of the parameters in the moving image source.
+    m_ParametersMask = ParametersMaskType(source->GetNumberOfParameters());
+    
+    // Initialize to have no active parameters.
+    for (unsigned int i = 0; i < m_ParametersMask.Size(); i++) {
+      m_ParametersMask[i] = 0;
+    }
+  }
+}
+
+
+/**
+ * Set the ImageToImageMetric.
+ */
+template <class TFixedImage, class TMovingImageSource>
+void
+ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+::SetImageToImageMetric(ImageToImageMetricType* source) {
+  itkDebugMacro("setting ImageToImageMetric to " << source );
+  if (this->m_ImageToImageMetric != source) {
+    this->m_ImageToImageMetric = source;
+    this->Modified();
+    
+    m_ImageToImageMetric->SetTransform(m_Transform);
+    m_ImageToImageMetric->SetInterpolator(m_Interpolator);
+  }
 }
 
 
@@ -74,6 +116,7 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   // Send the parameters to the parametric image source.
   m_MovingImageSource->SetParameters(parameters);
   m_MovingImageSource->Update();
+  std::cout << parameters << std::endl;
 
   m_ImageToImageMetric->SetFixedImage(m_FixedImage);
   m_ImageToImageMetric->SetFixedImageRegion(m_FixedImage->
@@ -104,7 +147,51 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
     {
     itkExceptionMacro(<<"Moving image source has not been assigned");
     }
-  m_MovingImageSource->SetParameters( parameters );
+
+  // Iterate through the parameters mask and set only the active parameters
+  ParametersType allParameters = m_MovingImageSource->GetParameters();
+  int activeIndex = 0;
+  for (unsigned int i = 0; i < allParameters.Size(); i++) {
+    if (m_ParametersMask[i])
+      allParameters[i] = parameters[activeIndex++];
+  }
+
+  m_MovingImageSource->SetParameters( allParameters );
+}
+
+
+/**
+ * Get the number of parameters.
+ */
+template <class TFixedImage, class TMovingImageSource>
+unsigned int
+ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+::GetNumberOfParameters() const {
+  ParametersMaskType* mask = const_cast< ImageToParameterizedImageSourceMetric< TFixedImage,TMovingImageSource >* >(this)->GetParametersMask();
+
+  // Count up the active parameters
+  unsigned int activeCount = 0;
+  for (unsigned int i = 0; i < m_MovingImageSource->GetNumberOfParameters(); i++) {
+    if (mask->GetElement(i))
+      activeCount++;
+  }
+  
+  return activeCount;
+}
+
+
+/**
+ * Get parameters mask array.
+ */
+template <class TFixedImage, class TMovingImageSource> 
+typename ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>::ParametersMaskType*
+ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+::GetParametersMask() throw ( ExceptionObject ) {
+  if (m_ParametersMask.Size() == 0) {
+    itkExceptionMacro(<<"MovingImageSource is not present so the parameters mask has not been initialized");
+  }
+
+  return &m_ParametersMask;
 }
 
 
@@ -157,9 +244,6 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   os << indent << "Moving Image Source: " << m_MovingImageSource.GetPointer()  << std::endl;
   os << indent << "Fixed  Image: " << m_FixedImage.GetPointer()   << std::endl;
   os << indent << "FixedImageRegion: " << m_FixedImageRegion << std::endl;
-  os << indent << "Number of Pixels Counted: " << m_NumberOfPixelsCounted 
-     << std::endl;
-
 }
 
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/17 16:10:18 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/07/20 13:41:35 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,6 +22,7 @@
 // gets integrated into the main directories.
 #include "itkConfigure.h"
 
+#include "itkArray.h"
 #include "itkCostFunction.h"
 #include "itkExceptionObject.h"
 #include "itkIdentityTransform.h"
@@ -103,6 +104,7 @@ public:
   /**  Type of the parameters. */
   typedef typename Superclass::ParametersValueType ParametersValueType;
   typedef typename Superclass::ParametersType      ParametersType;
+  typedef Array<unsigned int>                      ParametersMaskType;
 
   /** Transform and interpolator to pass to the delegate image to image metric. */
   typedef IdentityTransform<double>        TransformType;
@@ -119,13 +121,18 @@ public:
   itkGetConstObjectMacro( FixedImage, FixedImageType );
 
   /** Connect the Moving Image Source.  */
-  itkSetObjectMacro( MovingImageSource, MovingImageSourceType );
+  virtual void SetMovingImageSource(MovingImageSourceType* source);
 
   /** Get the Moving Image Source. */
   itkGetObjectMacro( MovingImageSource, MovingImageSourceType );
 
   /** Get the number of pixels considered in the computation. */
-  itkGetConstReferenceMacro( NumberOfPixelsCounted, unsigned long );
+  const unsigned long & GetNumberOfPixelsCounted() const {
+    if (m_ImageToImageMetric) {
+      return m_ImageToImageMetric->GetNumberOfPixelsCounted();
+    }
+    return 0L;
+  }
 
   /** Set the region over which the metric will be computed */
   itkSetMacro( FixedImageRegion, FixedImageRegionType );
@@ -134,17 +141,7 @@ public:
   itkGetConstReferenceMacro( FixedImageRegion, FixedImageRegionType );
 
   /** Set the delegate ImageToImageMetric. */
-  //itkSetObjectMacro( ImageToImageMetric, ImageToImageMetricType );
-  virtual void SetImageToImageMetric(ImageToImageMetricType* _arg) {
-    itkDebugMacro("setting ImageToImageMetric to " << _arg );
-    if (this->m_ImageToImageMetric != _arg) {
-	this->m_ImageToImageMetric = _arg;
-	this->Modified();
-
-	m_ImageToImageMetric->SetTransform(m_Transform);
-	m_ImageToImageMetric->SetInterpolator(m_Interpolator);
-    }
-  }
+  virtual void SetImageToImageMetric(ImageToImageMetricType* source);
 
   /** Get the delegate ImageToImageMetric. */
   itkGetConstObjectMacro( ImageToImageMetric, ImageToImageMetricType );
@@ -160,8 +157,11 @@ public:
   void SetParameters( const ParametersType & parameters ) const;
 
   /** Return the number of parameters required by the Transform */
-  virtual unsigned int GetNumberOfParameters(void) const 
-    { return m_MovingImageSource->GetNumberOfParameters(); }
+  virtual unsigned int GetNumberOfParameters(void) const;
+
+  /** Get a pointer to the parameter mask. This is the only pathway for
+      manipulating the mask. */
+  ParametersMaskType* GetParametersMask() throw ( ExceptionObject );
 
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly     */
@@ -172,19 +172,20 @@ protected:
   virtual ~ImageToParameterizedImageSourceMetric();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  mutable unsigned long         m_NumberOfPixelsCounted;
-
   FixedImageConstPointer        m_FixedImage;
   MovingImageSourcePointer      m_MovingImageSource;
   
   ImageToImageMetricTypePointer m_ImageToImageMetric;
 
-  /* Disable spatial registration with an identity transform. */
+  /** Disable spatial registration with an identity transform. */
   TransformTypePointer    m_Transform;
 
-  /* Use nearest neighbor interpolation because we will just be looking up
+  /** Use nearest neighbor interpolation because we will just be looking up
      pixel values at grid positions. */
   InterpolatorTypePointer m_Interpolator;
+
+  /** Mask for parameters. */
+  ParametersMaskType       m_ParametersMask;
 
 private:
   ImageToParameterizedImageSourceMetric(const Self&); //purposely not implemented
