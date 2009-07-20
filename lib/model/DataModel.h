@@ -9,6 +9,7 @@
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkShiftScaleImageFilter.h>
 
+#include <itkAmoebaOptimizer.h>
 #include <itkNormalizedCorrelationImageToImageMetric.h>
 #include <itkImageToParameterizedImageSourceMetric.h>
 
@@ -60,6 +61,7 @@ public:
     ParameterizedCostFunctionType;
   typedef itk::NormalizedCorrelationImageToImageMetric<TImage, TImage>
     ImageToImageCostFunctionType;
+  typedef itk::AmoebaOptimizer OptimizerType;
 
   DataModel();
   virtual ~DataModel();
@@ -196,6 +198,8 @@ public:
 
   double GetImageComparisonMetric();
 
+  void Optimize();
+
 protected:
   std::string m_ImageFileName;
 
@@ -209,8 +213,14 @@ protected:
   ITKImageToVTKImage<TImage>* m_MeasuredImageITKToVTKFilter;
   ITKImageToVTKImage<TImage>* m_PSFImageITKToVTKFilter;
 
+  // The cost function used by the optimizer.
   ParameterizedCostFunctionType::Pointer m_CostFunction;
+
+  // The delegate cost function used by m_CostFunction
   ImageToImageCostFunctionType::Pointer  m_ImageToImageCostFunction;
+  
+  // The optimizer
+  OptimizerType::Pointer m_Optimizer;
 };
 
 // _DATA_MODEL_H_

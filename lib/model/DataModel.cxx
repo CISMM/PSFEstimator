@@ -97,6 +97,8 @@ DataModel
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
   m_CostFunction->SetMovingImageSource(m_GibsonLanniPSFSource);
 
+  // Set up optimizer, but don't connect it to the cost function just yet.
+  m_Optimizer = OptimizerType::New();
 }
 
 
@@ -495,6 +497,36 @@ double
 DataModel
 ::GetImageComparisonMetric() {
   return m_CostFunction->GetValue(m_GibsonLanniPSFSource->GetParameters());
+}
+
+
+void
+DataModel
+::Optimize() {
+  typedef ParameterizedCostFunctionType::ParametersMaskType
+    ParametersMaskType;
+  ParametersMaskType* mask = m_CostFunction->GetParametersMask();
+
+  // Restrict parameters to x, y, z for initial test.
+  mask->SetElement(3, 1);
+  mask->SetElement(4, 1);
+  mask->SetElement(5, 1);
+
+  // Pluck out the active parameters
+  typedef ParameterizedCostFunctionType::ParametersType ParametersType;
+  ParametersType activeParameters
+    = ParametersType(m_CostFunction->GetNumberOfParameters());
+  int activeIndex = 0;
+  for (unsigned int i = 0; i < mask->Size(); i++) {
+    if (mask->GetElement(i)) {
+      activeParameters[activeIndex++] = m_GibsonLanniPSFSource->GetParameters()[i];
+    }
+  }
+
+  // Connect to the cost function, set the initial parameters, and optimize.
+  m_Optimizer->SetCostFunction(m_CostFunction);
+  m_Optimizer->SetInitialPosition(activeParameters);
+  m_Optimizer->StartOptimization();
 }
 
 #endif // _DATA_MODEL_CXX_
