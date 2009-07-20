@@ -525,6 +525,7 @@ DataModel
 
   // Connect to the cost function, set the initial parameters, and optimize.
   m_Optimizer->SetCostFunction(m_CostFunction);
+  m_Optimizer->SetFunctionConvergenceTolerance(1e-3);
   m_Optimizer->SetInitialPosition(activeParameters);
   m_Optimizer->StartOptimization();
 }
