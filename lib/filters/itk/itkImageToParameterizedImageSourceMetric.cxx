@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/20 13:41:35 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/07/20 20:26:43 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -107,16 +107,18 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 
 
 /**
- * Get the value of the cost function. 
+ * Get the value of the cost function. The parameters passed into this method
+ * are assumed to be the active parameters which is a subset of all parameters.
  */
 template <class TFixedImage, class TMovingImageSource>
 typename ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>::MeasureType
 ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 ::GetValue(const ParametersType& parameters) const {
   // Send the parameters to the parametric image source.
-  m_MovingImageSource->SetParameters(parameters);
+  //m_MovingImageSource->SetParameters(parameters);
+  SetParameters(parameters);
   m_MovingImageSource->Update();
-  std::cout << parameters << std::endl;
+  std::cout << parameters << " - ";
 
   m_ImageToImageMetric->SetFixedImage(m_FixedImage);
   m_ImageToImageMetric->SetFixedImageRegion(m_FixedImage->
@@ -131,12 +133,14 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   // Now we can set the moving image in the image to image metric.
   m_ImageToImageMetric->SetMovingImage(movingImage);
 
-  return m_ImageToImageMetric->GetValue(parameters);
+  MeasureType value = m_ImageToImageMetric->GetValue(parameters);
+  std::cout << value << std::endl;
+  return value;
 }
 
 
 /**
- * Set the parameters of the moving image source.
+ * Set the active parameters of the moving image source.
  */
 template <class TFixedImage, class TMovingImageSource> 
 void
@@ -166,7 +170,7 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 template <class TFixedImage, class TMovingImageSource>
 unsigned int
 ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
-::GetNumberOfParameters() const {
+::GetNumberOfParameters(void) const {
   ParametersMaskType* mask = const_cast< ImageToParameterizedImageSourceMetric< TFixedImage,TMovingImageSource >* >(this)->GetParametersMask();
 
   // Count up the active parameters
@@ -219,13 +223,6 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
     itkExceptionMacro(<<"ImageToImageMetric is not present");
     }
 
-  // Make sure the FixedImageRegion is within the FixedImage buffered region
-  if ( !m_FixedImageRegion.Crop( m_FixedImage->GetBufferedRegion() ) )
-    {
-    itkExceptionMacro(
-      <<"FixedImageRegion does not overlap the fixed image buffered region" );
-    }
-
   // If there are any observers on the metric, call them to give the
   // user code a chance to set parameters on the metric
   this->InvokeEvent( InitializeEvent() );
@@ -243,7 +240,6 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   Superclass::PrintSelf( os, indent );
   os << indent << "Moving Image Source: " << m_MovingImageSource.GetPointer()  << std::endl;
   os << indent << "Fixed  Image: " << m_FixedImage.GetPointer()   << std::endl;
-  os << indent << "FixedImageRegion: " << m_FixedImageRegion << std::endl;
 }
 
 

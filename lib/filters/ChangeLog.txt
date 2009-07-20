@@ -1,5 +1,15 @@
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniPSFImageSource.h: Added some helpful comments.
+   
+   * itk/itkImageToParameterizedImageSourceMetric.cxx: Now GetValue() method
+   sets only the active parameters (was setting all parameters, which was
+   a major programming error). Method SetFixedImageRegion passes on region to
+   the delegate ImageToImageMetric and removed the m_FixedImageRegion member
+   variable.
+
+2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkImageToParameterizedImageSourceMetric.h,.cxx: Added parameter mask to
    enable optimization of only certain parameters in the ParameterizedImageSource.
 

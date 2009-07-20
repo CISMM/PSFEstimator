@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/20 13:41:35 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/07/20 20:26:43 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -134,11 +134,18 @@ public:
     return 0L;
   }
 
-  /** Set the region over which the metric will be computed */
-  itkSetMacro( FixedImageRegion, FixedImageRegionType );
+  /** Set the region over which the metric will be computed. Forward to
+   * the ImageToImageMetric. */
+  virtual void SetFixedImageRegion(FixedImageRegionType region) {
+    if (m_ImageToImageMetric) {
+      m_ImageToImageMetric->SetFixedImageRegion(region);
+    }
+  }
 
   /** Get the region over which the metric will be computed */
-  itkGetConstReferenceMacro( FixedImageRegion, FixedImageRegionType );
+  virtual const FixedImageRegionType & GetFixedImageRegion() {
+    return m_ImageToImageMetric->GetFixedImageRegion();
+  }
 
   /** Set the delegate ImageToImageMetric. */
   virtual void SetImageToImageMetric(ImageToImageMetricType* source);
@@ -150,13 +157,15 @@ public:
       undefined derivative); */
   virtual void GetDerivative(const ParametersType& parameters, DerivativeType& derivative) const;
 
-  /** Get the value of the cost function. */
+  /** Get the value of the cost function. The parameters argument contains the
+      values of the active parameters only. */
   virtual MeasureType GetValue(const ParametersType& parameters) const;
  
-  /** Set the parameters for the Moving Image Source. */
+  /** Set active parameters for the Moving Image Source. */
   void SetParameters( const ParametersType & parameters ) const;
 
-  /** Return the number of parameters required by the Transform */
+  /** Return the number of active parameters required by the 
+      ParameterizedImageSource. */
   virtual unsigned int GetNumberOfParameters(void) const;
 
   /** Get a pointer to the parameter mask. This is the only pathway for
@@ -166,6 +175,7 @@ public:
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly     */
   virtual void Initialize(void) throw ( ExceptionObject );
+
 
 protected:
   ImageToParameterizedImageSourceMetric();
@@ -191,8 +201,6 @@ private:
   ImageToParameterizedImageSourceMetric(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   
-  FixedImageRegionType        m_FixedImageRegion;  
-
 };
 
 } // end namespace itk

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/17 16:10:19 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2009/07/20 20:26:43 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -181,10 +181,14 @@ public:
   /** Get the actual distance from the back focal plane to the detector (in millimeters). */
   itkGetConstMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
 
-  /** Parameter-related methods. */
+  /** Expects the parameters argument to contain values for ALL parameters. */
   virtual void SetParameters(const ParametersType& parameters);
-  virtual unsigned int GetNumberOfParameters() const;
+
+  /** Gets the full parameters list. */
   virtual ParametersType GetParameters() const;
+
+  /** Gets the total number of parameters. */
+  virtual unsigned int GetNumberOfParameters() const;
 
   static float BesselFunctionZeroOrderFirstKind(float x);
 
