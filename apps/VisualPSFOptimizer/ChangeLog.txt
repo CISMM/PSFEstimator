@@ -1,5 +1,10 @@
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Added call to RefreshUI() after optimization to
+   display optimal parameters.
+
+2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Connected optimize button to the optimizer's
    Optimize() method.
 

@@ -605,8 +605,8 @@ void
 VisualPSFOptimizer
 ::on_optimizePSFParametersButton_clicked() {
   m_DataModel->Optimize();
-  std::cout << "Metric: " << m_DataModel->GetImageComparisonMetric()
-	    << std::endl;
+
+  RefreshUI();
 }
 
 
