@@ -1,5 +1,13 @@
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
+   * DataModel.h,.cxx: Added method to set center of PSF. I was using the image
+   origin to calculate the pixel coordinates, but this proved cumbersome and
+   error prone. Prior to optimization, added update of the requested region
+   of the fixed image in the delegate ImageToImageCostFunction to be the entire
+   image.
+
+2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
+
    * DataModel.cxx: Bumped convergence tolerance down to 1e-3. Should expose
    this in the GUI.
 

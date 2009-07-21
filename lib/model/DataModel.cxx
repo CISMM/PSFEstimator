@@ -482,8 +482,26 @@ DataModel
 
 void
 DataModel
+::SetPSFPointCenter(double center[3]) {
+  float fCenter[3];
+  for (int i = 0; i < 3; i++)
+    fCenter[i] = static_cast<float>(center[i]);
+  m_GibsonLanniPSFSource->SetPointCenter(fCenter);
+}
+
+
+void
+DataModel
+::GetPSFPointCenter(double center[3]) {
+  float* fCenter = m_GibsonLanniPSFSource->GetPointCenter();
+  for (int i = 0; i < 3; i++)
+    center[i] = static_cast<double>(fCenter[i]);
+}
+
+
+void
+DataModel
 ::UpdateGibsonLanniPSFImage() {
-  std::cout << m_GibsonLanniPSFSource << std::endl;
   m_GibsonLanniPSFSource->Update();
   m_PSFImageMinMaxFilter->Compute();
 
@@ -524,6 +542,8 @@ DataModel
   }
 
   // Connect to the cost function, set the initial parameters, and optimize.
+  m_ImageToImageCostFunction
+    ->SetFixedImageRegion(m_GibsonLanniPSFSource->GetOutput()->GetLargestPossibleRegion());
   m_Optimizer->SetCostFunction(m_CostFunction);
   m_Optimizer->SetFunctionConvergenceTolerance(1e-3);
   m_Optimizer->SetInitialPosition(activeParameters);

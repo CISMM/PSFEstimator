@@ -124,6 +124,10 @@ public:
   // Recenters the PSF image origin to the center of the image bounds.
   void RecenterPSFImageOrigin();
 
+  // Sets the PSF center
+  void SetPSFPointCenter(double center[3]);
+  void GetPSFPointCenter(double center[3]);
+
   void UpdateGibsonLanniPSFImage();
 
   void  SetGLEmissionWavelength(float wavelength) {
