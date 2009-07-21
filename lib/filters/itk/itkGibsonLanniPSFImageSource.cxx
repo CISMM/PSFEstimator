@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/21 03:41:45 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2009/07/21 22:42:35 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -72,8 +72,8 @@ GibsonLanniPSFImageSource<TOutputImage>
   m_DesignSpecimenLayerRefractiveIndex         =  1.33f; // unitless
   m_ActualSpecimenLayerRefractiveIndex         =  1.33f; // unitless
   m_ActualPointSourceDepthInSpecimenLayer      =   0.0f; // in micrometers
-  m_DesignDistanceFromBackFocalPlaneToDetector = 170.0f; // in millimeters
-  m_ActualDistanceFromBackFocalPlaneToDetector = 170.0f; // in millimeters
+  m_DesignDistanceFromBackFocalPlaneToDetector = 160.0f; // in millimeters
+  m_ActualDistanceFromBackFocalPlaneToDetector = 160.0f; // in millimeters
 }
 
 
@@ -356,6 +356,9 @@ GibsonLanniPSFImageSource<TOutputImage>
     typename TOutputImage::PointType point;
     image->TransformIndexToPhysicalPoint(index, point);
 
+    for (int i = 0; i < 3; i++)
+      point[i] -= m_PointCenter[i];
+
     // See if we have switched slices. If so, we need to precompute some
     // integral terms for the new slice.
     if (zSlice != index[2]) {
@@ -469,9 +472,9 @@ GibsonLanniPSFImageSource<TOutputImage>
 ::ComputePixelValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
   typedef typename TOutputImage::PixelType ScalarType;
 
-  ScalarType px = (point[0] - m_PointCenter[0]) * 1e-9;
-  ScalarType py = (point[1] - m_PointCenter[1]) * 1e-9;
-  ScalarType pz = (point[2] - m_PointCenter[2]) * 1e-9;
+  ScalarType px = point[0] * 1e-9;
+  ScalarType py = point[1] * 1e-9;
+  ScalarType pz = point[2] * 1e-9;
 
   /* Compute terms that are independent of terms within the integral. */
   float K = 2.0f*M_PI / (m_EmissionWavelength * 1e-9);

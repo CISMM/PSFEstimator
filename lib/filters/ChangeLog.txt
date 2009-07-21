@@ -1,3 +1,9 @@
+2009-07-21  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniPSFImageSource.cxx: Moved translation of PSF center point
+   to immediately after voxel coordinate collection. z translation was not
+   getting set.
+
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniPSFImageSource.h,.cxx: Added point source center and
