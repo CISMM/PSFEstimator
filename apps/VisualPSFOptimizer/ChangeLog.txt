@@ -1,3 +1,10 @@
+2009-07-21  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.cxx: Moved all the mutable image settings into the
+   PSF parameters table. Added checkboxes in the PSF parameters table to enable
+   selection of which parameters to optimize. Added dirty bit and Sully() method
+   to keep track of when the parameter settings have been changed.
+
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.h,.cxx: Removed unneeded handler for origin recentering

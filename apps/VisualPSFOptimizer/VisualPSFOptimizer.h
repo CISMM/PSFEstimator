@@ -65,8 +65,14 @@ public slots:
   virtual void handle_imageInformationTableModel_dataChanged(const QModelIndex& topLeft,
     const QModelIndex& bottomRight);
 
+  /** Mark the session state as changed. */
+  void Sully();
+
 
 protected:
+  /** Dirty bit on the session. */
+  bool m_Dirty;
+
   typedef enum { MEASURED_PSF_IMAGE, CALCULATED_PSF_IMAGE } DisplayImageType;
 
   DataModel* m_DataModel;

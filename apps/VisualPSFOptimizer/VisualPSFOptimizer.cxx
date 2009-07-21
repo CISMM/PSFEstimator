@@ -28,6 +28,9 @@ VisualPSFOptimizer
 ::VisualPSFOptimizer(QWidget* p)
  : QMainWindow(p) {
   setupUi(this);
+
+  // Mark as initially clean
+  m_Dirty = false;
   
   // QT/VTK interaction
   m_Renderer = vtkRenderer::New();
@@ -54,32 +57,24 @@ VisualPSFOptimizer
   // Create and populate image information table model.
   int LEFT_COLUMN = 0;
   int RIGHT_COLUMN = 1;
-  m_ImageInformationTableModel = new QStandardItemModel(8, 2, this);
+  m_ImageInformationTableModel = new QStandardItemModel(5, 2, this);
   m_ImageInformationTableModel->setHeaderData(LEFT_COLUMN,  Qt::Horizontal, tr("Property"));
   m_ImageInformationTableModel->setHeaderData(RIGHT_COLUMN, Qt::Horizontal, tr("Value"));
   
-  QStandardItem* labelItems[11];
+  QStandardItem* labelItems[5];
   labelItems[ 0] = new QStandardItem(tr("Intensity minimum"));
   labelItems[ 1] = new QStandardItem(tr("Intensity maximum"));
   labelItems[ 2] = new QStandardItem(tr("X dimension (pixels)"));
   labelItems[ 3] = new QStandardItem(tr("Y dimension (pixels)"));
   labelItems[ 4] = new QStandardItem(tr("Z dimension (slices)"));
-  labelItems[ 5] = new QStandardItem(tr("X pixel size (nm)"));
-  labelItems[ 6] = new QStandardItem(tr("Y pixel size (nm)"));
-  labelItems[ 7] = new QStandardItem(tr("Z slice spacing (nm)"));
-  labelItems[ 8] = new QStandardItem(tr("PSF center X (nm)"));
-  labelItems[ 9] = new QStandardItem(tr("PSF center Y (nm)"));
-  labelItems[10] = new QStandardItem(tr("PSF center Z (nm)"));
  
   for (unsigned int i = 0; i < sizeof(labelItems) / sizeof(QStandardItem*); i++) {
     labelItems[i]->setEditable(false);
     m_ImageInformationTableModel->setItem(i, LEFT_COLUMN, labelItems[i]);
 
     QStandardItem* item = new QStandardItem(tr(""));
+    item->setEditable(false);
 
-    // Allow editing of voxel spacing and origin.
-    if (i < 5)
-      item->setEditable(false);
     m_ImageInformationTableModel->setItem(i, RIGHT_COLUMN, item);
   }
   imageDataView->setModel(m_ImageInformationTableModel);
@@ -90,15 +85,39 @@ VisualPSFOptimizer
   imageDataView->setColumnWidth(LEFT_COLUMN, LEFT_COLUMN_WIDTH);
 
   // Create and popuplate Gibson-Lanni PSF settings table model.
-  m_GibsonLanniPSFSettingsTableModel = new QStandardItemModel(16, 3, this);
-  m_GibsonLanniPSFSettingsTableModel->setHeaderData(0, Qt::Horizontal, tr("Property"));
-  m_GibsonLanniPSFSettingsTableModel->setHeaderData(1, Qt::Horizontal, tr("Value"));
-  m_GibsonLanniPSFSettingsTableModel->setHeaderData(2, Qt::Horizontal, tr("Units"));
+  int column = 0;
+  m_GibsonLanniPSFSettingsTableModel = new QStandardItemModel(21, 4, this);
+  m_GibsonLanniPSFSettingsTableModel->
+    setHeaderData(column++, Qt::Horizontal, tr("Property"));
+  m_GibsonLanniPSFSettingsTableModel->
+    setHeaderData(column++, Qt::Horizontal, tr("Value"));
+  m_GibsonLanniPSFSettingsTableModel->
+    setHeaderData(column++, Qt::Horizontal, tr("Units"));
+  m_GibsonLanniPSFSettingsTableModel->
+    setHeaderData(column++, Qt::Horizontal, tr("Optimize"));
 
-  QStandardItem* psfPropertyItems[15];
-  QStandardItem* unitItems[15];
+  QStandardItem* psfPropertyItems[21];
+  QStandardItem* unitItems[21];
 
   int item = 0;
+  psfPropertyItems[item] = new QStandardItem(tr("X pixel size"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("Y pixel size"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("Z slice spacing"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("PSF center X"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("PSF center Y"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("PSF center Z"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
   psfPropertyItems[item] = new QStandardItem(tr("Emission Wavelength"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
@@ -138,26 +157,33 @@ VisualPSFOptimizer
   psfPropertyItems[item] = new QStandardItem(tr("Actual Point Source Depth in Specimen Layer"));
   unitItems[item++] = new QStandardItem(tr("micrometers"));
 
-  psfPropertyItems[item] = new QStandardItem(tr("Design Point Source Distance from Back Focal Plane"));
+  psfPropertyItems[item] = new QStandardItem(tr("Design Distance from Back Focal Plane to Detector"));
   unitItems[item++] = new QStandardItem(tr("millimeters"));
 
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Point Source Distance from Back Focal Plane"));
+  psfPropertyItems[item] = new QStandardItem(tr("Actual Distance from Back Focal Plane to Detector"));
   unitItems[item++] = new QStandardItem(tr("millimeters"));
 
   for (unsigned int i = 0; i < sizeof(psfPropertyItems) / sizeof(QStandardItem*); i++) {
 
-    // Left column
+    // Property column
     psfPropertyItems[i]->setEditable(false);
     m_GibsonLanniPSFSettingsTableModel->setItem(i, 0, psfPropertyItems[i]);
 
-    // Middle column
+    // Value column
     QStandardItem* item = new QStandardItem(tr(""));
     m_GibsonLanniPSFSettingsTableModel->setItem(i, 1, item);
 
-    // Right column
+    // Units column
     unitItems[i]->setEditable(false);
     m_GibsonLanniPSFSettingsTableModel->setItem(i, 2, unitItems[i]);
+
+    // Optimize checkbox column
+    item = new QStandardItem();
+    item->setCheckable(true);
+    item->setEditable(false);
+    m_GibsonLanniPSFSettingsTableModel->setItem(i, 3, item);
   }
+
   psfSettingsTableView->setModel(m_GibsonLanniPSFSettingsTableModel);
   psfSettingsTableView->setColumnWidth(0, 300);
 
@@ -496,10 +522,37 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_applyButton_clicked() {
+  m_Dirty = false;
+
   float value = 0.0f;
-  int itemRow = 0;
   QStandardItem* item = NULL;
   int COLUMN = 1;
+  double dValue = 0.0;
+
+  int itemRow = 0;
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  dValue = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelXSpacing(dValue);
+  m_DataModel->SetPSFImageVoxelXSpacing(dValue);
+
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  dValue = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelYSpacing(dValue);
+  m_DataModel->SetPSFImageVoxelYSpacing(dValue);
+
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  dValue = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelZSpacing(dValue);
+  m_DataModel->SetPSFImageVoxelZSpacing(dValue);
+
+  double pointCenter[3];
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  pointCenter[0] = item->text().toDouble();
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  pointCenter[1] = item->text().toDouble();
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  pointCenter[2] = item->text().toDouble();
+  m_DataModel->SetPSFPointCenter(pointCenter);
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   value = item->text().toFloat();
@@ -561,34 +614,15 @@ VisualPSFOptimizer
   value = item->text().toFloat();
   m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(value);
 
+  // Now update which parameters should be optimized
+  for (int i = 0; i < m_GibsonLanniPSFSettingsTableModel->rowCount(); i++) {
+    item = m_GibsonLanniPSFSettingsTableModel->item(i, 3);
+    m_DataModel->SetGLParameterEnabled(i, item->checkState() == Qt::Checked);
+  }
+    
   // General image parameters
   COLUMN = 1;
   itemRow = 5;
-  double dValue = 0.0;
-
-  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  dValue = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelXSpacing(dValue);
-  m_DataModel->SetPSFImageVoxelXSpacing(dValue);
-
-  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  dValue = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelYSpacing(dValue);
-  m_DataModel->SetPSFImageVoxelYSpacing(dValue);
-
-  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  dValue = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelZSpacing(dValue);
-  m_DataModel->SetPSFImageVoxelZSpacing(dValue);
-
-  double pointCenter[3];
-  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  pointCenter[0] = item->text().toDouble();
-  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  pointCenter[1] = item->text().toDouble();
-  item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  pointCenter[2] = item->text().toDouble();
-  m_DataModel->SetPSFPointCenter(pointCenter);
 
   // Set up origin so that (0, 0, 0) is centered in the image volume.
   int dimensions[3];
@@ -629,7 +663,15 @@ VisualPSFOptimizer
   if (topLeft != bottomRight) {
     return;
   }
-  
+
+  Sully();
+}
+
+
+void
+VisualPSFOptimizer
+::Sully() {
+  m_Dirty = true;
 }
 
 
@@ -669,44 +711,45 @@ VisualPSFOptimizer
   zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
   
   ///////////////// Image information update /////////////////
+  int item = 0;
   QString dataMin = QString().sprintf(decimalFormat, GetDisplayedImageDataMinimum());
-  m_ImageInformationTableModel->item(0, 1)->setText(dataMin);
+  m_ImageInformationTableModel->item(item++, 1)->setText(dataMin);
   QString dataMax = QString().sprintf(decimalFormat, GetDisplayedImageDataMaximum());
-  m_ImageInformationTableModel->item(1, 1)->setText(dataMax);
+  m_ImageInformationTableModel->item(item++, 1)->setText(dataMax);
   
   int dims[3];
   m_DataModel->GetMeasuredImageDimensions(dims);
   QString xDim = QString().sprintf(intFormat, dims[0]);
-  m_ImageInformationTableModel->item(2, 1)->setText(xDim);
+  m_ImageInformationTableModel->item(item++, 1)->setText(xDim);
   QString yDim = QString().sprintf(intFormat, dims[1]);
-  m_ImageInformationTableModel->item(3, 1)->setText(yDim);
+  m_ImageInformationTableModel->item(item++, 1)->setText(yDim);
   QString zDim = QString().sprintf(intFormat, dims[2]);
-  m_ImageInformationTableModel->item(4, 1)->setText(zDim);
+  m_ImageInformationTableModel->item(item++, 1)->setText(zDim);
 
+  ///////////////// PSF settings update /////////////////
+  item = 0;
   double spacing[3];
   m_DataModel->GetMeasuredImageVoxelSpacing(spacing);
   QString xSpacing = QString().sprintf(decimalFormat, spacing[0]);
-  m_ImageInformationTableModel->item(5, 1)->setText(xSpacing);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(xSpacing);
 
   QString ySpacing = QString().sprintf(decimalFormat, spacing[1]);
-  m_ImageInformationTableModel->item(6, 1)->setText(ySpacing);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ySpacing);
 
   QString zSpacing = QString().sprintf(decimalFormat, spacing[2]);
-  m_ImageInformationTableModel->item(7, 1)->setText(zSpacing);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(zSpacing);
 
   double pointCenter[3];
   m_DataModel->GetPSFPointCenter(pointCenter);
   QString xPointCenter = QString().sprintf(decimalFormat, pointCenter[0]);
-  m_ImageInformationTableModel->item(8, 1)->setText(xPointCenter);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(xPointCenter);
 
   QString yPointCenter = QString().sprintf(decimalFormat, pointCenter[1]);
-  m_ImageInformationTableModel->item(9, 1)->setText(yPointCenter);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(yPointCenter);
 
   QString zPointCenter = QString().sprintf(decimalFormat, pointCenter[2]);
-  m_ImageInformationTableModel->item(10, 1)->setText(zPointCenter);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(zPointCenter);
 
-  ///////////////// PSF settings update /////////////////
-  int item = 0;
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLEmissionWavelength()));
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
@@ -738,6 +781,10 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector()));
   
+  for (int i = 0; i < m_GibsonLanniPSFSettingsTableModel->rowCount(); i++) {
+    m_GibsonLanniPSFSettingsTableModel->item(i, 3)->setCheckState(m_DataModel->GetGLParameterEnabled(i) ? Qt::Checked : Qt::Unchecked);
+  }
+
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();
 
