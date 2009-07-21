@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/20 20:26:43 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2009/07/21 03:41:45 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -90,6 +90,12 @@ public:
 
   /** Get the origin of the output image (in nanometers). */
   itkGetVectorMacro(Origin,float,TOutputImage::ImageDimension);
+
+  /** Specify the point source center (in nanometers). */
+  itkSetVectorMacro(PointCenter,float,TOutputImage::ImageDimension);
+
+  /** Get the point source center (in nanometers). */
+  itkGetVectorMacro(PointCenter,float,TOutputImage::ImageDimension);
   
   /** Specify the emission wavelength (in nanometers). */
   itkSetMacro(EmissionWavelength,float);
@@ -218,9 +224,10 @@ private:
   GibsonLanniPSFImageSource(const GibsonLanniPSFImageSource&); //purposely not implemented
   void operator=(const GibsonLanniPSFImageSource&); //purposely not implemented
 
-  unsigned long *m_Size;    //size of the output image
-  float         *m_Spacing; //spacing
-  float         *m_Origin;  //origin
+  unsigned long *m_Size;         //size of the output image
+  float         *m_Spacing;      //spacing
+  float         *m_Origin;       //origin
+  float         *m_PointCenter;  // the center of the point source
 
   /** Point-spread function model parameters. */
   float m_EmissionWavelength;

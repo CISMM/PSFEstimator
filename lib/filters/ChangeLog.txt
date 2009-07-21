@@ -1,5 +1,16 @@
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniPSFImageSource.h,.cxx: Added point source center and
+   accessors for it, as well as modified the PSF computation to take this into
+   account. The parameter list now includes this instead of the image origin.
+   
+   * itk/itkImageToParameterizedImageSourceMetric.cxx: Added request of full
+   image region to the moving image source. I'm still in shock that downstream
+   filters in the pipeline can modify this in a way that sticks for filters
+   branching off down another pipeline.
+
+2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniPSFImageSource.h: Added some helpful comments.
    
    * itk/itkImageToParameterizedImageSourceMetric.cxx: Now GetValue() method

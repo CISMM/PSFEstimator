@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/17 16:10:19 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2009/07/21 03:41:45 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -44,14 +44,16 @@ GibsonLanniPSFImageSource<TOutputImage>
 {
   m_Size    = new unsigned long [TOutputImage::GetImageDimension()];
   m_Spacing = new float [TOutputImage::GetImageDimension()];
-  m_Origin  = new float [TOutputImage::GetImageDimension()];  
+  m_Origin  = new float [TOutputImage::GetImageDimension()];
+  m_PointCenter = new float[TOutputImage::GetImageDimension()];
 
   //Initial image is 63 wide in each direction.
   for (unsigned int i=0; i<TOutputImage::GetImageDimension(); i++)
     {
     m_Size[i] = 63;
-    m_Spacing[i] = 65.0;
-    m_Origin[i] = 0.0;
+    m_Spacing[i] = 65.0f;
+    m_Origin[i] = 0.0f;
+    m_PointCenter[i] = 0.0f;
     }
 
   // Set default PSF model parameters.
@@ -82,6 +84,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   delete [] m_Size;
   delete [] m_Spacing;
   delete [] m_Origin;
+  delete [] m_PointCenter;
 }
 
 
@@ -101,11 +104,11 @@ GibsonLanniPSFImageSource<TOutputImage>
   spacing[2] = floatParams[index++];
   SetSpacing(spacing);
 
-  float origin[3];
-  origin[0] = floatParams[index++];
-  origin[1] = floatParams[index++];
-  origin[2] = floatParams[index++];
-  SetOrigin(origin);
+  float center[3];
+  center[0] = floatParams[index++];
+  center[1] = floatParams[index++];
+  center[2] = floatParams[index++];
+  SetPointCenter(center);
 
   SetEmissionWavelength(floatParams[index++]);
   SetNumericalAperture(floatParams[index++]);
@@ -138,10 +141,10 @@ GibsonLanniPSFImageSource<TOutputImage>
   floatParams[index++] = GetSpacing()[1];
   floatParams[index++] = GetSpacing()[2];
 
-  float* origin = GetOrigin();
-  floatParams[index++] = origin[0];
-  floatParams[index++] = origin[1];
-  floatParams[index++] = origin[2];
+  float* pointCenter = GetPointCenter();
+  floatParams[index++] = pointCenter[0];
+  floatParams[index++] = pointCenter[1];
+  floatParams[index++] = pointCenter[2];
 
   floatParams[index++] = GetEmissionWavelength();
   floatParams[index++] = GetNumericalAperture();
@@ -250,6 +253,13 @@ GibsonLanniPSFImageSource<TOutputImage>
     os << m_Size[i] << ", ";
     }
   os << m_Size[i] << "]" << std::endl;
+
+  os << indent << "PointCenter: [";
+  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+    {
+    os << m_PointCenter[i] << ", ";
+    }
+  os << m_PointCenter[i] << "]" << std::endl;
   
   os << indent << "EmissionWavelength (nanometers): "
      << m_EmissionWavelength << std::endl;
@@ -459,9 +469,9 @@ GibsonLanniPSFImageSource<TOutputImage>
 ::ComputePixelValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
   typedef typename TOutputImage::PixelType ScalarType;
 
-  ScalarType px = point[0] * 1e-9;
-  ScalarType py = point[1] * 1e-9;
-  ScalarType pz = point[2] * 1e-9;
+  ScalarType px = (point[0] - m_PointCenter[0]) * 1e-9;
+  ScalarType py = (point[1] - m_PointCenter[1]) * 1e-9;
+  ScalarType pz = (point[2] - m_PointCenter[2]) * 1e-9;
 
   /* Compute terms that are independent of terms within the integral. */
   float K = 2.0f*M_PI / (m_EmissionWavelength * 1e-9);
