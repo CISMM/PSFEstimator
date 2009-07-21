@@ -670,13 +670,6 @@
        </layout>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="recenterPSFOriginButton">
-       <property name="text">
-        <string>Recenter PSF Origin</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>

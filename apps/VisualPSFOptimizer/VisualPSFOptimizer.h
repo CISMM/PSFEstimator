@@ -10,7 +10,6 @@
 // Forward class declarations
 class DataModel;
 class Visualization;
-
 class vtkRenderer;
 
 class VisualPSFOptimizer : public QMainWindow, private Ui_MainWindow {
@@ -63,8 +62,6 @@ public slots:
   virtual void on_applyButton_clicked();
   virtual void on_optimizePSFParametersButton_clicked();
 
-  virtual void on_recenterPSFOriginButton_clicked();
-  
   virtual void handle_imageInformationTableModel_dataChanged(const QModelIndex& topLeft,
     const QModelIndex& bottomRight);
 

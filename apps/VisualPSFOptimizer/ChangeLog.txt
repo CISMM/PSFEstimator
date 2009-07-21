@@ -1,5 +1,14 @@
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.h,.cxx: Removed unneeded handler for origin recentering
+   button, which is now gone. On application of user settings, the origin is
+   now updated so that (0,0,0) is in the center of the image volume. Updated
+   GUI to show PSF center now instead of the image origin.
+   
+   * VisualPSFOptimizer.ui: Removed origin recentering button.
+
+2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Added call to RefreshUI() after optimization to
    display optimal parameters.
 

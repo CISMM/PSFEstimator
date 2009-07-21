@@ -67,9 +67,9 @@ VisualPSFOptimizer
   labelItems[ 5] = new QStandardItem(tr("X pixel size (nm)"));
   labelItems[ 6] = new QStandardItem(tr("Y pixel size (nm)"));
   labelItems[ 7] = new QStandardItem(tr("Z slice spacing (nm)"));
-  labelItems[ 8] = new QStandardItem(tr("X origin (nm)"));
-  labelItems[ 9] = new QStandardItem(tr("Y origin (nm)"));
-  labelItems[10] = new QStandardItem(tr("Z origin (nm)"));
+  labelItems[ 8] = new QStandardItem(tr("PSF center X (nm)"));
+  labelItems[ 9] = new QStandardItem(tr("PSF center Y (nm)"));
+  labelItems[10] = new QStandardItem(tr("PSF center Z (nm)"));
  
   for (unsigned int i = 0; i < sizeof(labelItems) / sizeof(QStandardItem*); i++) {
     labelItems[i]->setEditable(false);
@@ -581,13 +581,24 @@ VisualPSFOptimizer
   m_DataModel->SetMeasuredImageVoxelZSpacing(dValue);
   m_DataModel->SetPSFImageVoxelZSpacing(dValue);
 
-  double origin[3];
+  double pointCenter[3];
   item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  origin[0] = item->text().toDouble();
+  pointCenter[0] = item->text().toDouble();
   item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  origin[1] = item->text().toDouble();
+  pointCenter[1] = item->text().toDouble();
   item = m_ImageInformationTableModel->item(itemRow++, COLUMN);
-  origin[2] = item->text().toDouble();
+  pointCenter[2] = item->text().toDouble();
+  m_DataModel->SetPSFPointCenter(pointCenter);
+
+  // Set up origin so that (0, 0, 0) is centered in the image volume.
+  int dimensions[3];
+  double spacing[3], origin[3];
+  m_DataModel->GetPSFImageDimensions(dimensions);
+  m_DataModel->GetPSFImageVoxelSpacing(spacing);
+  for (int i = 0; i < 3; i++) {
+    origin[i] = -0.5*static_cast<double>(dimensions[i]-1)*spacing[i];
+  }
+
   m_DataModel->SetMeasuredImageOrigin(origin);
   m_DataModel->SetPSFImageOrigin(origin);
 
@@ -607,38 +618,6 @@ VisualPSFOptimizer
   m_DataModel->Optimize();
 
   RefreshUI();
-}
-
-
-void
-VisualPSFOptimizer
-::on_recenterPSFOriginButton_clicked() {
-  // Recenter the PSF origin parameters so that it is in the middle of the
-  // image whose voxel spacings are specified in the GUI. Usage model:
-  // user specifies voxel spacing and updates the PSF to recenter it
-  // according to that new spacing.
-  double spacing[3];
-  spacing[0] = m_ImageInformationTableModel->item(5, 1)->text().toDouble();
-  spacing[1] = m_ImageInformationTableModel->item(6, 1)->text().toDouble();
-  spacing[2] = m_ImageInformationTableModel->item(7, 1)->text().toDouble();
-
-  // Go to the data model for this info (it is immutable).
-  int size[3];
-  m_DataModel->GetPSFImageDimensions(size);
-  
-  double origin[3];
-  for (int i = 0; i < 3; i++)
-    origin[i] = -spacing[i]*static_cast<double>(size[i]-1)*0.5;
-
-  char *decimalFormat = "%.3f";
-  QString xOrigin = QString().sprintf(decimalFormat, origin[0]);
-  m_ImageInformationTableModel->item(8, 1)->
-    setText(QString().sprintf(decimalFormat, origin[0]));
-  m_ImageInformationTableModel->item(9, 1)->
-    setText(QString().sprintf(decimalFormat, origin[1]));
-  m_ImageInformationTableModel->item(10, 1)->
-    setText(QString().sprintf(decimalFormat, origin[2]));
-
 }
 
 
@@ -715,16 +694,16 @@ VisualPSFOptimizer
   QString zSpacing = QString().sprintf(decimalFormat, spacing[2]);
   m_ImageInformationTableModel->item(7, 1)->setText(zSpacing);
 
-  double origin[3];
-  m_DataModel->GetPSFImageOrigin(origin);
-  QString xOrigin = QString().sprintf(decimalFormat, origin[0]);
-  m_ImageInformationTableModel->item(8, 1)->setText(xOrigin);
+  double pointCenter[3];
+  m_DataModel->GetPSFPointCenter(pointCenter);
+  QString xPointCenter = QString().sprintf(decimalFormat, pointCenter[0]);
+  m_ImageInformationTableModel->item(8, 1)->setText(xPointCenter);
 
-  QString yOrigin = QString().sprintf(decimalFormat, origin[1]);
-  m_ImageInformationTableModel->item(9, 1)->setText(yOrigin);
+  QString yPointCenter = QString().sprintf(decimalFormat, pointCenter[1]);
+  m_ImageInformationTableModel->item(9, 1)->setText(yPointCenter);
 
-  QString zOrigin = QString().sprintf(decimalFormat, origin[2]);
-  m_ImageInformationTableModel->item(10, 1)->setText(zOrigin);
+  QString zPointCenter = QString().sprintf(decimalFormat, pointCenter[2]);
+  m_ImageInformationTableModel->item(10, 1)->setText(zPointCenter);
 
   ///////////////// PSF settings update /////////////////
   int item = 0;
