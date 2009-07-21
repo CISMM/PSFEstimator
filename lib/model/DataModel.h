@@ -200,6 +200,9 @@ public:
   float GetGLActualDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniPSFSource->GetActualDistanceFromBackFocalPlaneToDetector(); }
 
+  void SetGLParameterEnabled(unsigned int index, bool enabled);
+  bool GetGLParameterEnabled(unsigned int index);
+
   double GetImageComparisonMetric();
 
   void Optimize();

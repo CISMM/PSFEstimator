@@ -511,6 +511,37 @@ DataModel
 }
 
 
+void
+DataModel
+::SetGLParameterEnabled(unsigned int index, bool enabled) {
+  try {
+    typedef ParameterizedCostFunctionType::ParametersMaskType
+      ParametersMaskType;
+    ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
+    if (index < parametersMask->Size()) {
+      parametersMask->SetElement(index, enabled ? 1 : 0);
+    }
+  } catch (...) {}
+}
+
+
+bool
+DataModel
+::GetGLParameterEnabled(unsigned int index) {
+  bool enabled = false;
+  try {
+    typedef ParameterizedCostFunctionType::ParametersMaskType
+      ParametersMaskType;
+    ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
+    if (index < parametersMask->Size()) {
+      enabled = parametersMask->GetElement(index) != 0;
+    }
+  } catch (...) {}
+
+  return enabled;
+}
+
+
 double
 DataModel
 ::GetImageComparisonMetric() {
@@ -524,11 +555,6 @@ DataModel
   typedef ParameterizedCostFunctionType::ParametersMaskType
     ParametersMaskType;
   ParametersMaskType* mask = m_CostFunction->GetParametersMask();
-
-  // Restrict parameters to x, y, z for initial test.
-  mask->SetElement(3, 1);
-  mask->SetElement(4, 1);
-  mask->SetElement(5, 1);
 
   // Pluck out the active parameters
   typedef ParameterizedCostFunctionType::ParametersType ParametersType;

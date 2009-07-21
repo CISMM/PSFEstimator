@@ -1,3 +1,8 @@
+2009-07-21  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added methods to set parameters in the Gibson-Lanni
+   source by index.
+
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added method to set center of PSF. I was using the image
