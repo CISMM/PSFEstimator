@@ -1,3 +1,7 @@
+2009-07-22  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added method GetMeasuredImageDataMaximumCoordinates().
+
 2009-07-21  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added methods to set parameters in the Gibson-Lanni

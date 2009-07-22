@@ -29,6 +29,8 @@ public:
     Float3DImageReaderType;
   typedef itk::VTKImageExport<Float3DImageType>
     Float3DExporterType;
+  typedef Float3DImageType::PointType
+    Float3DPointType;
 
   typedef itk::GibsonLanniPSFImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
@@ -88,6 +90,7 @@ public:
 
   double GetMeasuredImageDataMinimum();
   double GetMeasuredImageDataMaximum();
+  Float3DPointType GetMeasuredImageDataMaximumCoordinates();
 
   void GetMeasuredImageDimensions(int dimensions[3]);
 

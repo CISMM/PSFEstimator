@@ -192,6 +192,19 @@ DataModel
 }
 
 
+DataModel::Float3DPointType
+DataModel
+::GetMeasuredImageDataMaximumCoordinates() {
+  Float3DPointType point;
+  Float3DImageType::Pointer image = GetMeasuredImageData();
+  if (image) {
+    image->TransformIndexToPhysicalPoint(m_MeasuredImageMinMaxFilter->GetIndexOfMaximum(), point);
+  }
+
+  return point;
+}
+
+
 void
 DataModel
 ::GetMeasuredImageDimensions(int dimensions[3]) {
