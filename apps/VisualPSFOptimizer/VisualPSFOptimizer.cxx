@@ -330,9 +330,8 @@ VisualPSFOptimizer
 ::SetDisplayedImageToMeasuredPSF() {
   m_DisplayedImage = MEASURED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
-  on_mapsToBlackSlider_sliderMoved(mapsToBlackSlider->sliderPosition());
-  on_mapsToWhiteSlider_sliderMoved(mapsToWhiteSlider->sliderPosition());
-  m_Visualization->Update();
+  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -343,9 +342,8 @@ VisualPSFOptimizer
 ::SetDisplayedImageToCalculatedPSF() {
   m_DisplayedImage = CALCULATED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
-  on_mapsToBlackSlider_sliderMoved(mapsToBlackSlider->sliderPosition());
-  on_mapsToWhiteSlider_sliderMoved(mapsToWhiteSlider->sliderPosition());
-  m_Visualization->Update();
+  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -643,6 +641,24 @@ VisualPSFOptimizer
   SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
+}
+
+
+void
+VisualPSFOptimizer
+::on_estimatePSFCenterButton_clicked() {
+  DataModel::Float3DPointType center = m_DataModel->GetMeasuredImageDataMaximumCoordinates();
+
+  char* decimalFormat = "%.3f";
+  int item = 3;
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
+    setText(QString().sprintf(decimalFormat, center[0]));
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
+    setText(QString().sprintf(decimalFormat, center[1]));
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
+    setText(QString().sprintf(decimalFormat, center[2]));
+
+  Sully();
 }
 
 

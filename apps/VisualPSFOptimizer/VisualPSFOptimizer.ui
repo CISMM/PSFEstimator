@@ -48,6 +48,9 @@
         </property>
         <item>
          <widget class="QVTKWidget" name="qvtkWidget" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -140,7 +143,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-475</y>
           <width>297</width>
           <height>634</height>
          </rect>
@@ -539,6 +542,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="applyButton">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -677,7 +683,7 @@
    <property name="minimumSize">
     <size>
      <width>340</width>
-     <height>275</height>
+     <height>309</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -697,6 +703,9 @@
         <string>PSF Settings</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="margin">
+         <number>3</number>
+        </property>
         <item>
          <widget class="QTableView" name="psfSettingsTableView">
           <property name="minimumSize">
@@ -733,8 +742,18 @@
         </item>
         <item>
          <widget class="QPushButton" name="applyButton2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>Apply</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="estimatePSFCenterButton">
+          <property name="text">
+           <string>Estimate PSF Center</string>
           </property>
          </widget>
         </item>
