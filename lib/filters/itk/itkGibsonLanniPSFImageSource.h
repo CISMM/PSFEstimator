@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/21 03:41:45 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2009/07/23 21:08:50 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -96,6 +96,14 @@ public:
 
   /** Get the point source center (in nanometers). */
   itkGetVectorMacro(PointCenter,float,TOutputImage::ImageDimension);
+
+  /** Specify the CCD border width (between the outer edge of the 
+      sensing portion of the CCD and the outer edge of the 
+      CCD element itself). */
+  itkSetVectorMacro(CCDBorderWidth,float,2);
+
+  /** Get the CCD border width. */
+  itkGetVectorMacro(CCDBorderWidth,float,2);
   
   /** Specify the emission wavelength (in nanometers). */
   itkSetMacro(EmissionWavelength,float);
@@ -228,6 +236,8 @@ private:
   float         *m_Spacing;      //spacing
   float         *m_Origin;       //origin
   float         *m_PointCenter;  // the center of the point source
+
+  mutable float m_CCDBorderWidth[2]; // size of border around CCD (x,y)
 
   /** Point-spread function model parameters. */
   float m_EmissionWavelength;

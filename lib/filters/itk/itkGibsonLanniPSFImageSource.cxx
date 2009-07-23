@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/21 22:42:35 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2009/07/23 21:08:50 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -55,6 +55,7 @@ GibsonLanniPSFImageSource<TOutputImage>
     m_Origin[i] = 0.0f;
     m_PointCenter[i] = 0.0f;
     }
+  m_CCDBorderWidth[0] = m_CCDBorderWidth[1] = 0.0f;
 
   // Set default PSF model parameters.
   m_EmissionWavelength   = 550.0f; // in nanometers
@@ -110,6 +111,10 @@ GibsonLanniPSFImageSource<TOutputImage>
   center[2] = floatParams[index++];
   SetPointCenter(center);
 
+  float ccdBorderWidth[2];
+  ccdBorderWidth[0] = floatParams[index++];
+  ccdBorderWidth[1] = floatParams[index++];
+
   SetEmissionWavelength(floatParams[index++]);
   SetNumericalAperture(floatParams[index++]);
   SetMagnification(floatParams[index++]);
@@ -146,6 +151,10 @@ GibsonLanniPSFImageSource<TOutputImage>
   floatParams[index++] = pointCenter[1];
   floatParams[index++] = pointCenter[2];
 
+  float* ccdBorderWidth = GetCCDBorderWidth();
+  floatParams[index++] = ccdBorderWidth[0];
+  floatParams[index++] = ccdBorderWidth[1];
+
   floatParams[index++] = GetEmissionWavelength();
   floatParams[index++] = GetNumericalAperture();
   floatParams[index++] = GetMagnification();
@@ -177,7 +186,7 @@ template <class TOutputImage>
 unsigned int
 GibsonLanniPSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const {
-  return 21;
+  return 23;
 }
 
 
@@ -261,6 +270,9 @@ GibsonLanniPSFImageSource<TOutputImage>
     }
   os << m_PointCenter[i] << "]" << std::endl;
   
+  os << indent << "CCDBorderWidth: [" << m_CCDBorderWidth[0]
+     << ", " << m_CCDBorderWidth[1] << std::endl;
+
   os << indent << "EmissionWavelength (nanometers): "
      << m_EmissionWavelength << std::endl;
   
@@ -343,7 +355,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
        
   typedef typename TOutputImage::PixelType ScalarType;
-  typename TOutputImage::Pointer image=this->GetOutput(0);
+  typename TOutputImage::Pointer image = this->GetOutput(0);
 
   ImageRegionIteratorWithIndex<TOutputImage> it(image, outputRegionForThread);
 
