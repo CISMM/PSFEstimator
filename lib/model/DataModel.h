@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "Configuration.h"
+
 #include <itkGibsonLanniPSFImageSource.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -71,6 +73,9 @@ public:
   void LoadImageFile(std::string fileName);
   void SavePSFImageFile(std::string fileName);
 
+  void SetConfiguration(Configuration & configuration);
+  void GetConfiguration(Configuration & configuration);
+
   std::string GetMeasuredImageFileName();
 
   // Number of threads to run for all the multithreaded ITK algorithms
@@ -120,6 +125,9 @@ public:
   void SetPSFImageVoxelYSpacing(double spacing);
   void SetPSFImageVoxelZSpacing(double spacing);
   void GetPSFImageVoxelSpacing(double spacing[3]);
+
+  void SetCCDBorderWidth(double borderWidth[2]);
+  void GetCCDBorderWidth(double borderWidth[2]);
 
   void SetPSFImageOrigin(double origin[3]);
   void GetPSFImageOrigin(double origin[3]);
@@ -211,6 +219,8 @@ public:
   void Optimize();
 
 protected:
+  Configuration m_Configuration;
+
   std::string m_ImageFileName;
 
   TImage::Pointer m_MeasuredImageData;

@@ -119,6 +119,109 @@ DataModel
 }
 
 
+void
+DataModel
+::SetConfiguration(Configuration & c) {
+  // Read the settings from the configuration structure
+  std::string sec("GibsonLanniPSFSettings");
+  
+  double vec3[3];
+  c.GetValueAsDoubleArray(sec, "VoxelSpacing", vec3, 3);
+  SetMeasuredImageVoxelSpacing(vec3);
+  SetPSFImageVoxelSpacing(vec3);
+
+  // Set up origin so that (0, 0, 0) is centered in the image volume.
+  int dimensions[3];
+  double origin[3];
+  GetPSFImageDimensions(dimensions);
+  for (int i = 0; i < 3; i++) {
+    origin[i] = -0.5*static_cast<double>(dimensions[i]-1)*vec3[i];
+  }
+  SetMeasuredImageOrigin(origin);
+  SetPSFImageOrigin(origin);
+
+  c.GetValueAsDoubleArray(sec, "CCDBorderWidth", vec3, 2);
+  SetCCDBorderWidth(vec3);
+
+  c.GetValueAsDoubleArray(sec, "PSFPointCenter", vec3, 3);
+  SetPSFPointCenter(vec3);
+
+  SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture"));
+  SetGLMagnification(c.GetValueAsFloat(sec, "Magnification"));
+  SetGLDesignCoverSlipRefractiveIndex
+    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex"));
+  SetGLActualCoverSlipRefractiveIndex
+    (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex"));
+  SetGLDesignCoverSlipThickness
+    (c.GetValueAsFloat(sec, "DesignCoverSlipThickness"));
+  SetGLActualCoverSlipThickness
+    (c.GetValueAsFloat(sec, "ActualCoverSlipThickness"));
+  SetGLDesignImmersionOilRefractiveIndex
+    (c.GetValueAsFloat(sec, "DesignImmersionOilRefractiveIndex"));
+  SetGLActualImmersionOilRefractiveIndex
+    (c.GetValueAsFloat(sec, "ActualImmersionOilRefractiveIndex"));
+  SetGLDesignImmersionOilThickness
+    (c.GetValueAsFloat(sec, "DesignImmersionOilThickness"));
+  SetGLDesignSpecimenLayerRefractiveIndex
+    (c.GetValueAsFloat(sec, "DesignSpecimenLayerRefractiveIndex"));
+  SetGLActualSpecimenLayerRefractiveIndex
+    (c.GetValueAsFloat(sec, "ActualSpecimenLayerRefractiveIndex"));
+  SetGLActualPointSourceDepthInSpecimenLayer
+    (c.GetValueAsFloat(sec, "ActualPointSourceDepthInSpecimenLayer"));
+  SetGLDesignDistanceFromBackFocalPlaneToDetector
+    (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
+  SetGLActualDistanceFromBackFocalPlaneToDetector
+    (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
+}
+
+
+void
+DataModel
+::GetConfiguration(Configuration & c) {
+  // Dump the settings into the configuration structure
+  std::string sec("GibsonLanniPSFSettings");
+
+  double vec3[3];
+  GetPSFImageVoxelSpacing(vec3);
+  c.SetValueFromDoubleArray(sec, "VoxelSpacing", vec3, 3);
+
+  GetCCDBorderWidth(vec3);
+  c.SetValueFromDoubleArray(sec, "CCDBorderWidth", vec3, 2);
+
+  GetPSFPointCenter(vec3);
+  c.SetValueFromDoubleArray(sec, "PSFPointerCenter", vec3, 3);
+
+  c.SetValueFromFloat(sec, "NumericalAperture",
+		      GetGLNumericalAperture());
+  c.SetValueFromFloat(sec, "Magnification",
+		      GetGLMagnification());
+  c.SetValueFromFloat(sec, "DesignCoverSlipRefractiveIndex",
+		      GetGLDesignCoverSlipRefractiveIndex());
+  c.SetValueFromFloat(sec, "ActualCoverSlipRefractiveIndex",
+		      GetGLActualCoverSlipRefractiveIndex());
+  c.SetValueFromFloat(sec, "DesignCoverSlipThickness",
+		      GetGLDesignCoverSlipThickness());
+  c.SetValueFromFloat(sec, "ActualCoverSlipThickness",
+		      GetGLActualCoverSlipThickness());
+  c.SetValueFromFloat(sec, "DesignImmersionOilRefractiveIndex",
+		      GetGLDesignImmersionOilRefractiveIndex());
+  c.SetValueFromFloat(sec, "ActualImmersionOilRefractiveIndex",
+		      GetGLActualImmersionOilRefractiveIndex());
+  c.SetValueFromFloat(sec, "DesignImmersionOilThickness",
+		      GetGLDesignImmersionOilThickness());
+  c.SetValueFromFloat(sec, "DesignSpecimenLayerRefractiveIndex",
+		      GetGLDesignSpecimenLayerRefractiveIndex());
+  c.SetValueFromFloat(sec, "ActualSpecimenLayerRefractiveIndex",
+		      GetGLActualSpecimenLayerRefractiveIndex());
+  c.SetValueFromFloat(sec, "ActualPointSourceDepthInSpecimenLayer",
+		      GetGLActualPointSourceDepthInSpecimenLayer());
+  c.SetValueFromFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector",
+		      GetGLDesignDistanceFromBackFocalPlaneToDetector());
+  c.SetValueFromFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
+		      GetGLActualDistanceFromBackFocalPlaneToDetector());
+}
+
+
 std::string
 DataModel
 ::GetMeasuredImageFileName() {
@@ -454,6 +557,25 @@ DataModel
   itk::Vector<double> thisSpacing = GetMeasuredImageData()->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
+}
+
+
+void
+DataModel
+::SetCCDBorderWidth(double borderWidth[2]) {
+  float width[2];
+  width[0] = static_cast<float>(borderWidth[0]);
+  width[1] = static_cast<float>(borderWidth[1]);
+  m_GibsonLanniPSFSource->SetCCDBorderWidth(width);
+}
+
+
+void
+DataModel
+::GetCCDBorderWidth(double borderWidth[2]) {
+  float* width =  m_GibsonLanniPSFSource->GetCCDBorderWidth();
+  borderWidth[0] = static_cast<double>(width[0]);
+  borderWidth[1] = static_cast<double>(width[1]);
 }
 
 
