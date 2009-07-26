@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/23 21:08:50 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2009/07/26 16:52:06 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -225,8 +225,14 @@ protected:
   complex_t IntegralTerm(complex_t* opdCache, float K, float a, float z_d,
 			 int rhoIndex, float h, float r_o, float z_o);
 
-  float ComputePixelValue(complex_t* opdCache,
-			  typename TOutputImage::PointType& point);
+  /** Computes the light intensity at a specified point. */
+  float ComputeSampleValue(complex_t* opdCache,
+			   typename TOutputImage::PointType& point);
+
+  /** Computes the integrated light intensity over a CCD pixel centered at
+      point. */
+  float ComputeIntegratedPixelValue(complex_t* opdCache,
+				    typename TOutputImage::PointType& point);
 
 private:
   GibsonLanniPSFImageSource(const GibsonLanniPSFImageSource&); //purposely not implemented

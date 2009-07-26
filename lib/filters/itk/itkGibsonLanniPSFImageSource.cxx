@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/23 21:08:50 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2009/07/26 16:52:06 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -378,7 +378,7 @@ GibsonLanniPSFImageSource<TOutputImage>
       zSlice = index[2];
     }
 
-    it.Set( ComputePixelValue(opdCache, point) );
+    it.Set( ComputeIntegratedPixelValue(opdCache, point) );
     progress.CompletedPixel();
     }
 }
@@ -481,7 +481,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <typename TOutputImage>
 float
 GibsonLanniPSFImageSource<TOutputImage>
-::ComputePixelValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
+::ComputeSampleValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
   typedef typename TOutputImage::PixelType ScalarType;
 
   ScalarType px = point[0] * 1e-9;
@@ -526,6 +526,33 @@ GibsonLanniPSFImageSource<TOutputImage>
 
   // Return squared magnitude of the integrated value
   return (ScalarType) norm(sum);
+}
+
+
+template <typename TOutputImage>
+float
+GibsonLanniPSFImageSource<TOutputImage>
+::ComputeIntegratedPixelValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
+  float integrated = 0.0f;
+
+  // Evaluate over a grid
+  int divs = 1;
+  float dx = m_Spacing[0] / static_cast<float>(divs);
+  float dy = m_Spacing[1] / static_cast<float>(divs);
+  for (int iy = 0; iy < divs; iy++) {
+    for (int ix = 0; ix < divs; ix++) {
+      typename TOutputImage::PointType samplePoint;
+      float fx = (static_cast<float>(ix) + 0.5f) * dx;
+      float fy = (static_cast<float>(iy) + 0.5f) * dy;
+      samplePoint[0] = point[0] - 0.5*m_Spacing[0] + fx;
+      samplePoint[1] = point[1] - 0.5*m_Spacing[1] + fy;
+      samplePoint[2] = point[2];
+
+      integrated += ComputeSampleValue(opdCache, samplePoint);
+    }
+  }
+
+  return integrated;
 }
 
 

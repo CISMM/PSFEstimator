@@ -1,3 +1,19 @@
+2009-07-26  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Added itkScanImageFilter to source list.
+
+   * itk/itkGibsonLanniPSFImageSource.h,.cxx: Renamed ComputePixelValue() to
+   ComputeSampleValue() (that's what it does) and added method
+   ComputeIntegratedPixelValue() that performs the integration over a CCD
+   element.
+
+   * itk/itkScanImageFilter.h,.cxx: New class that performs a scan of all rows
+   along a specified direction. The scan operator is a template parameter to 
+   this class, so you can compute prefix sums, prefix min/max, etc. by 
+   specifying a different operator (such operators are already defined in ITK).
+   I'm going to use this for computing prefix sums of a super-sampled PSF image
+   for use in efficient convolution of the PSF with volume-labeled geometry.
+
 2009-07-23  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniPSFImageSource.h,.cxx: Added CCD border member variables
