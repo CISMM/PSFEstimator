@@ -1,3 +1,14 @@
+2009-07-26  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.cxx,.ui: Added radio button for displaying a 
+   bead-spread function (BSF). Moved contrast controls closer to radio button to
+   be more conveniently accessible. Added loading/saving of program settings 
+   (basically, the Gibson-Lanni parameters). Added CCD border size to list of
+   PSF parameters. Changed slider handlers to handle valueChanged events instead
+   of sliderMoved events because sliderMoved events aren't triggered when you 
+   click on a slider position (rather than moving the slider to that position)
+   but valueChanged events are.
+
 2009-07-22  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.h,.cxx,.ui: Added button and handler for getting an

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1001</width>
-    <height>773</height>
+    <height>778</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -83,6 +83,9 @@
     <addaction name="separator"/>
     <addaction name="actionSavePSFImage"/>
     <addaction name="separator"/>
+    <addaction name="actionLoadSettings"/>
+    <addaction name="actionSaveSettings"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuWindows">
@@ -108,7 +111,7 @@
    <property name="minimumSize">
     <size>
      <width>340</width>
-     <height>191</height>
+     <height>218</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -143,9 +146,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-475</y>
+          <y>0</y>
           <width>297</width>
-          <height>634</height>
+          <height>654</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -167,7 +170,7 @@
                <string>Show the loaded, measured PSF.</string>
               </property>
               <property name="text">
-               <string>Measured PSF</string>
+               <string>Measured Point-Spread Function</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -183,7 +186,60 @@
                <string>Show the calculated PSF.</string>
               </property>
               <property name="text">
-               <string>Calculated PSF</string>
+               <string>Calculated Point-Spread Function</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="calculatedBSFRadioButton">
+              <property name="text">
+               <string>Calculated Bead-Spread Function</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="contrastGroupBox">
+           <property name="title">
+            <string>Contrast</string>
+           </property>
+           <layout class="QFormLayout" name="formLayout">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::ExpandingFieldsGrow</enum>
+            </property>
+            <property name="margin">
+             <number>3</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="mapsToBlackLabel">
+              <property name="text">
+               <string>Maps to Black:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSlider" name="mapsToBlackSlider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSlider" name="mapsToWhiteSlider">
+              <property name="sliderPosition">
+               <number>99</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="mapsToWhiteLabel">
+              <property name="text">
+               <string>Maps to White:</string>
               </property>
              </widget>
             </item>
@@ -374,52 +430,6 @@
                 </widget>
                </item>
               </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="contrastGroupBox">
-           <property name="title">
-            <string>Contrast</string>
-           </property>
-           <layout class="QFormLayout" name="formLayout">
-            <property name="fieldGrowthPolicy">
-             <enum>QFormLayout::ExpandingFieldsGrow</enum>
-            </property>
-            <property name="margin">
-             <number>3</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="mapsToBlackLabel">
-              <property name="text">
-               <string>Maps to Black:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSlider" name="mapsToBlackSlider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSlider" name="mapsToWhiteSlider">
-              <property name="sliderPosition">
-               <number>99</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="mapsToWhiteLabel">
-              <property name="text">
-               <string>Maps to White:</string>
-              </property>
              </widget>
             </item>
            </layout>
@@ -926,6 +936,19 @@
   <action name="actionSavePSFImage">
    <property name="text">
     <string>Save PSF Image...</string>
+   </property>
+  </action>
+  <action name="actionLoadSettings">
+   <property name="text">
+    <string>Load Settings...</string>
+   </property>
+  </action>
+  <action name="actionSaveSettings">
+   <property name="text">
+    <string>&amp;Save Settings...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

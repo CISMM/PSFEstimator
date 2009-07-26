@@ -7,6 +7,7 @@
 #pragma warning( disable : 4996 )
 #endif
 
+#include "Configuration.h"
 #include "DataModel.h"
 #include "Visualization.h"
 
@@ -96,8 +97,8 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->
     setHeaderData(column++, Qt::Horizontal, tr("Optimize"));
 
-  QStandardItem* psfPropertyItems[21];
-  QStandardItem* unitItems[21];
+  QStandardItem* psfPropertyItems[23];
+  QStandardItem* unitItems[23];
 
   int item = 0;
   psfPropertyItems[item] = new QStandardItem(tr("X pixel size"));
@@ -107,6 +108,12 @@ VisualPSFOptimizer
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
   psfPropertyItems[item] = new QStandardItem(tr("Z slice spacing"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("CCD border X"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("CCD border Y"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
   psfPropertyItems[item] = new QStandardItem(tr("PSF center X"));
@@ -277,6 +284,42 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
+::on_actionLoadSettings_triggered() {
+  // Locate file.
+  QString fileName = QFileDialog::getOpenFileName(this, "Load Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
+
+  if (fileName == "") {
+    return;
+  }
+
+  Configuration config;
+  config.Parse(fileName.toStdString());
+  m_DataModel->SetConfiguration(config);
+
+  RefreshUI();
+  on_applyButton_clicked();
+}
+
+
+void
+VisualPSFOptimizer
+::on_actionSaveSettings_triggered() {
+  // Locate file.
+  QString fileName = QFileDialog::getSaveFileName(this, "Save Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
+
+  if (fileName == "") {
+    return;
+  }
+
+  Configuration config;
+  m_DataModel->GetConfiguration(config);
+  std::ofstream os(fileName.toStdString().c_str());
+  config.Write(os);
+}
+
+
+void
+VisualPSFOptimizer
 ::on_actionExit_triggered() {
   // Ask if user really wants to quit.
   QMessageBox messageBox;
@@ -327,6 +370,13 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
+::on_calculatedBSFRadioButton_clicked(bool state) {
+  SetDisplayedImageToCalculatedBSF();
+}
+
+
+void
+VisualPSFOptimizer
 ::SetDisplayedImageToMeasuredPSF() {
   m_DisplayedImage = MEASURED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
@@ -351,6 +401,18 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
+::SetDisplayedImageToCalculatedBSF() {
+  //m_DisplayedImage = CALCULATED_BSF_IMAGE;
+  //  m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
+  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
+
+  RefreshUI();
+}
+
+
+void
+VisualPSFOptimizer
 ::on_showXPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowXPlane(show);
   qvtkWidget->GetRenderWindow()->Render();
@@ -359,7 +421,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_xPlaneSlider_sliderMoved(int plane) {
+::on_xPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetXPlane(plane-1);
   xPlaneEdit->setText(QString().sprintf("%d", plane));
   qvtkWidget->GetRenderWindow()->Render();
@@ -391,7 +453,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_yPlaneSlider_sliderMoved(int plane) {
+::on_yPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetYPlane(plane-1);
   yPlaneEdit->setText(QString().sprintf("%d", plane));
   qvtkWidget->GetRenderWindow()->Render();
@@ -423,7 +485,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_zPlaneSlider_sliderMoved(int plane) {
+::on_zPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetZPlane(plane-1);
   zPlaneEdit->setText(QString().sprintf("%d", plane));
   qvtkWidget->GetRenderWindow()->Render();
@@ -447,7 +509,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_mapsToBlackSlider_sliderMoved(int value) {
+::on_mapsToBlackSlider_valueChanged(int value) {
   SetMapsToBlackValueFromSliderPosition(value);
   qvtkWidget->GetRenderWindow()->Render();  
 }
@@ -455,7 +517,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_mapsToWhiteSlider_sliderMoved(int value) {
+::on_mapsToWhiteSlider_valueChanged(int value) {
   SetMapsToWhiteValueFromSliderPosition(value);
   qvtkWidget->GetRenderWindow()->Render();
 }
@@ -528,20 +590,25 @@ VisualPSFOptimizer
   double dValue = 0.0;
 
   int itemRow = 0;
+
+  double vec3[3];
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  dValue = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelXSpacing(dValue);
-  m_DataModel->SetPSFImageVoxelXSpacing(dValue);
+  vec3[0] = item->text().toDouble();
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  dValue = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelYSpacing(dValue);
-  m_DataModel->SetPSFImageVoxelYSpacing(dValue);
+  vec3[1] = item->text().toDouble();
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  dValue = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelZSpacing(dValue);
-  m_DataModel->SetPSFImageVoxelZSpacing(dValue);
+  vec3[2] = item->text().toDouble();
+  m_DataModel->SetMeasuredImageVoxelSpacing(vec3);
+  m_DataModel->SetPSFImageVoxelSpacing(vec3);
+
+  double ccdBorder[2];
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  ccdBorder[0] = item->text().toDouble();
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  ccdBorder[1] = item->text().toDouble();
+  m_DataModel->SetCCDBorderWidth(ccdBorder);
 
   double pointCenter[3];
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
@@ -641,6 +708,7 @@ VisualPSFOptimizer
   SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
+  
 }
 
 
@@ -650,7 +718,7 @@ VisualPSFOptimizer
   DataModel::Float3DPointType center = m_DataModel->GetMeasuredImageDataMaximumCoordinates();
 
   char* decimalFormat = "%.3f";
-  int item = 3;
+  int item = 5;
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, center[0]));
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
@@ -754,6 +822,14 @@ VisualPSFOptimizer
 
   QString zSpacing = QString().sprintf(decimalFormat, spacing[2]);
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(zSpacing);
+
+  double ccdBorder[2];
+  m_DataModel->GetCCDBorderWidth(ccdBorder);
+  QString ccdBorderX = QString().sprintf(decimalFormat, ccdBorder[0]);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ccdBorderX);
+
+  QString ccdBorderY = QString().sprintf(decimalFormat, ccdBorder[1]);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ccdBorderY);
 
   double pointCenter[3];
   m_DataModel->GetPSFPointCenter(pointCenter);

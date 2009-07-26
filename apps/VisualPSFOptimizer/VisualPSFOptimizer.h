@@ -28,27 +28,30 @@ public slots:
   // on_<widget name>_<signal name>(<signal parameters>).
   virtual void on_actionOpenImage_triggered();
   virtual void on_actionSavePSFImage_triggered();
+  virtual void on_actionLoadSettings_triggered();
+  virtual void on_actionSaveSettings_triggered();
   virtual void on_actionExit_triggered();
   
   virtual void on_actionAboutApplication_triggered();
 
   virtual void on_measuredPSFRadioButton_clicked(bool state);
   virtual void on_calculatedPSFRadioButton_clicked(bool state);
+  virtual void on_calculatedBSFRadioButton_clicked(bool state);
   
   virtual void on_showXPlaneCheckBox_toggled(bool show);
-  virtual void on_xPlaneSlider_sliderMoved(int value);
+  virtual void on_xPlaneSlider_valueChanged(int value);
   virtual void on_xPlaneEdit_textEdited(QString text);
   
   virtual void on_showYPlaneCheckBox_toggled(bool show);
-  virtual void on_yPlaneSlider_sliderMoved(int value);
+  virtual void on_yPlaneSlider_valueChanged(int value);
   virtual void on_yPlaneEdit_textEdited(QString text);
   
   virtual void on_showZPlaneCheckBox_toggled(bool show);
-  virtual void on_zPlaneSlider_sliderMoved(int value);
+  virtual void on_zPlaneSlider_valueChanged(int value);
   virtual void on_zPlaneEdit_textEdited(QString text);
   
-  virtual void on_mapsToBlackSlider_sliderMoved(int value);
-  virtual void on_mapsToWhiteSlider_sliderMoved(int value);
+  virtual void on_mapsToBlackSlider_valueChanged(int value);
+  virtual void on_mapsToWhiteSlider_valueChanged(int value);
 
   virtual void on_showDataOutlineCheckBox_toggled(bool show);
 
@@ -74,7 +77,11 @@ protected:
   /** Dirty bit on the session. */
   bool m_Dirty;
 
-  typedef enum { MEASURED_PSF_IMAGE, CALCULATED_PSF_IMAGE } DisplayImageType;
+  typedef enum { 
+    MEASURED_PSF_IMAGE,
+    CALCULATED_PSF_IMAGE,
+    CALCULATED_BSF_IMAGE
+  } DisplayImageType;
 
   DataModel* m_DataModel;
   
@@ -90,6 +97,7 @@ protected:
   
   void SetDisplayedImageToMeasuredPSF();
   void SetDisplayedImageToCalculatedPSF();
+  void SetDisplayedImageToCalculatedBSF();
 
   void RefreshUI();
 
