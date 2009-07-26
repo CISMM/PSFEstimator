@@ -1,3 +1,8 @@
+2009-07-26  Cory Quammen
+
+   * ImagePlaneVisualizationPipeline.cxx: Switched to nearest neighbor
+   interpolation.
+
 2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
 
    * ImagePlaneVisualizationPipeline.cxx: Fixed GetSliceNumber, which was

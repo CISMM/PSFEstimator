@@ -28,7 +28,7 @@ ImagePlaneVisualizationPipeline
   SetInputAlgorithm(m_ShiftScaler);
 
   m_ImageActor = vtkSmartPointer<vtkImageActor>::New();
-  m_ImageActor->InterpolateOn();
+  m_ImageActor->InterpolateOff();
   m_ImageActor->SetInput(m_ShiftScaler->GetOutput());
 }
 
