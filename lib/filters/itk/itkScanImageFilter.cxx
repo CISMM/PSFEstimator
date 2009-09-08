@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScanImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/26 16:52:06 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/09/08 21:33:37 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,8 @@ template <class TInputImage, class TOutputImage, class TAccumulator>
 ScanImageFilter<TInputImage,TOutputImage,TAccumulator>
 ::ScanImageFilter() {
   this->SetNumberOfRequiredInputs(1);
-  m_ScanDimension=InputImageDimension-1;
+  m_ScanDimension = InputImageDimension-1;
+  m_ScanOrder     = INCREASING_ORDER;
 }
 
 
@@ -167,7 +168,8 @@ void
 ScanImageFilter<TInputImage,TOutputImage,TAccumulator>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
 		       int threadId) {
-  // Use the output image to report the progress.
+  // Use the output image to report the progress. This should be set
+  // to the number of lines.
   ProgressReporter progress(this, threadId,
                             outputRegionForThread.GetNumberOfPixels());
 
@@ -184,10 +186,11 @@ ScanImageFilter<TInputImage,TOutputImage,TAccumulator>
   InputIteratorType iIt( inputImage, inputRegionForThread );
 
   iIt.SetDirection( m_ScanDimension );
-  iIt.GoToBegin();
 
   // Instantiate the accumulator.
   AccumulatorType accumulator = this->NewAccumulator(1);
+
+  iIt.GoToBegin();
 
   // OK, everything is ready... lets the linear iterator do its job !
   while( !iIt.IsAtEnd() ) {
@@ -195,13 +198,28 @@ ScanImageFilter<TInputImage,TOutputImage,TAccumulator>
     // Init the accumulator before a new set of pixels
     accumulator.Initialize();
 
-    while( !iIt.IsAtEndOfLine() ) {
-      accumulator( iIt.Get() );
-      const typename InputImageType::IndexType index = iIt.GetIndex();
-      if (outputRegionForThread.IsInside(index)) {
-	outputImage->SetPixel(index, accumulator.GetValue());
+    // Switch between increasing/decreasing scan
+    if (m_ScanOrder == INCREASING_ORDER) {
+
+      while( !iIt.IsAtEndOfLine() ) {
+	accumulator( iIt.Get() );
+	const typename InputImageType::IndexType index = iIt.GetIndex();
+	if (outputRegionForThread.IsInside(index)) {
+	  outputImage->SetPixel(index, accumulator.GetValue());
+	}
+	++iIt;
       }
-      ++iIt;
+    } else { // DECREASING_ORDER
+
+      iIt.GoToReverseBegin();
+      while( !iIt.IsAtReverseEndOfLine() ) {
+	accumulator( iIt.Get() );
+	const typename InputImageType::IndexType index = iIt.GetIndex();
+	if (outputRegionForThread.IsInside(index)) {
+	  outputImage->SetPixel(index, accumulator.GetValue());
+	}
+	--iIt;
+      }
     }
 
     // Report that the line is finished.
@@ -210,7 +228,6 @@ ScanImageFilter<TInputImage,TOutputImage,TAccumulator>
     // Continue with the next one.
     iIt.NextLine();
   }
-
 }
 
 

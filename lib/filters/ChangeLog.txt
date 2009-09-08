@@ -1,3 +1,22 @@
+2009-09-08  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Added itkGibsonLanniBSFImageSource.cxx and
+   itkSphereConvolutionFilter.cxx to source file list.
+   
+   * itkGibsonLanniBSFImageSource.h,.cxx: New class that computes the bead-
+   spread function of a wide-field fluorescence microscope. Intermediate
+   check-in (not fully functional yet).
+   
+   * itkGibsonLanniPSFImageSource.h: Replaced 'template' keyword with 'class'
+   in class template to fix compilation problem on gcc.
+   
+   * itkScanImageFilter.cxx: Added order parameter (increasing or decreasing
+   along a dimension).
+   
+   * itkSphereConvolutionFilter.h,.cxx: New class that computes the convolution
+   of a uniform density sphere function with an arbitrary input kernel. Intended
+   to be used by itkGibsonLanniBSFImageSource to do the heavy lifting.
+
 2009-07-26  Cory Quammen <cquammen@cs.unc.edu>
 
    * CMakeLists.txt: Added itkScanImageFilter to source list.
