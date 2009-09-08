@@ -5,7 +5,10 @@
 
 #include "Configuration.h"
 
+#include <itkGibsonLanniBSFImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
+#include <itkScanImageFilter.h>
+#include <itkSumProjectionImageFilter.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
@@ -19,7 +22,7 @@
 
 #include "ITKImageToVTKImage.h"
 
-// This is the data model for the Fibrin Analysis library.
+// This is the data model for the PSF Optimizer library.
 class DataModel {
 
 public:
@@ -38,6 +41,16 @@ public:
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
+  typedef itk::GibsonLanniBSFImageSource<Float3DImageType>
+    GibsonLanniBSFImageSourceType;
+  typedef GibsonLanniBSFImageSourceType::Pointer
+    GibsonLanniBSFImageSourcePointer;
+  typedef itk::Function::SumAccumulator<FloatPixelType,FloatPixelType>
+    SumAccumulatorType;
+  typedef itk::ScanImageFilter<Float3DImageType,Float3DImageType,SumAccumulatorType>
+    ScanImageFilterType;
+  typedef ScanImageFilterType::Pointer
+    ScanImageFilterPointer;
   
   typedef Float3DImageType TImage;
   typedef TImage InputImageType;
@@ -86,12 +99,18 @@ public:
   TImage::Pointer GetMeasuredImageData();
 
   TImage::Pointer GetPSFImageData();
+  TImage::Pointer GetBSFImageData();
 
   // Returns the VTK output port for the original scalar image data.
   vtkAlgorithmOutput* GetMeasuredImageOutputPort();
 
-  // Returns the VTK output port for the generated PSF image data.
+  // Returns the VTK output port for the generated point-spread function
+  // image data.
   vtkAlgorithmOutput* GetPSFImageOutputPort();
+
+  // Returns the VTK output port for the generated bead-spread function
+  // image data.
+  vtkAlgorithmOutput* GetBSFImageOutputPort();
 
   double GetMeasuredImageDataMinimum();
   double GetMeasuredImageDataMaximum();
@@ -101,9 +120,6 @@ public:
 
   void SetMeasuredImageVoxelSpacing(double spacing[3]);
   void SetMeasuredImageVoxelSpacing(int dimension, double spacing);
-  void SetMeasuredImageVoxelXSpacing(double spacing);
-  void SetMeasuredImageVoxelYSpacing(double spacing);
-  void SetMeasuredImageVoxelZSpacing(double spacing);
   void GetMeasuredImageVoxelSpacing(double spacing[3]);
 
   void SetMeasuredImageOrigin(double origin[3]);
@@ -112,19 +128,24 @@ public:
   double GetPSFImageDataMinimum();
   double GetPSFImageDataMaximum();
 
+  double GetBSFImageDataMinimum();
+  double GetBSFImageDataMaximum();
+
   void SetPSFImageDimensions(int dimensions[3]);
   void SetPSFImageDimension(int index, int dimension);
-  void SetPSFImageXDimension(int dimension);
-  void SetPSFImageYDimension(int dimension);
-  void SetPSFImageZDimension(int dimension);
   void GetPSFImageDimensions(int dimensions[3]);
+
+  void SetBSFImageDimensions(int dimensions[3]);
+  void SetBSFImageDimension(int index, int dimension);
+  void GetBSFImageDimensions(int dimensions[3]);
 
   void SetPSFImageVoxelSpacing(double spacing[3]);
   void SetPSFImageVoxelSpacing(int dimension, double spacing);
-  void SetPSFImageVoxelXSpacing(double spacing);
-  void SetPSFImageVoxelYSpacing(double spacing);
-  void SetPSFImageVoxelZSpacing(double spacing);
   void GetPSFImageVoxelSpacing(double spacing[3]);
+
+  void SetBSFImageVoxelSpacing(double spacing[3]);
+  void SetBSFImageVoxelSpacing(int dimension, double spacing);
+  void GetBSFImageVoxelSpacing(double spacing[3]);
 
   void SetCCDBorderWidth(double borderWidth[2]);
   void GetCCDBorderWidth(double borderWidth[2]);
@@ -132,14 +153,22 @@ public:
   void SetPSFImageOrigin(double origin[3]);
   void GetPSFImageOrigin(double origin[3]);
 
+  void SetBSFImageOrigin(double origin[3]);
+  void GetBSFImageOrigin(double origin[3]);
+
   // Recenters the PSF image origin to the center of the image bounds.
   void RecenterPSFImageOrigin();
 
   // Sets the PSF center
   void SetPSFPointCenter(double center[3]);
   void GetPSFPointCenter(double center[3]);
+  void SetBSFPointCenter(double center[3]);
+  void GetBSFPointCenter(double center[3]);
 
   void UpdateGibsonLanniPSFImage();
+
+  void SetBeadRadius(double radius);
+  double GetBeadRadius();
 
   void  SetGLEmissionWavelength(float wavelength) {
     m_GibsonLanniPSFSource->SetEmissionWavelength(wavelength); }    
@@ -226,12 +255,18 @@ protected:
   TImage::Pointer m_MeasuredImageData;
 
   GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
+  GibsonLanniBSFImageSourcePointer m_GibsonLanniBSFSource;
+
+  // Used for pre-integrated convolution.
+  ScanImageFilterPointer m_ScanImageFilter;
 
   MinMaxType::Pointer m_MeasuredImageMinMaxFilter;
   MinMaxType::Pointer m_PSFImageMinMaxFilter;
+  MinMaxType::Pointer m_BSFImageMinMaxFilter;
 
   ITKImageToVTKImage<TImage>* m_MeasuredImageITKToVTKFilter;
   ITKImageToVTKImage<TImage>* m_PSFImageITKToVTKFilter;
+  ITKImageToVTKImage<TImage>* m_BSFImageITKToVTKFilter;
 
   // The cost function used by the optimizer.
   ParameterizedCostFunctionType::Pointer m_CostFunction;

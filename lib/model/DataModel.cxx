@@ -12,17 +12,22 @@
 #include <itkMultiThreader.h>
 #include <itkPoint.h>
 
+
 DataModel
 ::DataModel() {
   m_MeasuredImageData = NULL;
   
   m_GibsonLanniPSFSource = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniBSFSource = GibsonLanniBSFImageSourceType::New();
+  m_ScanImageFilter = ScanImageFilterType::New();
 
   m_MeasuredImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter      = MinMaxType::New();
+  m_BSFImageMinMaxFilter      = MinMaxType::New();
 
   m_MeasuredImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
-  m_PSFImageITKToVTKFilter   = new ITKImageToVTKImage<TImage>();
+  m_PSFImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
+  m_BSFImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
 
   m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
   m_CostFunction = ParameterizedCostFunctionType::New();
@@ -45,6 +50,7 @@ DataModel
 ::~DataModel() {
   delete m_MeasuredImageITKToVTKFilter;
   delete m_PSFImageITKToVTKFilter;
+  delete m_BSFImageITKToVTKFilter;
 }
 
 
@@ -71,17 +77,25 @@ DataModel
   double spacing[3];
   GetMeasuredImageVoxelSpacing(spacing);
   SetPSFImageVoxelSpacing(spacing);
+  SetBSFImageVoxelSpacing(spacing);
 
   int size[3];
   GetMeasuredImageDimensions(size);
   SetPSFImageDimensions(size);
+  SetBSFImageDimensions(size);
   
   float origin[3];
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
   m_GibsonLanniPSFSource->Update();
+  m_GibsonLanniBSFSource->SetOrigin(origin);
+  m_GibsonLanniBSFSource->Update();
   m_MeasuredImageData->SetOrigin(origin);
+
+  // Set up pre-integration class
+  m_ScanImageFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
+  m_ScanImageFilter->Update();
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
@@ -89,9 +103,19 @@ DataModel
   m_PSFImageMinMaxFilter->SetRegion(region);
   m_PSFImageMinMaxFilter->Compute();
 
-  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
+  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());  
   m_PSFImageITKToVTKFilter->Modified();
   m_PSFImageITKToVTKFilter->Update();
+
+  m_BSFImageMinMaxFilter = MinMaxType::New();
+  m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
+  region = m_GibsonLanniBSFSource->GetOutput()->GetLargestPossibleRegion();
+  m_BSFImageMinMaxFilter->SetRegion(region);
+  m_BSFImageMinMaxFilter->Compute();
+
+  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());  
+  m_BSFImageITKToVTKFilter->Modified();
+  m_BSFImageITKToVTKFilter->Update();
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
@@ -123,7 +147,12 @@ void
 DataModel
 ::SetConfiguration(Configuration & c) {
   // Read the settings from the configuration structure
-  std::string sec("GibsonLanniPSFSettings");
+  std::string sec("FileInfo");
+
+  std::string fileName = c.GetValue(sec, "FileName");
+  LoadImageFile(fileName);
+
+  sec = std::string("GibsonLanniPSFSettings");
   
   double vec3[3];
   c.GetValueAsDoubleArray(sec, "VoxelSpacing", vec3, 3);
@@ -143,8 +172,11 @@ DataModel
   c.GetValueAsDoubleArray(sec, "CCDBorderWidth", vec3, 2);
   SetCCDBorderWidth(vec3);
 
-  c.GetValueAsDoubleArray(sec, "PSFPointCenter", vec3, 3);
-  SetPSFPointCenter(vec3);
+  c.GetValueAsDoubleArray(sec, "BeadCenter", vec3, 3);
+  SetBSFPointCenter(vec3);
+
+  double beadRadius = c.GetValueAsDouble(sec, "BeadRadius");
+  SetBeadRadius(beadRadius);
 
   SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture"));
   SetGLMagnification(c.GetValueAsFloat(sec, "Magnification"));
@@ -179,7 +211,10 @@ void
 DataModel
 ::GetConfiguration(Configuration & c) {
   // Dump the settings into the configuration structure
-  std::string sec("GibsonLanniPSFSettings");
+  std::string sec("FileInfo");
+  c.SetValue(sec, "FileName", m_ImageFileName);
+
+  sec = std::string("GibsonLanniPSFSettings");
 
   double vec3[3];
   GetPSFImageVoxelSpacing(vec3);
@@ -189,7 +224,7 @@ DataModel
   c.SetValueFromDoubleArray(sec, "CCDBorderWidth", vec3, 2);
 
   GetPSFPointCenter(vec3);
-  c.SetValueFromDoubleArray(sec, "PSFPointerCenter", vec3, 3);
+  c.SetValueFromDoubleArray(sec, "PSFPointCenter", vec3, 3);
 
   c.SetValueFromFloat(sec, "NumericalAperture",
 		      GetGLNumericalAperture());
@@ -272,6 +307,13 @@ vtkAlgorithmOutput*
 DataModel
 ::GetPSFImageOutputPort() {
   return m_PSFImageITKToVTKFilter->GetOutputPort();
+}
+
+
+vtkAlgorithmOutput*
+DataModel
+::GetBSFImageOutputPort() {
+  return m_BSFImageITKToVTKFilter->GetOutputPort();
 }
 
 
@@ -359,27 +401,6 @@ DataModel
 
 void
 DataModel
-::SetMeasuredImageVoxelXSpacing(double spacing) {
-  SetMeasuredImageVoxelSpacing(0, spacing); 
-}
-
-
-void
-DataModel
-::SetMeasuredImageVoxelYSpacing(double spacing) {
-  SetMeasuredImageVoxelSpacing(1, spacing); 
-}
-
-
-void
-DataModel
-::SetMeasuredImageVoxelZSpacing(double spacing) {
-  SetMeasuredImageVoxelSpacing(2, spacing); 
-}
-
-
-void
-DataModel
 ::GetMeasuredImageVoxelSpacing(double spacing[3]) {
   if (!GetMeasuredImageData()) {
     for (int i = 0; i < 3; i++)
@@ -439,6 +460,36 @@ DataModel
 }
 
 
+double
+DataModel
+::GetBSFImageDataMinimum() {
+  if (!GetMeasuredImageData()) {
+    return 0.0;
+  }
+
+  Float3DImageType::RegionType region = m_GibsonLanniBSFSource->GetOutput()
+    ->GetLargestPossibleRegion();
+  m_BSFImageMinMaxFilter->SetRegion(region);
+  m_BSFImageMinMaxFilter->Compute();
+  return m_BSFImageMinMaxFilter->GetMinimum();
+}
+
+
+double
+DataModel
+::GetBSFImageDataMaximum() {
+  if (!GetMeasuredImageData()) {
+    return 0.0;
+  }
+
+  Float3DImageType::RegionType region = m_GibsonLanniBSFSource->GetOutput()
+    ->GetLargestPossibleRegion();
+  m_BSFImageMinMaxFilter->SetRegion(region);
+  m_BSFImageMinMaxFilter->Compute();
+  return m_BSFImageMinMaxFilter->GetMaximum();  
+}
+
+
 void
 DataModel
 ::SetPSFImageDimensions(int dimensions[3]) {
@@ -464,28 +515,42 @@ DataModel
 
 void
 DataModel
-::SetPSFImageXDimension(int dimension) {
-  SetPSFImageDimension(0, dimension);
-}
-
-
-void
-DataModel
-::SetPSFImageYDimension(int dimension) {
-  SetPSFImageDimension(1, dimension);
-}
-
-
-void
-DataModel
-::SetPSFImageZDimension(int dimension) {
-  SetPSFImageDimension(2, dimension);
-}
-
-
-void
-DataModel
 ::GetPSFImageDimensions(int dimensions[3]) {
+  Float3DImageType::RegionType region 
+      = GetMeasuredImageData()->GetLargestPossibleRegion();
+  itk::Size<3> size = region.GetSize();
+
+  for (int i = 0; i < 3; i++)
+    dimensions[i] = size[i];
+}
+
+
+void
+DataModel
+::SetBSFImageDimensions(int dimensions[3]) {
+  unsigned long ulDimensions[3];
+  for (int i = 0; i < 3; i++)
+    ulDimensions[i] = static_cast<unsigned long>(dimensions[i]);
+
+  m_GibsonLanniBSFSource->SetSize(ulDimensions);
+}
+
+
+void
+DataModel
+::SetBSFImageDimension(int index, int dimension) {
+  int dimensions[3];
+  GetBSFImageDimensions(dimensions);
+  if (index >= 0 && index <= 2) {
+    dimensions[index] = dimension;
+    SetBSFImageDimensions(dimensions);  
+  }
+}
+
+
+void
+DataModel
+::GetBSFImageDimensions(int dimensions[3]) {
   Float3DImageType::RegionType region 
       = GetMeasuredImageData()->GetLargestPossibleRegion();
   itk::Size<3> size = region.GetSize();
@@ -526,28 +591,51 @@ DataModel
 
 void
 DataModel
-::SetPSFImageVoxelXSpacing(double spacing) {
-  SetPSFImageVoxelSpacing(0, spacing); 
-}
-
-
-void
-DataModel
-::SetPSFImageVoxelYSpacing(double spacing) {
-  SetPSFImageVoxelSpacing(1, spacing); 
-}
-
-
-void
-DataModel
-::SetPSFImageVoxelZSpacing(double spacing) {
-  SetPSFImageVoxelSpacing(2, spacing); 
-}
-
-
-void
-DataModel
 ::GetPSFImageVoxelSpacing(double spacing[3]) {
+  if (!GetMeasuredImageData()) {
+    for (int i = 0; i < 3; i++)
+      spacing[i] = 0.0;
+    return;
+  }
+
+  itk::Vector<double> thisSpacing = GetMeasuredImageData()->GetSpacing();
+  for (int i = 0; i < 3; i++)
+    spacing[i] = thisSpacing[i];
+}
+
+
+void
+DataModel
+::SetBSFImageVoxelSpacing(double spacing[3]) {
+  float floatSpacing[3];
+  for (int i = 0; i < 3; i++)
+    floatSpacing[i] = static_cast<float>(spacing[i]);
+
+  m_GibsonLanniBSFSource->SetSpacing(floatSpacing);
+  m_BSFImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
+}
+
+
+void
+DataModel
+::SetBSFImageVoxelSpacing(int dimension, double spacing) {
+  if (!GetMeasuredImageData())
+    return;
+  
+  TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
+  currentSpacing[dimension] = spacing;
+
+  double doubleSpacing[3];
+  for (int i = 0; i < 3; i++)
+    doubleSpacing[i] = currentSpacing[i];
+
+  SetBSFImageVoxelSpacing(doubleSpacing);
+}
+
+
+void
+DataModel
+::GetBSFImageVoxelSpacing(double spacing[3]) {
   if (!GetMeasuredImageData()) {
     for (int i = 0; i < 3; i++)
       spacing[i] = 0.0;
@@ -601,6 +689,26 @@ DataModel
 
 void
 DataModel
+::SetBSFImageOrigin(double origin[3]) {
+  float fOrigin[3];
+  for (int i = 0; i < 3; i++)
+    fOrigin[i] = static_cast<float>(origin[i]);
+  m_GibsonLanniBSFSource->SetOrigin(fOrigin);
+  m_GibsonLanniBSFSource->Modified();
+}
+
+
+void
+DataModel
+::GetBSFImageOrigin(double origin[3]) {
+  float* fOrigin = m_GibsonLanniBSFSource->GetOrigin();
+  for (int i = 0; i < 3; i++)
+    origin[i] = static_cast<double>(fOrigin[i]);
+}
+
+
+void
+DataModel
 ::RecenterPSFImageOrigin() {
   double spacing[3];
   GetPSFImageVoxelSpacing(spacing);
@@ -636,6 +744,25 @@ DataModel
 
 void
 DataModel
+::SetBSFPointCenter(double center[3]) {
+  float fCenter[3];
+  for (int i = 0; i < 3; i++)
+    fCenter[i] = static_cast<float>(center[i]);
+  m_GibsonLanniPSFSource->SetPointCenter(fCenter);
+}
+
+
+void
+DataModel
+::GetBSFPointCenter(double center[3]) {
+  float* fCenter = m_GibsonLanniBSFSource->GetBeadCenter();
+  for (int i = 0; i < 3; i++)
+    center[i] = static_cast<double>(fCenter[i]);
+}
+
+
+void
+DataModel
 ::UpdateGibsonLanniPSFImage() {
   m_GibsonLanniPSFSource->Update();
   m_PSFImageMinMaxFilter->Compute();
@@ -643,6 +770,20 @@ DataModel
   double min = GetPSFImageDataMinimum();
   double max = GetPSFImageDataMaximum();
   std::cout << "Min: " << min << ", " << max << std::endl;
+}
+
+
+void
+DataModel
+::SetBeadRadius(double radius) {
+  m_GibsonLanniBSFSource->SetBeadRadius(radius);
+}
+
+
+double
+DataModel
+::GetBeadRadius() {
+  return m_GibsonLanniBSFSource->GetBeadRadius();
 }
 
 

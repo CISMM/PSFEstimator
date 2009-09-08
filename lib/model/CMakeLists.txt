@@ -17,4 +17,5 @@ TARGET_LINK_LIBRARIES( vpsfoModel
   ITKCommon
   ITKBasicFilters
   ITKIO
+  ITKNumerics
 )

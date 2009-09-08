@@ -1,3 +1,12 @@
+2009-09-08  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Added ITKNumerics library to get access to AmoebaOptimizer.
+   It worked before on MacOS X without including this library, but not on
+   linux. I'm not sure why.
+
+   * DataModel.h,.cxx: Added bead-spread function class and methods to pass
+   parameters to it. 
+
 2009-07-23  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added methods that read/write settings from a
