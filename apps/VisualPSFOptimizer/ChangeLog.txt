@@ -1,3 +1,12 @@
+2009-09-08  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.ui: Renambed "Settings" to "Session". 
+   
+   * VisualPSFOptimizer.cxx: Added bead radius parameter. Changed "PSF Center"
+   parameters to "Bead Center". Session files contain the path to the loaded
+   PSF image now, which is loaded when the session file is loaded. Started tying
+   bead-spread function class into GUI (intermediate check-in).
+
 2009-07-26  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.h,.cxx,.ui: Added radio button for displaying a 

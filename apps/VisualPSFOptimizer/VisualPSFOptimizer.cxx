@@ -87,7 +87,7 @@ VisualPSFOptimizer
 
   // Create and popuplate Gibson-Lanni PSF settings table model.
   int column = 0;
-  m_GibsonLanniPSFSettingsTableModel = new QStandardItemModel(21, 4, this);
+  m_GibsonLanniPSFSettingsTableModel = new QStandardItemModel(24, 4, this);
   m_GibsonLanniPSFSettingsTableModel->
     setHeaderData(column++, Qt::Horizontal, tr("Property"));
   m_GibsonLanniPSFSettingsTableModel->
@@ -95,10 +95,10 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->
     setHeaderData(column++, Qt::Horizontal, tr("Units"));
   m_GibsonLanniPSFSettingsTableModel->
-    setHeaderData(column++, Qt::Horizontal, tr("Optimize"));
+    setHeaderData(column++, Qt::Horizontal, tr("Optimize?"));
 
-  QStandardItem* psfPropertyItems[23];
-  QStandardItem* unitItems[23];
+  QStandardItem* psfPropertyItems[24];
+  QStandardItem* unitItems[24];
 
   int item = 0;
   psfPropertyItems[item] = new QStandardItem(tr("X pixel size"));
@@ -116,10 +116,13 @@ VisualPSFOptimizer
   psfPropertyItems[item] = new QStandardItem(tr("CCD border Y"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
-  psfPropertyItems[item] = new QStandardItem(tr("PSF center X"));
+  psfPropertyItems[item] = new QStandardItem(tr("Bead radius"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
-  psfPropertyItems[item] = new QStandardItem(tr("PSF center Y"));
+  psfPropertyItems[item] = new QStandardItem(tr("Bead center X"));
+  unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("Bead center Y"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
   psfPropertyItems[item] = new QStandardItem(tr("PSF center Z"));
@@ -194,8 +197,6 @@ VisualPSFOptimizer
   psfSettingsTableView->setModel(m_GibsonLanniPSFSettingsTableModel);
   psfSettingsTableView->setColumnWidth(0, 300);
 
-  connect(m_GibsonLanniPSFSettingsTableModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handle_GibsonLanniPSFSettingsTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
-
   // Refresh the UI
   RefreshUI();
 
@@ -229,26 +230,6 @@ VisualPSFOptimizer
 
   // Should probably report if opening the image failed.
   OpenFile(fileName.toStdString());
-  
-  // Set up m_Visualization pipeline.
-  m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
-  m_Visualization->SetXPlane(0);
-  m_Visualization->SetYPlane(0);
-  m_Visualization->SetZPlane(0);
-
-  SetDisplayedImageToMeasuredPSF();
-
-  measuredPSFRadioButton->setEnabled(true);
-  calculatedPSFRadioButton->setEnabled(true);
-
-  // Refresh the UI
-  RefreshUI();
-
-  // Reset camera
-  m_Renderer->ResetCamera();
-  
-  // Render
-  qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -262,6 +243,27 @@ VisualPSFOptimizer
   QString imageInfo("Loaded image '");
   imageInfo.append(fileName.c_str()); imageInfo.append("'.");
   statusbar->showMessage(imageInfo);
+
+  // Set up m_Visualization pipeline.
+  m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
+  m_Visualization->SetXPlane(0);
+  m_Visualization->SetYPlane(0);
+  m_Visualization->SetZPlane(0);
+
+  SetDisplayedImageToMeasuredPSF();
+
+  measuredPSFRadioButton->setEnabled(true);
+  calculatedPSFRadioButton->setEnabled(true);
+  calculatedBSFRadioButton->setEnabled(true);
+
+  // Refresh the UI
+  RefreshUI();
+
+  // Reset camera
+  m_Renderer->ResetCamera();
+  
+  // Render
+  qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -284,7 +286,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_actionLoadSettings_triggered() {
+::on_actionLoadSession_triggered() {
   // Locate file.
   QString fileName = QFileDialog::getOpenFileName(this, "Load Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
 
@@ -294,6 +296,8 @@ VisualPSFOptimizer
 
   Configuration config;
   config.Parse(fileName.toStdString());
+
+  OpenFile(config.GetValue("FileInfo", "FileName"));
   m_DataModel->SetConfiguration(config);
 
   RefreshUI();
@@ -303,7 +307,7 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_actionSaveSettings_triggered() {
+::on_actionSaveSession_triggered() {
   // Locate file.
   QString fileName = QFileDialog::getSaveFileName(this, "Save Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
 
@@ -402,8 +406,8 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::SetDisplayedImageToCalculatedBSF() {
-  //m_DisplayedImage = CALCULATED_BSF_IMAGE;
-  //  m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
+  m_DisplayedImage = CALCULATED_BSF_IMAGE;
+  m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
   SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
   SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
 
@@ -587,8 +591,6 @@ VisualPSFOptimizer
   float value = 0.0f;
   QStandardItem* item = NULL;
   int COLUMN = 1;
-  double dValue = 0.0;
-
   int itemRow = 0;
 
   double vec3[3];
@@ -602,6 +604,7 @@ VisualPSFOptimizer
   vec3[2] = item->text().toDouble();
   m_DataModel->SetMeasuredImageVoxelSpacing(vec3);
   m_DataModel->SetPSFImageVoxelSpacing(vec3);
+  m_DataModel->SetBSFImageVoxelSpacing(vec3);
 
   double ccdBorder[2];
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
@@ -609,6 +612,10 @@ VisualPSFOptimizer
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   ccdBorder[1] = item->text().toDouble();
   m_DataModel->SetCCDBorderWidth(ccdBorder);
+
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  double beadRadius = item->text().toDouble();
+  m_DataModel->SetBeadRadius(beadRadius);
 
   double pointCenter[3];
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
@@ -700,6 +707,7 @@ VisualPSFOptimizer
 
   m_DataModel->SetMeasuredImageOrigin(origin);
   m_DataModel->SetPSFImageOrigin(origin);
+  m_DataModel->SetBSFImageOrigin(origin);
 
   // Now update
   m_DataModel->UpdateGibsonLanniPSFImage();
@@ -812,6 +820,7 @@ VisualPSFOptimizer
 
   ///////////////// PSF settings update /////////////////
   item = 0;
+
   double spacing[3];
   m_DataModel->GetMeasuredImageVoxelSpacing(spacing);
   QString xSpacing = QString().sprintf(decimalFormat, spacing[0]);
@@ -830,6 +839,9 @@ VisualPSFOptimizer
 
   QString ccdBorderY = QString().sprintf(decimalFormat, ccdBorder[1]);
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ccdBorderY);
+
+  QString beadRadius = QString().sprintf(decimalFormat, m_DataModel->GetBeadRadius());
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(beadRadius);
 
   double pointCenter[3];
   m_DataModel->GetPSFPointCenter(pointCenter);
@@ -895,6 +907,8 @@ VisualPSFOptimizer
     return m_DataModel->GetMeasuredImageDataMinimum();
   } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
     return m_DataModel->GetPSFImageDataMinimum();
+  } else if (m_DisplayedImage == CALCULATED_BSF_IMAGE) {
+    return m_DataModel->GetBSFImageDataMinimum();
   }
   return 0.0;
 }
@@ -907,6 +921,8 @@ VisualPSFOptimizer
     return m_DataModel->GetMeasuredImageDataMaximum();
   } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
     return m_DataModel->GetPSFImageDataMaximum();
+  } else if (m_DisplayedImage == CALCULATED_BSF_IMAGE) {
+    return m_DataModel->GetBSFImageDataMaximum();
   }
   return 0.0;
 }
