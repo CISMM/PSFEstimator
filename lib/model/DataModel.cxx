@@ -224,7 +224,9 @@ DataModel
   c.SetValueFromDoubleArray(sec, "CCDBorderWidth", vec3, 2);
 
   GetPSFPointCenter(vec3);
-  c.SetValueFromDoubleArray(sec, "PSFPointCenter", vec3, 3);
+  c.SetValueFromDoubleArray(sec, "BeadCenter", vec3, 3);
+
+  c.SetValueFromDouble(sec, "BeadRadius", GetBeadRadius());
 
   c.SetValueFromFloat(sec, "NumericalAperture",
 		      GetGLNumericalAperture());
@@ -730,6 +732,7 @@ DataModel
   for (int i = 0; i < 3; i++)
     fCenter[i] = static_cast<float>(center[i]);
   m_GibsonLanniPSFSource->SetPointCenter(fCenter);
+  m_GibsonLanniBSFSource->SetBeadCenter(fCenter);
 }
 
 

@@ -1,3 +1,8 @@
+2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.cxx: Added writing of BeadCenter and BeadRadius parameters to
+   session file.
+
 2009-09-08  Cory Quammen <cquammen@cs.unc.edu>
 
    * CMakeLists.txt: Added ITKNumerics library to get access to AmoebaOptimizer.
