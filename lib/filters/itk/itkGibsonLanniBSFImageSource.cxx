@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/09 20:35:46 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/09/09 20:57:09 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -236,13 +236,25 @@ GibsonLanniBSFImageSource<TOutputImage>
 
   // Update the PSF source. Let's super sample it by 2 times in x and  y
   // and 4 times in z and dilated by at least the sphere radius.
-  int superX = 2;
-  int superY = 2;
-  int superZ = 4;
+  unsigned long superX = 2;
+  unsigned long superY = 2;
+  unsigned long superZ = 4;
 
   // Set the PSF size parameters and update.
-  m_PSFSource->SetSize(this->GetSize());
-  m_PSFSource->SetSpacing(this->GetSpacing());
+  unsigned long psfSize[3];
+  psfSize[0] = GetSize()[0] * superX;
+  psfSize[1] = GetSize()[1] * superY;
+  psfSize[2] = GetSize()[2] * superZ;
+
+  //m_PSFSource->SetSize(this->GetSize());
+  m_PSFSource->SetSize(psfSize);
+
+  float psfSpacing[3];
+  psfSpacing[0] = GetSpacing()[0] / static_cast<float>(superX);
+  psfSpacing[1] = GetSpacing()[1] / static_cast<float>(superY);
+  psfSpacing[2] = GetSpacing()[2] / static_cast<float>(superZ);
+  m_PSFSource->SetSpacing(psfSpacing);
+
   m_PSFSource->SetOrigin(this->GetOrigin());
   m_PSFSource->Update();
 

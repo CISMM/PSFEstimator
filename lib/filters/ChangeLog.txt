@@ -1,5 +1,10 @@
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniBSFImageSource.cxx: Bumped up the resolution at which the
+   PSF is sampled.
+
+2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniBSFImageSource.h: Re-wrote methods SetBeadCenter
    and SetBeadRadius so that they pass the values on to the
    itkSphereConvolutionFilter which does all the work.
