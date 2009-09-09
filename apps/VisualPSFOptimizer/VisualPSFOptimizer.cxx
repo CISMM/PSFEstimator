@@ -125,7 +125,7 @@ VisualPSFOptimizer
   psfPropertyItems[item] = new QStandardItem(tr("Bead center Y"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
-  psfPropertyItems[item] = new QStandardItem(tr("PSF center Z"));
+  psfPropertyItems[item] = new QStandardItem(tr("Bead center Z"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
 
   psfPropertyItems[item] = new QStandardItem(tr("Emission Wavelength"));
