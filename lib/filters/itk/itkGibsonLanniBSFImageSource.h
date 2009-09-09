@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/09/08 21:33:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/09/09 20:35:46 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -136,16 +136,28 @@ public:
   itkGetVectorMacro(Origin,float,TOutputImage::ImageDimension);
 
   /** Specify the point source center (in nanometers). */
-  itkSetVectorMacro(BeadCenter,float,TOutputImage::ImageDimension);
+  //itkSetVectorMacro(BeadCenter,float,TOutputImage::ImageDimension);
+  void SetBeadCenter(float center[TOutputImage::ImageDimension]) {
+    m_Convolver->SetSphereCenter(center);
+  }
 
   /** Get the point source center (in nanometers). */
-  itkGetVectorMacro(BeadCenter,float,TOutputImage::ImageDimension);
+  //itkGetVectorMacro(BeadCenter,float,TOutputImage::ImageDimension);
+  float * GetBeadCenter() const {
+    return m_Convolver->GetSphereCenter();
+  }
 
   /** Specify the bead radius (in nanometers). */
-  itkSetMacro(BeadRadius,float);
+  //itkSetMacro(BeadRadius,float);
+  void SetBeadRadius(float radius) {
+    m_Convolver->SetSphereRadius(radius);
+  }
 
   /** Get the bead radius. */
-  itkGetConstMacro(BeadRadius,float);
+  //itkGetConstMacro(BeadRadius,float);
+  float GetBeadRadius() const {
+    return m_Convolver->GetSphereRadius();
+  }
 
   /** Specify the emission wavelength (in nanometers). */
   DelegateSetMacro(EmissionWavelength,float);

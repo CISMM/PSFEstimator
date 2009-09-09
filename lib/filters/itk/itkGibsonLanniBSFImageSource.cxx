@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/08 21:33:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/09/09 20:35:46 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -55,8 +55,7 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_BeadRadius = 200.0;
   m_PSFSource = PSFSourceType::New();
   m_Convolver = ConvolverType::New();
-
-  this->SetNthOutput(0, m_Convolver->GetOutput());
+  m_Convolver->SetInput(m_PSFSource->GetOutput());
 }
 
 
@@ -241,58 +240,16 @@ GibsonLanniBSFImageSource<TOutputImage>
   int superY = 2;
   int superZ = 4;
 
-#if 0
-  // Connect the PSF source to the sphere convolution filter
-  try {
-    m_Convolver->SetInput(m_PSFSource->GetOutput());
-    //m_Convolver->GraftOutput(this->GetOutput());
-    m_Convolver->Update();
-  } catch (itk::ExceptionObject & e) {
-    std::cout << "Exception caught: " << std::endl;
-    std::cout << e << std::endl;
-  }
-
-  // Set this output to the convolver's output.
-  this->AllocateOutputs();
-
-  this->GraftOutput(m_Convolver->GetOutput());
-    
-#else
-  /*typename GaussianImageSource<TOutputImage>::Pointer randSrc =
-    GaussianImageSource<TOutputImage>::New();
-  randSrc->SetOrigin(this->GetOrigin());
-  randSrc->SetSpacing(this->GetSpacing());
-  typename GaussianImageSource<TOutputImage>::ArrayType stddev;
-  stddev[0] = 500.0;
-  stddev[1] = 500.0;
-  stddev[2] = 500.0;
-  randSrc->SetSigma(stddev);
-  randSrc->GraftOutput(this->GetOutput());
-  randSrc->Update();
-  std::cout << randSrc->GetSpacing() << std::endl;
-  std::cout << m_Spacing[0] << ", " << m_Spacing[1] << ", " << m_Spacing[2] << std::endl;
-  */
-
-  //m_PSFSource->GraftOutput(this->GetOutput());
-  
-  // These aren't supposed to be necessary with grafting, but it makes it work.
+  // Set the PSF size parameters and update.
   m_PSFSource->SetSize(this->GetSize());
   m_PSFSource->SetSpacing(this->GetSpacing());
   m_PSFSource->SetOrigin(this->GetOrigin());
-
   m_PSFSource->Update();
-  //this->GraftOutput(m_PSFSource->GetOutput());
 
-  // Now put this through a scan filter
-  typedef Function::SumAccumulator<typename TOutputImage::PixelType, typename TOutputImage::PixelType> AccumulatorType;
-  typedef ScanImageFilter<TOutputImage, TOutputImage, AccumulatorType> ScanImageFilterType;
-  typename ScanImageFilterType::Pointer scanFilter = ScanImageFilterType::New();
-  scanFilter->SetInput(m_PSFSource->GetOutput());
-  scanFilter->GraftOutput(this->GetOutput());
-  scanFilter->Update();
-  this->GraftOutput(scanFilter->GetOutput());
+  m_Convolver->GraftOutput(this->GetOutput());
+  m_Convolver->Update();
+  this->GraftOutput(m_Convolver->GetOutput());
 
-#endif
 }
 
 

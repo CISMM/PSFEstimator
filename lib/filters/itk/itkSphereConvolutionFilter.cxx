@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/08 21:33:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/09/09 20:35:46 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -46,6 +46,9 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   m_ScanImageFilter = ScanImageFilterType::New();
   m_ScanImageFilter->SetScanDimension(2);
   m_ScanImageFilter->SetScanOrderToIncreasing();
+
+  m_KernelInterpolator = InterpolatorType::New();
+  m_TableInterpolator = InterpolatorType::New();
 }
 
 
@@ -73,7 +76,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     z1 = z2 = 0.0f;
     return 0; // no solutions
   } else if (sqrtTerm == 0) {
-    z1 = z1 = cz;
+    z1 = z2 = cz;
     return 1; // one solution
   } else {
     z1 = cz - sqrt(sqrtTerm);
@@ -133,6 +136,10 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   // Compute the scan of the convolution kernel.
   m_ScanImageFilter->SetInput(this->GetInput());
   m_ScanImageFilter->Update();
+
+  // Set the inputs for the interpolators
+  m_KernelInterpolator->SetInputImage(this->GetInput());
+  m_TableInterpolator->SetInputImage(m_ScanImageFilter->GetOutput());
 }
 
 
@@ -154,8 +161,6 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     OutputImageIndexType index = it.GetIndex();
     OutputImagePointType point;
     image->TransformIndexToPhysicalPoint(index, point);
-    std::cout << "SphereConvFilter: " << point[0] << ", " << point[1]
-	      << ", " << point[2] << std::endl;
 
     it.Set( ComputeIntegratedVoxelValue(point) );
     progress.CompletedPixel();
@@ -169,43 +174,75 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ComputeSampleValue(OutputImagePointType& point) {
   float value = 0.0f;
 
-  // Find the intersection z-coordinate values, if they exist.
-  unsigned int intersections;
-  float x = point[0];
-  float y = point[1];
-  float z1 = 0.0f, z2 = 0.0f;
-  intersections = IntersectWithVerticalLine(x, y, z1, z2);
+  // Compute bounds of geometry sampling region
+  float xMin = m_SphereCenter[0] - m_SphereRadius;
+  float xMax = m_SphereCenter[0] + m_SphereRadius;
+  float yMin = m_SphereCenter[1] - m_SphereRadius;
+  float yMax = m_SphereCenter[1] + m_SphereRadius;
 
-  if (intersections == 2) {
-    OutputImagePointType p1, p2;
-    p1[0] = x;   p1[1] = y;   p1[2] = z1;
-    p2[0] = x;   p2[1] = y;   p2[2] = z2;
+  // Compute maximum z value in the pre-integrated table.
+  InputImagePointer scannedImage = m_ScanImageFilter->GetOutput();
+  float tableZMax = (scannedImage->GetSpacing()[2] *
+		     static_cast<float>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
 
-    // Get values from the pre-integrated table
-    InputImageIndexType index;
-    InputImagePointer lookupTable = m_ScanImageFilter->GetOutput();
+  float samplesPerDim = 10.0;
+  float diameter = 2.0f*m_SphereRadius;
+  float sampleIncrX = diameter / samplesPerDim;
+  float sampleIncrY = diameter / samplesPerDim;
+  for (float ys = yMin; ys <= yMax; ys += sampleIncrY) {
+    for (float xs = xMin; xs <= xMax; xs += sampleIncrX) {
 
-    lookupTable->TransformPhysicalPointToIndex(p1, index);
-    InputImagePixelType v1 = lookupTable->GetPixel(index);
-    lookupTable->TransformPhysicalPointToIndex(p2, index);
-    InputImagePixelType v2 = lookupTable->GetPixel(index);
+      // Find the intersection z-coordinate values, if they exist.
+      float x = point[0];
+      float y = point[1];
+      float z = point[2];
+      float z1 = 0.0f, z2 = 0.0f;
+      unsigned int intersections;
+      intersections = IntersectWithVerticalLine(xs, ys, z1, z2);
+      
+      if (intersections == 2) {
+	OutputImagePointType p1, p2;
+	p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z1 - z;
+	p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z2 - z;
+	
+	// Get values from the pre-integrated table
+	bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
+	bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
+	InputImagePixelType v1 = 0.0;
+	InputImagePixelType v2 = 0.0;
+	if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
+	if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
 
-    // z1 is always less than z2, and integration goes along positive z,
-    // so we return v2 - v1.
-    value = v2 - v1;
+	// If p1 is outside the pre-integrated table, then leaving v1 at 0
+	// is fine (the parts of the vertical line that actually contribute
+	// will be accounted for.
+	//
+	// However, if p2 is outside the pre-integrated table, then we need
+	// to move z2 to the boundary of the pre-integration table. Leaving
+	// it at 0.0 is the wrong thing to do as it will lead to negative
+	// numbers.
+	if (v1Inside && !v2Inside && p2[2] > tableZMax) {
+	  p2[2] = tableZMax - 1e-5;
+	  v2 = m_TableInterpolator->Evaluate(p2);
+	}
+	
+	// z1 is always less than z2, and integration goes along positive z,
+	// so we return v2 - v1.
+	value += v2 - v1;
 
-  } else if (intersections == 1) {
-    OutputImagePointType p;
-    p[0] = x;   p[1] = y;  p[2] = z1;
+      } else if (intersections == 1) {
+	OutputImagePointType p;
+	p[0] = x - xs;   p[1] = y - ys;   p[2] = z1 - z;
+	
+	if (m_KernelInterpolator->IsInsideBuffer(p))
+	  value += m_KernelInterpolator->Evaluate(p);
+      }
 
-    // Get value from the single intersection in the original kernel.
-    // An interpolator could go here.
-    InputImageIndexType index;
-    this->GetInput()->TransformPhysicalPointToIndex(p, index);
-    value = this->GetInput()->GetPixel(index);
+      
+    }
   }
 
-  return value; // No contribution
+  return value;
 }
 
 

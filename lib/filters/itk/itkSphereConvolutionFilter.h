@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.h,v $
   Language:  C++
-  Date:      $Date: 2009/09/08 21:33:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009/09/09 20:35:46 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,6 +21,7 @@
 #define __itkSphereConvolutionFilter_h
 
 #include "itkImageToImageFilter.h"
+#include "itkLinearInterpolateImageFunction.h"
 #include "itkScanImageFilter.h"
 #include "itkSumProjectionImageFilter.h"
 
@@ -81,6 +82,11 @@ public:
   typedef typename ScanImageFilterType::Pointer
     ScanImageFilterPointer;
 
+  typedef LinearInterpolateImageFunction<InputImageType, float>
+    InterpolatorType;
+  typedef typename InterpolatorType::Pointer
+    InterpolatorPointer;
+
   itkStaticConstMacro(ImageDimension,
 		      unsigned int,
 		      TOutputImage::ImageDimension);
@@ -132,7 +138,10 @@ protected:
   float         *m_SphereCenter; // the center of the sphere
   float         m_SphereRadius;  // the radius of the sphere
 
-  ScanImageFilterPointer m_ScanImageFilter;
+  ScanImageFilterPointer  m_ScanImageFilter;
+  
+  InterpolatorPointer     m_KernelInterpolator;
+  InterpolatorPointer     m_TableInterpolator;
 
   /** Gets the z-coordinate(s) of the intersection of a sphere with a line
    * parallel to the z-axis specified by the x- and y-coordinates. z1 and z2

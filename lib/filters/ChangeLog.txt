@@ -1,3 +1,28 @@
+2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniBSFImageSource.h: Re-wrote methods SetBeadCenter
+   and SetBeadRadius so that they pass the values on to the
+   itkSphereConvolutionFilter which does all the work.
+   
+   * itk/itkGibsonLanniBSFImageSource.cxx: Removed call to SetNthOutput in the
+   constructor that was causing no end of problems. It is not the right way to
+   make the output of an internal filter be the output of the containing filter
+   (use GraftOutput() to do that). Pulled out all the debugging stuff that was
+   in there.
+   
+   * itk/itkSphereConvolutionFilter.h: Added linear interpolator classes for
+   both the pre-integrated PSF table and the PSF itself. These are used when
+   computing each sample's contribution to each pixel in the bead-spread
+   function.
+   
+   * itk/itkSphereConvolutionFilter.cxx: Fixed the sphere intersection test so
+   that when there is only one intersection of the line with the sphere, both
+   z values are set (only z1 was getting set before). Added in the interpolators
+   mentioned above. Added sampling of the sphere in ThreadedGenerateData() to
+   collect contributions from all over the sphere to each voxel. Fixed some of
+   the lookup table math and also added safeguards against accessing out-of-
+   bounds memory. 
+
 2009-09-08  Cory Quammen <cquammen@cs.unc.edu>
 
    * CMakeLists.txt: Added itkGibsonLanniBSFImageSource.cxx and
