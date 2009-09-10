@@ -1,5 +1,10 @@
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkSphereConvolutionFilter.cxx: Fixed table lookup so that the 
+   bead-spread function is not flipped in z.
+
+2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniBSFImageSource.cxx: Bumped up the resolution at which the
    PSF is sampled.
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/09 20:35:46 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/09/10 02:43:17 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -202,8 +202,8 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
       
       if (intersections == 2) {
 	OutputImagePointType p1, p2;
-	p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z1 - z;
-	p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z2 - z;
+	p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z2;
+	p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z1;
 	
 	// Get values from the pre-integrated table
 	bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
@@ -232,7 +232,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
       } else if (intersections == 1) {
 	OutputImagePointType p;
-	p[0] = x - xs;   p[1] = y - ys;   p[2] = z1 - z;
+	p[0] = x - xs;   p[1] = y - ys;   p[2] = z - z1;
 	
 	if (m_KernelInterpolator->IsInsideBuffer(p))
 	  value += m_KernelInterpolator->Evaluate(p);
