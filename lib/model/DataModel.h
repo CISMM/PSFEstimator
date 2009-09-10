@@ -171,72 +171,102 @@ public:
   double GetBeadRadius();
 
   void  SetGLEmissionWavelength(float wavelength) {
-    m_GibsonLanniPSFSource->SetEmissionWavelength(wavelength); }    
+    m_GibsonLanniPSFSource->SetEmissionWavelength(wavelength);
+    m_GibsonLanniBSFSource->SetEmissionWavelength(wavelength);
+  }
   float GetGLEmissionWavelength() { 
     return m_GibsonLanniPSFSource->GetEmissionWavelength(); }
 
   void  SetGLNumericalAperture(float na) {
-    m_GibsonLanniPSFSource->SetNumericalAperture(na); }
+    m_GibsonLanniPSFSource->SetNumericalAperture(na);
+    m_GibsonLanniBSFSource->SetNumericalAperture(na);
+  }
   float GetGLNumericalAperture() {
     return m_GibsonLanniPSFSource->GetNumericalAperture(); }
 
   void  SetGLMagnification(float magnification) {
-    m_GibsonLanniPSFSource->SetMagnification(magnification); }
+    m_GibsonLanniPSFSource->SetMagnification(magnification);
+    m_GibsonLanniBSFSource->SetMagnification(magnification);
+  }
   float GetGLMagnification() {
     return m_GibsonLanniPSFSource->GetMagnification(); }
 
   void  SetGLDesignCoverSlipRefractiveIndex(float ri) {
-    m_GibsonLanniPSFSource->SetDesignCoverSlipRefractiveIndex(ri); }
+    m_GibsonLanniPSFSource->SetDesignCoverSlipRefractiveIndex(ri);
+    m_GibsonLanniBSFSource->SetDesignCoverSlipRefractiveIndex(ri);
+  }
   float GetGLDesignCoverSlipRefractiveIndex() {
     return m_GibsonLanniPSFSource->GetDesignCoverSlipRefractiveIndex(); }
   void  SetGLActualCoverSlipRefractiveIndex(float ri) {
-    m_GibsonLanniPSFSource->SetActualCoverSlipRefractiveIndex(ri); }
+    m_GibsonLanniPSFSource->SetActualCoverSlipRefractiveIndex(ri);
+    m_GibsonLanniBSFSource->SetActualCoverSlipRefractiveIndex(ri);
+  }
   float GetGLActualCoverSlipRefractiveIndex() {
     return m_GibsonLanniPSFSource->GetActualCoverSlipRefractiveIndex(); }
 
   void  SetGLDesignCoverSlipThickness(float thickness) {
-    m_GibsonLanniPSFSource->SetDesignCoverSlipThickness(thickness); }
+    m_GibsonLanniPSFSource->SetDesignCoverSlipThickness(thickness);
+    m_GibsonLanniBSFSource->SetDesignCoverSlipThickness(thickness);
+  }
   float GetGLDesignCoverSlipThickness() {
     return m_GibsonLanniPSFSource->GetDesignCoverSlipThickness(); }
   void  SetGLActualCoverSlipThickness(float thickness) {
-    m_GibsonLanniPSFSource->SetActualCoverSlipThickness(thickness); }
+    m_GibsonLanniPSFSource->SetActualCoverSlipThickness(thickness);
+    m_GibsonLanniBSFSource->SetActualCoverSlipThickness(thickness);
+  }
   float GetGLActualCoverSlipThickness() {
     return m_GibsonLanniPSFSource->GetActualCoverSlipThickness(); }
 
   void  SetGLDesignImmersionOilRefractiveIndex(float ri) {
-    m_GibsonLanniPSFSource->SetDesignImmersionOilRefractiveIndex(ri); }
+    m_GibsonLanniPSFSource->SetDesignImmersionOilRefractiveIndex(ri);
+    m_GibsonLanniBSFSource->SetDesignImmersionOilRefractiveIndex(ri);
+  }
   float GetGLDesignImmersionOilRefractiveIndex() {
     return m_GibsonLanniPSFSource->GetDesignImmersionOilRefractiveIndex(); }
   void  SetGLActualImmersionOilRefractiveIndex(float ri) {
-    m_GibsonLanniPSFSource->SetActualImmersionOilRefractiveIndex(ri); }
+    m_GibsonLanniPSFSource->SetActualImmersionOilRefractiveIndex(ri);
+    m_GibsonLanniBSFSource->SetActualImmersionOilRefractiveIndex(ri);
+  }
   float GetGLActualImmersionOilRefractiveIndex() {
     return m_GibsonLanniPSFSource->GetActualImmersionOilRefractiveIndex(); }
 
   void  SetGLDesignImmersionOilThickness(float thickness) {
-    m_GibsonLanniPSFSource->SetDesignImmersionOilThickness(thickness); }
+    m_GibsonLanniPSFSource->SetDesignImmersionOilThickness(thickness);
+    m_GibsonLanniBSFSource->SetDesignImmersionOilThickness(thickness);
+  }
   float GetGLDesignImmersionOilThickness() {
     return m_GibsonLanniPSFSource->GetDesignImmersionOilThickness(); }
 
   void  SetGLDesignSpecimenLayerRefractiveIndex(float ri) {
-    m_GibsonLanniPSFSource->SetDesignSpecimenLayerRefractiveIndex(ri); }
+    m_GibsonLanniPSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
+    m_GibsonLanniBSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
+  }
   float GetGLDesignSpecimenLayerRefractiveIndex() {
     return m_GibsonLanniPSFSource->GetDesignSpecimenLayerRefractiveIndex(); }
   void  SetGLActualSpecimenLayerRefractiveIndex(float ri) {
-    m_GibsonLanniPSFSource->SetActualSpecimenLayerRefractiveIndex(ri); }
+    m_GibsonLanniPSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
+    m_GibsonLanniBSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
+  }
   float GetGLActualSpecimenLayerRefractiveIndex() {
     return m_GibsonLanniPSFSource->GetActualSpecimenLayerRefractiveIndex(); }
 
   void  SetGLActualPointSourceDepthInSpecimenLayer(float depth) {
-    m_GibsonLanniPSFSource->SetActualPointSourceDepthInSpecimenLayer(depth); }
+    m_GibsonLanniPSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
+    m_GibsonLanniBSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
+  }
   float GetGLActualPointSourceDepthInSpecimenLayer() {
     return m_GibsonLanniPSFSource->GetActualPointSourceDepthInSpecimenLayer(); }
 
   void  SetGLDesignDistanceFromBackFocalPlaneToDetector(float distance) {
-    m_GibsonLanniPSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance); }
+    m_GibsonLanniPSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
+    m_GibsonLanniBSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
+  }
   float GetGLDesignDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniPSFSource->GetDesignDistanceFromBackFocalPlaneToDetector(); }
   void  SetGLActualDistanceFromBackFocalPlaneToDetector(float distance) {
-    m_GibsonLanniPSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance); }
+    m_GibsonLanniPSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
+    m_GibsonLanniBSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
+  }
   float GetGLActualDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniPSFSource->GetActualDistanceFromBackFocalPlaneToDetector(); }
 

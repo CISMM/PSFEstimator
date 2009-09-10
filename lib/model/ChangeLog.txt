@@ -1,5 +1,10 @@
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
+   * DataModel.h: Added calls to set parameter values in the bead-spread
+   function source class.
+
+2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
+
    * DataModel.cxx: Added writing of BeadCenter and BeadRadius parameters to
    session file.
 
