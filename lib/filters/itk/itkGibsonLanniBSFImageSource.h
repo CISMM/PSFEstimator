@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/09/09 20:35:46 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009/09/10 02:45:03 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,6 +30,7 @@
 virtual void Set##name(type data) \
 { \
   m_PSFSource->Set##name(data); \
+  this->Modified(); \
 }
 
 #define DelegateGetMacro(name, type) \
@@ -98,63 +99,61 @@ public:
   typedef typename Superclass::ParametersType      ParametersType;
   
   /** Specify the size of the output image. */
-  //itkSetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
   void SetSize(unsigned long size[TOutputImage::ImageDimension]) {
     for (int i = 0; i < TOutputImage::ImageDimension; i++) {
       m_Size[i] = size[i];
     }
 
     m_Convolver->SetSize(size);
+    this->Modified();
   }
 
   /** Get the size of the output image. */
   itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
   
   /** Specify the spacing of the output image (in nanometers). */
-  //itkSetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
   void SetSpacing(float spacing[TOutputImage::ImageDimension]) {
     for (int i = 0; i < TOutputImage::ImageDimension; i++) {
       m_Spacing[i] = spacing[i];
     }
     m_Convolver->SetSpacing(spacing);
+    this->Modified();
   }
 
   /** Get the spacing of the output image (in nanometers). */
   itkGetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
 
   /** Specify the origin of the output image (in nanometers). */
-  //itkSetVectorMacro(Origin,float,TOutputImage::ImageDimension);
   void SetOrigin(float origin[TOutputImage::ImageDimension]) {
     for (int i = 0; i < TOutputImage::ImageDimension; i++) {
       m_Origin[i] = origin[i];
     }
 
     m_Convolver->SetOrigin(origin);
+    this->Modified();
   }
 
   /** Get the origin of the output image (in nanometers). */
   itkGetVectorMacro(Origin,float,TOutputImage::ImageDimension);
 
   /** Specify the point source center (in nanometers). */
-  //itkSetVectorMacro(BeadCenter,float,TOutputImage::ImageDimension);
   void SetBeadCenter(float center[TOutputImage::ImageDimension]) {
     m_Convolver->SetSphereCenter(center);
+    this->Modified();
   }
 
   /** Get the point source center (in nanometers). */
-  //itkGetVectorMacro(BeadCenter,float,TOutputImage::ImageDimension);
   float * GetBeadCenter() const {
     return m_Convolver->GetSphereCenter();
   }
 
   /** Specify the bead radius (in nanometers). */
-  //itkSetMacro(BeadRadius,float);
   void SetBeadRadius(float radius) {
     m_Convolver->SetSphereRadius(radius);
+    this->Modified();
   }
 
   /** Get the bead radius. */
-  //itkGetConstMacro(BeadRadius,float);
   float GetBeadRadius() const {
     return m_Convolver->GetSphereRadius();
   }

@@ -1,5 +1,11 @@
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniBSFImageSource.h: Added calls to this->Modified() in
+   methods that set parameters to ensure the filter is updated when Update()
+   is called.
+
+2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkSphereConvolutionFilter.cxx: Fixed table lookup so that the 
    bead-spread function is not flipped in z.
 
