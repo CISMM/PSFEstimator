@@ -1,5 +1,11 @@
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkSphereConvolutionFilter.cxx: Fixed problem with bottom-most
+   plane being too bright (caused by one of the lookup table points falling
+   outside of the table).
+
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniPSFImageSource.h,.cxx: Switched to include <complex>
    instead of <complex.h> because Visual Studio C++ is not ISO 99 compliant.
    <complex> works just as well.

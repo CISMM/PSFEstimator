@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/10 02:43:17 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2009/09/14 18:37:18 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -182,8 +182,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
   // Compute maximum z value in the pre-integrated table.
   InputImagePointer scannedImage = m_ScanImageFilter->GetOutput();
-  float tableZMax = (scannedImage->GetSpacing()[2] *
-		     static_cast<float>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
+  float tableZMin = scannedImage->GetOrigin()[2];
 
   float samplesPerDim = 10.0;
   float diameter = 2.0f*m_SphereRadius;
@@ -213,17 +212,16 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 	if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
 	if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
 
-	// If p1 is outside the pre-integrated table, then leaving v1 at 0
+	// If p2 is outside the pre-integrated table, then leaving v2 at 0
 	// is fine (the parts of the vertical line that actually contribute
 	// will be accounted for.
 	//
-	// However, if p2 is outside the pre-integrated table, then we need
-	// to move z2 to the boundary of the pre-integration table. Leaving
-	// it at 0.0 is the wrong thing to do as it will lead to negative
-	// numbers.
-	if (v1Inside && !v2Inside && p2[2] > tableZMax) {
-	  p2[2] = tableZMax - 1e-5;
-	  v2 = m_TableInterpolator->Evaluate(p2);
+	// However, if p1 is outside the pre-integrated table, then we need
+	// to move p1 to the low z-boundary of the pre-integration table. Leaving
+	// v1 = 0.0 is the wrong thing to do.
+	if (!v1Inside && v2Inside && p1[2] < tableZMin) {
+	  p1[2] = tableZMin + 1e-5;
+	  v1 = m_TableInterpolator->Evaluate(p1);
 	}
 	
 	// z1 is always less than z2, and integration goes along positive z,
