@@ -28,6 +28,7 @@ public slots:
   // on_<widget name>_<signal name>(<signal parameters>).
   virtual void on_actionOpenImage_triggered();
   virtual void on_actionSavePSFImage_triggered();
+  virtual void on_actionSaveBSFImage_triggered();
   virtual void on_actionLoadSession_triggered();
   virtual void on_actionSaveSession_triggered();
   virtual void on_actionExit_triggered();

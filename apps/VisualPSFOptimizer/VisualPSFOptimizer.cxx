@@ -273,7 +273,7 @@ VisualPSFOptimizer
 ::on_actionSavePSFImage_triggered() {
 
   // Locate file.
-  QString fileName = QFileDialog::getSaveFileName(this, "Save Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+  QString fileName = QFileDialog::getSaveFileName(this, "Save PSF Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
 
   // Now read the file
   if (fileName == "") {
@@ -281,6 +281,23 @@ VisualPSFOptimizer
   }
 
   m_DataModel->SavePSFImageFile(fileName.toStdString());
+  
+}
+
+
+void
+VisualPSFOptimizer
+::on_actionSaveBSFImage_triggered() {
+
+  // Locate file.
+  QString fileName = QFileDialog::getSaveFileName(this, "Save BSF Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+
+  // Now read the file
+  if (fileName == "") {
+    return;
+  }
+
+  m_DataModel->SaveBSFImageFile(fileName.toStdString());
   
 }
 

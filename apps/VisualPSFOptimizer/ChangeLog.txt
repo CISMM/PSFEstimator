@@ -1,5 +1,13 @@
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.h,.cxx: Added method on_actionSaveBSFImage_triggered()
+   to save the generated bead-spread function.
+   
+   * VisualPSFOptimizer.ui: Added item in File menu to save the bead-spread
+   function.
+
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Added initialization of m_DisplayedImage member
    variable.
 
