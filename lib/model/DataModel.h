@@ -85,6 +85,7 @@ public:
 
   void LoadImageFile(std::string fileName);
   void SavePSFImageFile(std::string fileName);
+  void SaveBSFImageFile(std::string fileName);
 
   void SetConfiguration(Configuration & configuration);
   void GetConfiguration(Configuration & configuration);

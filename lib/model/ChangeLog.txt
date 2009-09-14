@@ -1,3 +1,8 @@
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added method SaveBSFImageFile() and fixed image
+   rescaling during save to unsigned short TIFs.
+
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h: Added calls to set parameter values in the bead-spread
