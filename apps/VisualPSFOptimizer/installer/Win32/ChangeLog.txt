@@ -1,5 +1,9 @@
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * CMake/Win32Package.txt: Fixed path to Windows icon.
+
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * Win32Icon.ico: Made the icon be of a picture of a PSF side profile.
 
 2009-07-02  Cory Quammen <cquammen@cs.unc.edu>

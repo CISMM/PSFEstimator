@@ -65,6 +65,6 @@ SET( CPACK_NSIS_URL_INFO_ABOUT "http://www.cismm.org" )
 SET( CPACK_NSIS_CONTACT "cquammen@cs.unc.edu" )
 
 # Both of these need to be set or neither of them is set.
-SET( CPACK_NSIS_MUI_ICON "${VisualPSFOptimizer_SOURCE_DIR}/installer/Win32/Win32Icon.ico" )
-SET( CPACK_NSIS_MUI_UNIICON "${VisualPSFOptimizer_SOURCE_DIR}/installer/Win32/ModernUninstallFull.ico" )
+SET( CPACK_NSIS_MUI_ICON "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/Win32/Win32Icon.ico" )
+SET( CPACK_NSIS_MUI_UNIICON "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/Win32/ModernUninstallFull.ico" )
 SET( CPACK_NSIS_INSTALLED_ICON_NAME "BIN\\\\VisualPSFOptimizer.exe" )
