@@ -47,7 +47,7 @@ IF (${CMAKE_BUILD_TOOL} MATCHES "devenv")
 ENDIF (${CMAKE_BUILD_TOOL} MATCHES "devenv")
 
 IF ( WIN32 )
-  SET( WinResources "${VisualPSFOptimizer_SOURCE_DIR}/installer/Win32/icon.rc" )
+  SET( WinResources "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/Win32/icon.rc" )
 ENDIF ( WIN32 )
 
 ADD_EXECUTABLE( VisualPSFOptimizer ${QtGuiSrcs} ${UISrcs} ${MOCSrcs} ${WinResources} )
