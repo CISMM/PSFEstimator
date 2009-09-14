@@ -32,6 +32,7 @@ VisualPSFOptimizer
 
   // Mark as initially clean
   m_Dirty = false;
+  m_DisplayedImage = MEASURED_PSF_IMAGE;
   
   // QT/VTK interaction
   m_Renderer = vtkRenderer::New();

@@ -1,5 +1,10 @@
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Added initialization of m_DisplayedImage member
+   variable.
+
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * CMakeLists.txt: Fixed path to icon file.
 
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
