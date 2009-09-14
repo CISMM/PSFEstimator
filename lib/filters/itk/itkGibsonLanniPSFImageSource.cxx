@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/26 16:52:06 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2009/09/14 13:57:30 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -507,7 +507,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   float h = 1.0f / static_cast<float>(INTEGRATE_N-1);
 
   // Accumulator for integration.
-  complex<ScalarType> sum(0.0f, 0.0f);
+  std::complex<ScalarType> sum(0.0f, 0.0f);
 
   // Compute initial terms in Simpson quadrature method.
   sum += IntegralTerm(opdCache, K, a, z_d, 0, h, r_o, z_o);

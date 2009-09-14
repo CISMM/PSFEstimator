@@ -1,3 +1,9 @@
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniPSFImageSource.h,.cxx: Switched to include <complex>
+   instead of <complex.h> because Visual Studio C++ is not ISO 99 compliant.
+   <complex> works just as well.
+
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniBSFImageSource.h: Added calls to this->Modified() in

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/09/08 21:33:37 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2009/09/14 13:57:30 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -20,7 +20,7 @@
 #ifndef __itkGibsonLanniPSFImageSource_h
 #define __itkGibsonLanniPSFImageSource_h
 
-#include <complex.h>
+#include <complex>
 
 #include "itkParameterizedImageSource.h"
 #include "itkNumericTraits.h"
@@ -62,7 +62,7 @@ public:
 		      TOutputImage::ImageDimension);
 
   /** Typedef for complex type. */
-  typedef complex<PixelType> complex_t;
+  typedef std::complex<PixelType> complex_t;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GibsonLanniPSFImageSource,ParameterizedImageSource);
