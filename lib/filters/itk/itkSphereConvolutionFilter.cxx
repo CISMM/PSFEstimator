@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/14 18:37:18 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2009/09/15 02:22:37 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -182,7 +182,8 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
   // Compute maximum z value in the pre-integrated table.
   InputImagePointer scannedImage = m_ScanImageFilter->GetOutput();
-  float tableZMin = scannedImage->GetOrigin()[2];
+  float tableZMax = (scannedImage->GetSpacing()[2] *
+	      static_cast<float>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
 
   float samplesPerDim = 10.0;
   float diameter = 2.0f*m_SphereRadius;
@@ -200,43 +201,33 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
       intersections = IntersectWithVerticalLine(xs, ys, z1, z2);
       
       if (intersections == 2) {
-	OutputImagePointType p1, p2;
-	p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z2;
-	p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z1;
+        OutputImagePointType p1, p2;
+        p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z1;
+        p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z2;
 	
-	// Get values from the pre-integrated table
-	bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
-	bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
-	InputImagePixelType v1 = 0.0;
-	InputImagePixelType v2 = 0.0;
-	if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
-	if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
+        // Get values from the pre-integrated table
+        bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
+        bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
+        InputImagePixelType v1 = 0.0;
+        InputImagePixelType v2 = 0.0;
+        if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
+        if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
 
-	// If p2 is outside the pre-integrated table, then leaving v2 at 0
-	// is fine (the parts of the vertical line that actually contribute
-	// will be accounted for.
-	//
-	// However, if p1 is outside the pre-integrated table, then we need
-	// to move p1 to the low z-boundary of the pre-integration table. Leaving
-	// v1 = 0.0 is the wrong thing to do.
-	if (!v1Inside && v2Inside && p1[2] < tableZMin) {
-	  p1[2] = tableZMin + 1e-5;
-	  v1 = m_TableInterpolator->Evaluate(p1);
-	}
-	
-	// z1 is always less than z2, and integration goes along positive z,
-	// so we return v2 - v1.
-	value += v2 - v1;
+        if (!v1Inside && v2Inside && p1[2] > tableZMax) {
+          p1[2] = tableZMax - 1e-5;
+          v1 = m_TableInterpolator->Evaluate(p1);
+        }
+        // z - z1 is always larger than z - z2, and integration goes along positive z,
+        // so we return v1 - v2.
+        value += v1 - v2;
 
       } else if (intersections == 1) {
-	OutputImagePointType p;
-	p[0] = x - xs;   p[1] = y - ys;   p[2] = z - z1;
-	
-	if (m_KernelInterpolator->IsInsideBuffer(p))
-	  value += m_KernelInterpolator->Evaluate(p);
-      }
+        OutputImagePointType p;
+        p[0] = x - xs;   p[1] = y - ys;   p[2] = z - z1;
 
-      
+        if (m_KernelInterpolator->IsInsideBuffer(p))
+          value += m_KernelInterpolator->Evaluate(p);
+      }
     }
   }
 

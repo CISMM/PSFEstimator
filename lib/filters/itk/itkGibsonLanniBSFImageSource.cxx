@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/09 20:57:09 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2009/09/15 02:22:37 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -236,26 +236,24 @@ GibsonLanniBSFImageSource<TOutputImage>
 
   // Update the PSF source. Let's super sample it by 2 times in x and  y
   // and 4 times in z and dilated by at least the sphere radius.
-  unsigned long superX = 2;
-  unsigned long superY = 2;
-  unsigned long superZ = 4;
+  unsigned long superRes[3];
+  superRes[0] = 1;
+  superRes[1] = 1;
+  superRes[2] = 1;
 
   // Set the PSF size parameters and update.
   unsigned long psfSize[3];
-  psfSize[0] = GetSize()[0] * superX;
-  psfSize[1] = GetSize()[1] * superY;
-  psfSize[2] = GetSize()[2] * superZ;
-
-  //m_PSFSource->SetSize(this->GetSize());
+  float psfSpacing[3], psfOrigin[3];
+  for (int i = 0; i < 3; i++) {
+    psfSize[i]    = GetSize()[i] * superRes[i];
+    psfSpacing[i] = GetSpacing()[i] / static_cast<float>(superRes[i]);
+    psfOrigin[i]  = -0.5*static_cast<float>((psfSize[i]-1))*psfSpacing[i];
+  }
   m_PSFSource->SetSize(psfSize);
-
-  float psfSpacing[3];
-  psfSpacing[0] = GetSpacing()[0] / static_cast<float>(superX);
-  psfSpacing[1] = GetSpacing()[1] / static_cast<float>(superY);
-  psfSpacing[2] = GetSpacing()[2] / static_cast<float>(superZ);
   m_PSFSource->SetSpacing(psfSpacing);
+  m_PSFSource->SetOrigin(psfOrigin);
 
-  m_PSFSource->SetOrigin(this->GetOrigin());
+  //m_PSFSource->SetOrigin(this->GetOrigin());
   m_PSFSource->Update();
 
   m_Convolver->GraftOutput(this->GetOutput());

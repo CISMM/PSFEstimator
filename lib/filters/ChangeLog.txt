@@ -1,5 +1,14 @@
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniBSFImageSource.cxx: Simplified code and added
+   correct computation of the supersampled PSF lookup table origin.
+   
+   * itk/itkSphereConvolutionFilter.cxx: Fixed problem with top plane
+   being too bright (caused by one of the lookup table points falling
+   outside of the table).
+   
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkSphereConvolutionFilter.cxx: Fixed problem with bottom-most
    plane being too bright (caused by one of the lookup table points falling
    outside of the table).
