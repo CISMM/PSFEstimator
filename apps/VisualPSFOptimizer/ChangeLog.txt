@@ -1,5 +1,10 @@
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.ui: Changed Ctrl-O keyboard shortcut to open
+   session file instead of an image file.
+
+2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.h,.cxx: Added method on_actionSaveBSFImage_triggered()
    to save the generated bead-spread function.
    

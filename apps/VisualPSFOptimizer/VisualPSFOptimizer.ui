@@ -789,7 +789,7 @@
     <string>&amp;Open Image...</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string/>
    </property>
   </action>
   <action name="actionExit">
@@ -935,6 +935,9 @@
   <action name="actionLoadSession">
    <property name="text">
     <string>Load Session...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionSaveSession">
