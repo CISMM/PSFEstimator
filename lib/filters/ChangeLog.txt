@@ -1,5 +1,10 @@
 2009-09-16  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkSphereConvolutionFilter.cxx: Added check for non-positive radius
+   in ComputeSampleValue() to prevent infinite loop.
+
+2009-09-16  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniBSFImageSource.cxx: Changed sampling frequency of PSF
    pre-integrated table.
 
