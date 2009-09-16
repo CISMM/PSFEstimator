@@ -19,7 +19,6 @@ DataModel
   
   m_GibsonLanniPSFSource = GibsonLanniPSFImageSourceType::New();
   m_GibsonLanniBSFSource = GibsonLanniBSFImageSourceType::New();
-  m_ScanImageFilter = ScanImageFilterType::New();
 
   m_MeasuredImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter      = MinMaxType::New();
@@ -88,38 +87,20 @@ DataModel
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
-  m_GibsonLanniPSFSource->Update();
   m_GibsonLanniBSFSource->SetOrigin(origin);
-  m_GibsonLanniBSFSource->Update();
   m_MeasuredImageData->SetOrigin(origin);
-
-  // Set up pre-integration class
-  m_ScanImageFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
-  m_ScanImageFilter->Update();
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
-  region = m_GibsonLanniPSFSource->GetOutput()->GetLargestPossibleRegion();
-  m_PSFImageMinMaxFilter->SetRegion(region);
-  m_PSFImageMinMaxFilter->Compute();
-
   m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());  
-  m_PSFImageITKToVTKFilter->Modified();
-  m_PSFImageITKToVTKFilter->Update();
 
   m_BSFImageMinMaxFilter = MinMaxType::New();
   m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
-  region = m_GibsonLanniBSFSource->GetOutput()->GetLargestPossibleRegion();
-  m_BSFImageMinMaxFilter->SetRegion(region);
-  m_BSFImageMinMaxFilter->Compute();
-
   m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());  
-  m_BSFImageITKToVTKFilter->Modified();
-  m_BSFImageITKToVTKFilter->Update();
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
-  m_CostFunction->SetMovingImageSource(m_GibsonLanniPSFSource);
+  m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
   // Set up optimizer, but don't connect it to the cost function just yet.
   m_Optimizer = OptimizerType::New();
@@ -841,7 +822,7 @@ DataModel
 double
 DataModel
 ::GetImageComparisonMetric() {
-  return m_CostFunction->GetValue(m_GibsonLanniPSFSource->GetParameters());
+  return m_CostFunction->GetValue(m_GibsonLanniBSFSource->GetParameters());
 }
 
 
@@ -859,13 +840,13 @@ DataModel
   int activeIndex = 0;
   for (unsigned int i = 0; i < mask->Size(); i++) {
     if (mask->GetElement(i)) {
-      activeParameters[activeIndex++] = m_GibsonLanniPSFSource->GetParameters()[i];
+      activeParameters[activeIndex++] = m_GibsonLanniBSFSource->GetParameters()[i];
     }
   }
 
   // Connect to the cost function, set the initial parameters, and optimize.
   m_ImageToImageCostFunction
-    ->SetFixedImageRegion(m_GibsonLanniPSFSource->GetOutput()->GetLargestPossibleRegion());
+    ->SetFixedImageRegion(m_GibsonLanniBSFSource->GetOutput()->GetLargestPossibleRegion());
   m_Optimizer->SetCostFunction(m_CostFunction);
   m_Optimizer->SetFunctionConvergenceTolerance(1e-3);
   m_Optimizer->SetInitialPosition(activeParameters);

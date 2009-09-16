@@ -45,12 +45,6 @@ public:
     GibsonLanniBSFImageSourceType;
   typedef GibsonLanniBSFImageSourceType::Pointer
     GibsonLanniBSFImageSourcePointer;
-  typedef itk::Function::SumAccumulator<FloatPixelType,FloatPixelType>
-    SumAccumulatorType;
-  typedef itk::ScanImageFilter<Float3DImageType,Float3DImageType,SumAccumulatorType>
-    ScanImageFilterType;
-  typedef ScanImageFilterType::Pointer
-    ScanImageFilterPointer;
   
   typedef Float3DImageType TImage;
   typedef TImage InputImageType;
@@ -74,7 +68,7 @@ public:
     TIFFWriterType;
 
   // Types for optimization.
-  typedef itk::ImageToParameterizedImageSourceMetric<TImage, GibsonLanniPSFImageSourceType>
+  typedef itk::ImageToParameterizedImageSourceMetric<TImage, GibsonLanniBSFImageSourceType>
     ParameterizedCostFunctionType;
   typedef itk::NormalizedCorrelationImageToImageMetric<TImage, TImage>
     ImageToImageCostFunctionType;
@@ -287,9 +281,6 @@ protected:
 
   GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
   GibsonLanniBSFImageSourcePointer m_GibsonLanniBSFSource;
-
-  // Used for pre-integrated convolution.
-  ScanImageFilterPointer m_ScanImageFilter;
 
   MinMaxType::Pointer m_MeasuredImageMinMaxFilter;
   MinMaxType::Pointer m_PSFImageMinMaxFilter;

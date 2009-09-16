@@ -1,3 +1,12 @@
+2009-09-16  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h: Removed itkScanImageFilter that was used for testing.
+   
+   * DataModel.cxx: Removed unnecessary filter updates right after loading an
+   image that made image loading take a lot longer than necessary. Also, hooked
+   up optimization routine to the bead-spread function generator instead of the
+   point-spread function generator.
+
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added method SaveBSFImageFile() and fixed image
