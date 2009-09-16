@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/15 02:22:37 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2009/09/16 16:59:22 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -237,9 +237,9 @@ GibsonLanniBSFImageSource<TOutputImage>
   // Update the PSF source. Let's super sample it by 2 times in x and  y
   // and 4 times in z and dilated by at least the sphere radius.
   unsigned long superRes[3];
-  superRes[0] = 1;
-  superRes[1] = 1;
-  superRes[2] = 1;
+  superRes[0] = 2;
+  superRes[1] = 2;
+  superRes[2] = 4;
 
   // Set the PSF size parameters and update.
   unsigned long psfSize[3];

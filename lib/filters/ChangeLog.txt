@@ -1,3 +1,13 @@
+2009-09-16  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniBSFImageSource.cxx: Changed sampling frequency of PSF
+   pre-integrated table.
+
+   * itk/itkSphereConvolutionFilter.cxx: Fixed problem with indices in the
+   pre-integrated PSF table. One of the z-coordinates was off by one voxel size.
+   This is a little subtle, but becomes clear when looking at how to use prefix
+   sums to obtain sums of arbitrary spans of consecutive elements in an array.
+
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniBSFImageSource.cxx: Simplified code and added

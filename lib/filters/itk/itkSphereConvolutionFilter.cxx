@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/15 02:22:37 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2009/09/16 16:59:22 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -183,7 +183,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   // Compute maximum z value in the pre-integrated table.
   InputImagePointer scannedImage = m_ScanImageFilter->GetOutput();
   float tableZMax = (scannedImage->GetSpacing()[2] *
-	      static_cast<float>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
+              static_cast<float>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
 
   float samplesPerDim = 10.0;
   float diameter = 2.0f*m_SphereRadius;
@@ -204,7 +204,13 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
         OutputImagePointType p1, p2;
         p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z1;
         p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z2;
-	
+        
+        // Important: z1 is always less than z2, so p1 is always above p2
+
+        // Subtract z-voxel spacing from p2[2] to get the proper behavior
+        // in the pre-integrated PSF table.
+        p2[2] -= scannedImage->GetSpacing()[2];
+
         // Get values from the pre-integrated table
         bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
         bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
@@ -217,8 +223,8 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
           p1[2] = tableZMax - 1e-5;
           v1 = m_TableInterpolator->Evaluate(p1);
         }
-        // z - z1 is always larger than z - z2, and integration goes along positive z,
-        // so we return v1 - v2.
+        // z - z1 is always larger than z - z2, and integration goes along 
+        // positive z, so we return v1 - v2.
         value += v1 - v2;
 
       } else if (intersections == 1) {
