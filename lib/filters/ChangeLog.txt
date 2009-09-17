@@ -1,3 +1,11 @@
+2009-09-17  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniBSFImageSource.cxx: Fixed up number of parameters in this
+   source and their ordering to make optimization work.
+   
+   * itk/itkImageToParameterizedImageSourceMetric.cxx: Improved printing of 
+   parameters and comparison metric during optimization.
+
 2009-09-16  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkSphereConvolutionFilter.cxx: Added check for non-positive radius

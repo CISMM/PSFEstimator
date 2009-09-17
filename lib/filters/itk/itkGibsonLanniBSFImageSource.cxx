@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/16 16:59:22 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2009/09/17 20:30:15 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -86,13 +86,16 @@ GibsonLanniBSFImageSource<TOutputImage>
   spacing[2] = floatParams[index++];
   SetSpacing(spacing);
 
+  // CCD border goes here
+  index += 2;
+
+  SetBeadRadius(floatParams[index++]);
+
   float center[3];
   center[0] = floatParams[index++];
   center[1] = floatParams[index++];
   center[2] = floatParams[index++];
   SetBeadCenter(center);
-
-  SetBeadRadius(floatParams[index++]);
 
   SetEmissionWavelength(floatParams[index++]);
   SetNumericalAperture(floatParams[index++]);
@@ -125,12 +128,16 @@ GibsonLanniBSFImageSource<TOutputImage>
   floatParams[index++] = GetSpacing()[1];
   floatParams[index++] = GetSpacing()[2];
 
+  // CCD border goes here
+  floatParams[index++] = 0.0;
+  floatParams[index++] = 0.0;
+
+  floatParams[index++] = GetBeadRadius();
+
   float* beadCenter = GetBeadCenter();
   floatParams[index++] = beadCenter[0];
   floatParams[index++] = beadCenter[1];
   floatParams[index++] = beadCenter[2];
-
-  floatParams[index++] = GetBeadRadius();
 
   floatParams[index++] = GetEmissionWavelength();
   floatParams[index++] = GetNumericalAperture();
@@ -163,7 +170,7 @@ template <class TOutputImage>
 unsigned int
 GibsonLanniBSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const {
-  return 22;
+  return 24;
 }
 
 

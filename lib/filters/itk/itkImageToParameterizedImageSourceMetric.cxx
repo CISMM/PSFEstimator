@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/07/21 03:41:45 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2009/09/17 20:30:15 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -117,14 +117,13 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   // Send the parameters to the parametric image source.
   //m_MovingImageSource->SetParameters(parameters);
   SetParameters(parameters);
-  std::cout << parameters << std::endl;
+  std::cout << "Parameters: " << parameters << " - ";
   m_MovingImageSource->GetOutput()->SetRequestedRegionToLargestPossibleRegion();
   m_MovingImageSource->Update();
 
   m_ImageToImageMetric->SetFixedImage(m_FixedImage);
   m_ImageToImageMetric->SetFixedImageRegion(m_FixedImage->
 					    GetLargestPossibleRegion());
-  std::cout << m_ImageToImageMetric->GetFixedImageRegion() << std::endl;
 
   // Have to set the new moving image in the interpolator manually because
   // the delegate image to image metric does this only at initialization.
@@ -136,7 +135,7 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   m_ImageToImageMetric->SetMovingImage(movingImage);
 
   MeasureType value = m_ImageToImageMetric->GetValue(parameters);
-  std::cout << value << std::endl;
+  std::cout << "Value: " << value << std::endl;
   return value;
 }
 
