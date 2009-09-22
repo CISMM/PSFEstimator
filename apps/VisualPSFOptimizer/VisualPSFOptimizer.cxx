@@ -744,7 +744,7 @@ VisualPSFOptimizer
   DataModel::Float3DPointType center = m_DataModel->GetMeasuredImageDataMaximumCoordinates();
 
   char* decimalFormat = "%.3f";
-  int item = 5;
+  int item = 6;
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, center[0]));
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->

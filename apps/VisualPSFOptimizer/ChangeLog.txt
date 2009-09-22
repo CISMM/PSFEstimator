@@ -1,3 +1,8 @@
+2009-09-22  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: Fixed off-by-one error when setting estimated
+   PSF center.
+
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.ui: Changed Ctrl-O keyboard shortcut to open
