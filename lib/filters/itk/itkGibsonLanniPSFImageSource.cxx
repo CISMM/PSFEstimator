@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/14 13:57:30 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2009/09/30 21:03:06 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -416,7 +416,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   float z_d_d   = m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
   float z_d     = m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
   float n_s     = m_ActualSpecimenLayerRefractiveIndex;
-  float t_s     = m_ActualPointSourceDepthInSpecimenLayer * 1e-9;
+  float t_s     = m_ActualPointSourceDepthInSpecimenLayer * 1e-6;
   float n_g_d   = m_DesignCoverSlipRefractiveIndex;
   float n_g     = m_ActualCoverSlipRefractiveIndex;
   float t_g_d   = m_DesignCoverSlipThickness * 1e-6;

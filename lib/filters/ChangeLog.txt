@@ -1,3 +1,8 @@
+2009-09-30  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniPSFImageSource.cxx: Fixed unit conversion error for the
+   depth into the specimen.
+
 2009-09-17  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniBSFImageSource.cxx: Fixed up number of parameters in this
