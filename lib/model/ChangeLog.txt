@@ -1,3 +1,10 @@
+2009-09-30  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.cxx: Added call to turn on mean subtraction in the normalized
+   correlation image-to-image metric (it's not subtracted by default; how can
+   it be normalized without mean subtraction? This makes fitting to real data
+   work much, much better.
+
 2009-09-16  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h: Removed itkScanImageFilter that was used for testing.

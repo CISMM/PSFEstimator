@@ -29,6 +29,7 @@ DataModel
   m_BSFImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
 
   m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
+  m_ImageToImageCostFunction->SubtractMeanOn();
   m_CostFunction = ParameterizedCostFunctionType::New();
   m_CostFunction->SetImageToImageMetric(m_ImageToImageCostFunction);
 
