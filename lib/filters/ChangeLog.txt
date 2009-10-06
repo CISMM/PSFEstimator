@@ -1,3 +1,14 @@
+2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniBSFImageSource.cxx: Added calculation of adequate
+   sampling rate. Fixed problems with requested region being larger than
+   largest possible region by replacing calls to Update() with calls to
+   UpdateLargestPossibleRegion().
+
+   * itk/itkSphereConvolutionFilter.cxx: Fixed problems with requested 
+   region being larger than largest possible region by replacing calls to
+   Update() with calls to UpdateLargestPossibleRegion().
+
 2009-09-30  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniPSFImageSource.cxx: Fixed unit conversion error for the

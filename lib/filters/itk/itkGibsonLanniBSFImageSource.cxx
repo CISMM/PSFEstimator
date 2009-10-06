@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/17 20:30:15 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2009/10/06 23:18:24 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -241,30 +241,47 @@ void
 GibsonLanniBSFImageSource<TOutputImage>
 ::GenerateData() {
 
-  // Update the PSF source. Let's super sample it by 2 times in x and  y
-  // and 4 times in z and dilated by at least the sphere radius.
-  unsigned long superRes[3];
-  superRes[0] = 2;
-  superRes[1] = 2;
-  superRes[2] = 4;
-
-  // Set the PSF size parameters and update.
-  unsigned long psfSize[3];
+  // Set the PSF sampling spacing and size parameters, and update.
   float psfSpacing[3], psfOrigin[3];
+
+  // Determine Nyquist sampling (taken from Heintzmann, R. and Sheppard, C. 
+  // (2007). The sampling limit in fluorescence microscopy. Micron,
+  // 38(2):145–149. Actually, sample at twice this rate.
+  float NA     = GetNumericalAperture();
+  float lambda = GetEmissionWavelength();
+  float n      = GetDesignImmersionOilRefractiveIndex();
+  double alpha = asin(NA/n);
+  psfSpacing[0] = psfSpacing[1] = 0.5*lambda / (4.0 * NA);
+  psfSpacing[2] = 0.5*(2.0 * psfSpacing[0] * sin(alpha)) / (1.0 - cos(alpha));
+
+  // Determine necessary spatial extent of PSF table.
+  unsigned long psfSize[3];
   for (int i = 0; i < 3; i++) {
-    psfSize[i]    = GetSize()[i] * superRes[i];
-    psfSpacing[i] = GetSpacing()[i] / static_cast<float>(superRes[i]);
-    psfOrigin[i]  = -0.5*static_cast<float>((psfSize[i]-1))*psfSpacing[i];
+    // First calculate extent of BSF in this dimension.
+    float minExtent = GetOrigin()[i];
+    float maxExtent = static_cast<float>(GetSize()[i]-1)*GetSpacing()[i] +
+      GetOrigin()[i];
+
+    // Now modify calculated PSF dimension to account for bead shift and radius
+    minExtent += -GetBeadCenter()[i] - m_BeadRadius;
+    maxExtent += -GetBeadCenter()[i] + m_BeadRadius;
+
+    // Determine logical extent of the PSF table for the min and max extents.
+    long iDimMin = static_cast<long>(floor(minExtent / psfSpacing[i]));
+    psfOrigin[i] = static_cast<float>(iDimMin)*psfSpacing[i];
+    long iDimMax = static_cast<long>(ceil(maxExtent / psfSpacing[i]));
+
+    // Determine the logical extent of the PSF table in this dimension.
+    psfSize[i] = iDimMax - iDimMin + 1;
   }
+
   m_PSFSource->SetSize(psfSize);
   m_PSFSource->SetSpacing(psfSpacing);
   m_PSFSource->SetOrigin(psfOrigin);
-
-  //m_PSFSource->SetOrigin(this->GetOrigin());
-  m_PSFSource->Update();
+  m_PSFSource->UpdateLargestPossibleRegion();
 
   m_Convolver->GraftOutput(this->GetOutput());
-  m_Convolver->Update();
+  m_Convolver->UpdateLargestPossibleRegion();
   this->GraftOutput(m_Convolver->GetOutput());
 
 }

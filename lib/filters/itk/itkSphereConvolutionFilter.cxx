@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/16 17:41:29 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2009/10/06 23:18:24 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -135,7 +135,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData() {
   // Compute the scan of the convolution kernel.
   m_ScanImageFilter->SetInput(this->GetInput());
-  m_ScanImageFilter->Update();
+  m_ScanImageFilter->UpdateLargestPossibleRegion();
 
   // Set the inputs for the interpolators
   m_KernelInterpolator->SetInputImage(this->GetInput());
