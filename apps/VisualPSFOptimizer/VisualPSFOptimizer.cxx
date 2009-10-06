@@ -728,7 +728,11 @@ VisualPSFOptimizer
   m_DataModel->SetBSFImageOrigin(origin);
 
   // Now update
-  m_DataModel->UpdateGibsonLanniPSFImage();
+  if (calculatedPSFRadioButton->isChecked()) {
+    m_DataModel->UpdateGibsonLanniPSFImage();
+  } else if (calculatedBSFRadioButton->isChecked()) {
+    m_DataModel->UpdateGibsonLanniBSFImage();
+  }
   
   SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
   SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());

@@ -1,3 +1,9 @@
+2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: When handling Apply button clicks, now updates 
+   only the PSF if the PSF is set to be displayed or the BSF if it is set
+   to be displayed.
+
 2009-09-22  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: Fixed off-by-one error when setting estimated
