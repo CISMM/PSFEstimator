@@ -161,6 +161,7 @@ public:
   void GetBSFPointCenter(double center[3]);
 
   void UpdateGibsonLanniPSFImage();
+  void UpdateGibsonLanniBSFImage();
 
   void SetBeadRadius(double radius);
   double GetBeadRadius();

@@ -768,10 +768,14 @@ DataModel
 ::UpdateGibsonLanniPSFImage() {
   m_GibsonLanniPSFSource->Update();
   m_PSFImageMinMaxFilter->Compute();
+}
 
-  double min = GetPSFImageDataMinimum();
-  double max = GetPSFImageDataMaximum();
-  std::cout << "Min: " << min << ", " << max << std::endl;
+
+void
+DataModel
+::UpdateGibsonLanniBSFImage() {
+  m_GibsonLanniBSFSource->Update();
+  m_BSFImageMinMaxFilter->Compute();
 }
 
 

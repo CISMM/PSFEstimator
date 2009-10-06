@@ -1,3 +1,7 @@
+2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h: Added method UpdateGibsonLanniBSFImage().
+
 2009-09-30  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.cxx: Added call to turn on mean subtraction in the normalized
