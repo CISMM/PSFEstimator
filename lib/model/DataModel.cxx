@@ -56,6 +56,74 @@ DataModel
 
 void
 DataModel
+::CreateImageFile(int xSize, int ySize, int zSize,
+                  float xSpacing, float ySpacing, float zSpacing) {
+
+  DummyImageSourcePointer dummy = DummyImageSourceType::New();
+
+  DummyImageSourceType::SizeType dummySize;
+  dummySize[0] = xSize;
+  dummySize[1] = ySize;
+  dummySize[2] = zSize;
+  dummy->SetSize(dummySize);
+
+  DummyImageSourceType::SpacingType dummySpacing;
+  dummySpacing[0] = xSpacing;
+  dummySpacing[1] = ySpacing;
+  dummySpacing[2] = zSpacing;
+  dummy->SetSpacing(dummySpacing);
+  
+  dummy->SetScale(0.0);
+  dummy->Update();
+  SetMeasuredImageData(dummy->GetOutput());
+  
+  // Connect this image data to the various pipelines.
+  m_MeasuredImageMinMaxFilter->SetImage(m_MeasuredImageData);
+  Float3DImageType::RegionType region = 
+    m_MeasuredImageData->GetLargestPossibleRegion();
+  m_MeasuredImageMinMaxFilter->SetRegion(region);
+  m_MeasuredImageMinMaxFilter->Compute();
+  
+  m_MeasuredImageITKToVTKFilter->Modified();
+  m_MeasuredImageITKToVTKFilter->Update();
+
+  // Set up PSF settings to match loaded image settings
+  double spacing[3];
+  GetMeasuredImageVoxelSpacing(spacing);
+  SetPSFImageVoxelSpacing(spacing);
+  SetBSFImageVoxelSpacing(spacing);
+
+  int size[3];
+  GetMeasuredImageDimensions(size);
+  SetPSFImageDimensions(size);
+  SetBSFImageDimensions(size);
+  
+  float origin[3];
+  for (int i = 0; i < 3; i++)
+    origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
+  m_GibsonLanniPSFSource->SetOrigin(origin);
+  m_GibsonLanniBSFSource->SetOrigin(origin);
+  m_MeasuredImageData->SetOrigin(origin);
+
+  m_PSFImageMinMaxFilter = MinMaxType::New();
+  m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
+  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());  
+
+  m_BSFImageMinMaxFilter = MinMaxType::New();
+  m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
+  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());  
+
+  // Set up cost function
+  m_CostFunction->SetFixedImage(m_MeasuredImageData);
+  m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
+
+  // Set up optimizer, but don't connect it to the cost function just yet.
+  m_Optimizer = OptimizerType::New();  
+}
+
+
+void
+DataModel
 ::LoadImageFile(std::string fileName) {
   m_ImageFileName = fileName;
   ScalarFileReaderType::Pointer reader = ScalarFileReaderType::New();

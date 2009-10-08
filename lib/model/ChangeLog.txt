@@ -1,3 +1,11 @@
+2009-10-07  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added method CreateImageFile() to support creation of 
+   an image file of arbitrary size and voxel spacing. Basically, this creates
+   a dummy image in place of the measured image loaded from a file. This is
+   a waste of memory, but it is the quickest way to support creation of 
+   arbitrary PSF images.
+
 2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h: Added method UpdateGibsonLanniBSFImage().

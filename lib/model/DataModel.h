@@ -5,6 +5,7 @@
 
 #include "Configuration.h"
 
+#include <itkGridImageSource.h>
 #include <itkGibsonLanniBSFImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
 #include <itkScanImageFilter.h>
@@ -37,6 +38,10 @@ public:
   typedef Float3DImageType::PointType
     Float3DPointType;
 
+  typedef itk::GridImageSource<Float3DImageType>
+    DummyImageSourceType;
+  typedef DummyImageSourceType::Pointer
+    DummyImageSourcePointer;
   typedef itk::GibsonLanniPSFImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
@@ -77,6 +82,8 @@ public:
   DataModel();
   virtual ~DataModel();
 
+  void CreateImageFile(int xSize, int ySize, int zSize,
+                       float xSpacing, float ySpacing, float zSpacing);
   void LoadImageFile(std::string fileName);
   void SavePSFImageFile(std::string fileName);
   void SaveBSFImageFile(std::string fileName);
