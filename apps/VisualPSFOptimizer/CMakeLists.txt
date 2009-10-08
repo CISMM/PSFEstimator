@@ -26,6 +26,7 @@ INCLUDE_DIRECTORIES(
 
 SET(UIS
   VisualPSFOptimizer.ui
+  NewImageDialog.ui
 )
 SET (ApplicationHeaders
   VisualPSFOptimizer.h

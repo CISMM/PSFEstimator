@@ -1,3 +1,15 @@
+2009-10-07  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Added NewImageDialog.ui interface file.
+
+   * NewImageDialog.ui: Dialog box to specify size of new image.
+
+   * VisualPSFOptimizer.h,.cxx: Added new image dialog and method to
+   create a new PSF image file. Hooked up the dialog to a "New" file menu
+   item. Factored out some common code into new method SetupRenderer().
+
+   * VisualPSFOptimizer.ui: Added "New Image" item to file menu.
+
 2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: When handling Apply button clicks, now updates 

@@ -23,6 +23,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 
+#define CLAMP(value, min, max) (value < min ? min : (value > max ? max : value))
 
 // Constructor
 VisualPSFOptimizer
@@ -53,7 +54,9 @@ VisualPSFOptimizer
   // Restore inter-session GUI settings.
   readProgramSettings();
   
-  // Set up error dialog box.
+  // Set up dialog boxes.
+  m_NewFileDialogUI.setupUi(&m_NewFileDialog);
+
   m_ErrorDialog.setModal(true);
   
   // Create and populate image information table model.
@@ -219,6 +222,29 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
+::on_actionNewImage_triggered() {
+  // Create dialog box and show it.
+  if (m_NewFileDialog.exec() == QDialog::Accepted) {
+
+    // Read out settings from the interface and create a new image.
+    int xSize = m_NewFileDialogUI.xSizeEdit->text().toInt();
+    int ySize = m_NewFileDialogUI.ySizeEdit->text().toInt();
+    int zSize = m_NewFileDialogUI.zSizeEdit->text().toInt();
+    float xSpacing = m_NewFileDialogUI.xSpacingEdit->text().toFloat();
+    float ySpacing = m_NewFileDialogUI.ySpacingEdit->text().toFloat();
+    float zSpacing = m_NewFileDialogUI.zSpacingEdit->text().toFloat();
+    CreateFile(xSize, ySize, zSize, xSpacing, ySpacing, zSpacing);
+
+    // Disable the measured image radio button
+    calculatedPSFRadioButton->click();
+    measuredPSFRadioButton->setEnabled(false);
+  }
+
+}
+
+
+void
+VisualPSFOptimizer
 ::on_actionOpenImage_triggered() {
 
   // Locate file.
@@ -236,6 +262,28 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
+::CreateFile(int xSize, int ySize, int zSize,
+             float xSpacing, float ySpacing, float zSpacing) {
+  // Create new image in data model
+  m_DataModel->CreateImageFile(xSize, ySize, zSize,
+                               xSpacing, ySpacing, zSpacing);
+
+  // Set status bar.
+  QString imageInfo("Created new image.");
+  statusbar->showMessage(imageInfo);
+
+  SetupRenderer();
+
+  measuredPSFRadioButton->setEnabled(false);
+  calculatedPSFRadioButton->setEnabled(true);
+  calculatedBSFRadioButton->setEnabled(true);
+
+  calculatedPSFRadioButton->click();
+}
+
+
+void
+VisualPSFOptimizer
 ::OpenFile(std::string fileName) {
   std::cout << "Loading file '" << fileName << "'" << std::endl;
   m_DataModel->LoadImageFile(fileName);
@@ -245,17 +293,29 @@ VisualPSFOptimizer
   imageInfo.append(fileName.c_str()); imageInfo.append("'.");
   statusbar->showMessage(imageInfo);
 
-  // Set up m_Visualization pipeline.
-  m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
-  m_Visualization->SetXPlane(0);
-  m_Visualization->SetYPlane(0);
-  m_Visualization->SetZPlane(0);
-
-  SetDisplayedImageToMeasuredPSF();
+  SetupRenderer();
 
   measuredPSFRadioButton->setEnabled(true);
   calculatedPSFRadioButton->setEnabled(true);
   calculatedBSFRadioButton->setEnabled(true);
+
+  measuredPSFRadioButton->click();
+}
+
+
+void
+VisualPSFOptimizer
+::SetupRenderer() {
+  // Set up m_Visualization pipeline.
+  m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
+
+  // Should clamp this to the valid range for the newly-opened file.
+  int dims[3];
+  m_DataModel->GetMeasuredImageDimensions(dims);
+
+  m_Visualization->SetXPlane(CLAMP(xPlaneEdit->text().toInt()-1,0,dims[0]-1));
+  m_Visualization->SetYPlane(CLAMP(yPlaneEdit->text().toInt()-1,0,dims[1]-1));
+  m_Visualization->SetZPlane(CLAMP(zPlaneEdit->text().toInt()-1,0,dims[2]-1));
 
   // Refresh the UI
   RefreshUI();

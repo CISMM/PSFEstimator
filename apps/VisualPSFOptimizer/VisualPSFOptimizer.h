@@ -1,11 +1,13 @@
 #ifndef _QTVTKITK_GENERIC_APPLICATION_H_
 #define _QTVTKITK_GENERIC_APPLICATION_H_
 
+#include <qdialog.h>
 #include <qerrormessage.h>
 #include <qmainwindow.h>
 #include <qstandarditemmodel.h>
 
 #include "ui_VisualPSFOptimizer.h"
+#include "ui_NewImageDialog.h"
 
 // Forward class declarations
 class DataModel;
@@ -26,6 +28,7 @@ public slots:
   // Use Qt's auto-connect magic to tie GUI widgets to slots.
   // Names of the methods must follow the naming convention
   // on_<widget name>_<signal name>(<signal parameters>).
+  virtual void on_actionNewImage_triggered();
   virtual void on_actionOpenImage_triggered();
   virtual void on_actionSavePSFImage_triggered();
   virtual void on_actionSaveBSFImage_triggered();
@@ -94,7 +97,10 @@ protected:
   
   DisplayImageType m_DisplayedImage;
 
+  void CreateFile(int xSize, int ySize, int zSize,
+                  float xSpacing, float ySpacing, float zSpacing);
   void OpenFile(std::string fileName);
+  void SetupRenderer();
   
   void SetDisplayedImageToMeasuredPSF();
   void SetDisplayedImageToCalculatedPSF();
@@ -114,7 +120,10 @@ protected:
 protected slots:
 
 private:
-  vtkRenderer* m_Renderer;
+  vtkRenderer*  m_Renderer;
+
+  QDialog       m_NewFileDialog;
+  Ui::Dialog    m_NewFileDialogUI;
   
   QErrorMessage m_ErrorDialog;
   

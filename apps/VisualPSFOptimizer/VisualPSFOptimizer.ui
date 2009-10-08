@@ -47,7 +47,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QVTKWidget" name="qvtkWidget">
+         <widget class="QVTKWidget" name="qvtkWidget" native="true">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -72,13 +72,14 @@
      <x>0</x>
      <y>0</y>
      <width>1001</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionNewImage"/>
     <addaction name="actionOpenImage"/>
     <addaction name="separator"/>
     <addaction name="actionSavePSFImage"/>
@@ -148,8 +149,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>303</width>
-          <height>586</height>
+          <width>302</width>
+          <height>652</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -951,6 +952,14 @@
   <action name="actionSaveBSFImage">
    <property name="text">
     <string>Save BSF Image...</string>
+   </property>
+  </action>
+  <action name="actionNewImage">
+   <property name="text">
+    <string>&amp;New Image...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>
