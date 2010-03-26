@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/09/14 13:57:30 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2010/03/26 17:29:09 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -96,6 +96,18 @@ public:
 
   /** Get the point source center (in nanometers). */
   itkGetVectorMacro(PointCenter,float,TOutputImage::ImageDimension);
+
+  /** Specify the X shear. */
+  itkSetMacro(ShearX,float);
+
+  /** Get the X shear. */
+  itkGetConstMacro(ShearX,float);
+
+  /** Specify the Y shear. */
+  itkSetMacro(ShearY,float);
+
+  /** Get the Y shear. */
+  itkGetConstMacro(ShearY,float);
 
   /** Specify the CCD border width (between the outer edge of the 
       sensing portion of the CCD and the outer edge of the 
@@ -242,6 +254,8 @@ private:
   float         *m_Spacing;      //spacing
   float         *m_Origin;       //origin
   float         *m_PointCenter;  // the center of the point source
+  float         m_ShearX;        // Shear in the x-direction with respect to z
+  float         m_ShearY;        // Shear in the y-direction with respect to z
 
   mutable float m_CCDBorderWidth[2]; // size of border around CCD (x,y)
 

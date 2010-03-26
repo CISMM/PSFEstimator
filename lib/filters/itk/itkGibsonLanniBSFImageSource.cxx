@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/10/06 23:18:24 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2010/03/26 17:29:09 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -97,6 +97,9 @@ GibsonLanniBSFImageSource<TOutputImage>
   center[2] = floatParams[index++];
   SetBeadCenter(center);
 
+  SetShearX(floatParams[index++]);
+  SetShearY(floatParams[index++]);
+
   SetEmissionWavelength(floatParams[index++]);
   SetNumericalAperture(floatParams[index++]);
   SetMagnification(floatParams[index++]);
@@ -139,6 +142,10 @@ GibsonLanniBSFImageSource<TOutputImage>
   floatParams[index++] = beadCenter[1];
   floatParams[index++] = beadCenter[2];
 
+  // Shear goes here
+  floatParams[index++] = GetShearX();
+  floatParams[index++] = GetShearY();
+
   floatParams[index++] = GetEmissionWavelength();
   floatParams[index++] = GetNumericalAperture();
   floatParams[index++] = GetMagnification();
@@ -170,7 +177,7 @@ template <class TOutputImage>
 unsigned int
 GibsonLanniBSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const {
-  return 24;
+  return 26;
 }
 
 
@@ -283,7 +290,6 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_Convolver->GraftOutput(this->GetOutput());
   m_Convolver->UpdateLargestPossibleRegion();
   this->GraftOutput(m_Convolver->GetOutput());
-
 }
 
 

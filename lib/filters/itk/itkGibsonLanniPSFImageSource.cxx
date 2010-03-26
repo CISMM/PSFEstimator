@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2009/09/30 21:03:06 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2010/03/26 17:29:09 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,6 +56,8 @@ GibsonLanniPSFImageSource<TOutputImage>
     m_PointCenter[i] = 0.0f;
     }
   m_CCDBorderWidth[0] = m_CCDBorderWidth[1] = 0.0f;
+  m_ShearX = 0.0;
+  m_ShearY = 0.0;
 
   // Set default PSF model parameters.
   m_EmissionWavelength   = 550.0f; // in nanometers
@@ -111,6 +113,9 @@ GibsonLanniPSFImageSource<TOutputImage>
   center[2] = floatParams[index++];
   SetPointCenter(center);
 
+  SetShearX(floatParams[index++]);
+  SetShearY(floatParams[index++]);
+
   float ccdBorderWidth[2];
   ccdBorderWidth[0] = floatParams[index++];
   ccdBorderWidth[1] = floatParams[index++];
@@ -151,6 +156,9 @@ GibsonLanniPSFImageSource<TOutputImage>
   floatParams[index++] = pointCenter[1];
   floatParams[index++] = pointCenter[2];
 
+  floatParams[index++] = GetShearX();
+  floatParams[index++] = GetShearY();
+
   float* ccdBorderWidth = GetCCDBorderWidth();
   floatParams[index++] = ccdBorderWidth[0];
   floatParams[index++] = ccdBorderWidth[1];
@@ -186,7 +194,7 @@ template <class TOutputImage>
 unsigned int
 GibsonLanniPSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const {
-  return 23;
+  return 25;
 }
 
 
@@ -269,7 +277,10 @@ GibsonLanniPSFImageSource<TOutputImage>
     os << m_PointCenter[i] << ", ";
     }
   os << m_PointCenter[i] << "]" << std::endl;
-  
+
+  os << "ShearX: " << m_ShearX << std::endl;
+  os << "ShearY: " << m_ShearY << std::endl;  
+
   os << indent << "CCDBorderWidth: [" << m_CCDBorderWidth[0]
      << ", " << m_CCDBorderWidth[1] << std::endl;
 
@@ -368,6 +379,11 @@ GibsonLanniPSFImageSource<TOutputImage>
     typename TOutputImage::PointType point;
     image->TransformIndexToPhysicalPoint(index, point);
 
+    // Apply x and y shear here
+    point[0] = point[0] - m_ShearX*(point[2] - m_PointCenter[2]);
+    point[1] = point[1] - m_ShearY*(point[2] - m_PointCenter[2]);
+
+    // Shift the center of the point
     for (int i = 0; i < 3; i++)
       point[i] -= m_PointCenter[i];
 

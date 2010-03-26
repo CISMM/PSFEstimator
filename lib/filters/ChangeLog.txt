@@ -1,3 +1,11 @@
+2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniBSFImageSource.h,.cxx: Added ShearX and ShearY parameters.
+   
+   * itk/itkGibsonLanniPSFImageSource.h,.cxx: Same.
+   
+   * itk/itkSphereConvolutionFilter.h,.cxx: Same.
+
 2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniBSFImageSource.cxx: Added calculation of adequate
