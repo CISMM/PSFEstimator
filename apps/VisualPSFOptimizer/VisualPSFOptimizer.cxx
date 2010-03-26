@@ -29,7 +29,9 @@
 VisualPSFOptimizer
 ::VisualPSFOptimizer(QWidget* p)
  : QMainWindow(p) {
-  setupUi(this);
+  
+  gui = new Ui_MainWindow();
+  gui->setupUi(this);
 
   // Mark as initially clean
   m_Dirty = false;
@@ -37,7 +39,7 @@ VisualPSFOptimizer
   
   // QT/VTK interaction
   m_Renderer = vtkRenderer::New();
-  qvtkWidget->GetRenderWindow()->AddRenderer(m_Renderer);
+  gui->qvtkWidget->GetRenderWindow()->AddRenderer(m_Renderer);
   
   // Instantiate data model.
   m_DataModel = new DataModel();
@@ -82,12 +84,12 @@ VisualPSFOptimizer
 
     m_ImageInformationTableModel->setItem(i, RIGHT_COLUMN, item);
   }
-  imageDataView->setModel(m_ImageInformationTableModel);
+  gui->imageDataView->setModel(m_ImageInformationTableModel);
   
   connect(m_ImageInformationTableModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handle_imageInformationTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
   
   int LEFT_COLUMN_WIDTH = 160;
-  imageDataView->setColumnWidth(LEFT_COLUMN, LEFT_COLUMN_WIDTH);
+  gui->imageDataView->setColumnWidth(LEFT_COLUMN, LEFT_COLUMN_WIDTH);
 
   // Create and popuplate Gibson-Lanni PSF settings table model.
   int column = 0;
@@ -101,8 +103,8 @@ VisualPSFOptimizer
   m_GibsonLanniPSFSettingsTableModel->
     setHeaderData(column++, Qt::Horizontal, tr("Optimize?"));
 
-  QStandardItem* psfPropertyItems[24];
-  QStandardItem* unitItems[24];
+  QStandardItem* psfPropertyItems[26];
+  QStandardItem* unitItems[26];
 
   int item = 0;
   psfPropertyItems[item] = new QStandardItem(tr("X pixel size"));
@@ -131,6 +133,12 @@ VisualPSFOptimizer
 
   psfPropertyItems[item] = new QStandardItem(tr("Bead center Z"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("Shear X"));
+  unitItems[item++] = new QStandardItem(tr("nanometers in X vs nanometers in Z"));
+
+  psfPropertyItems[item] = new QStandardItem(tr("Shear Y"));
+  unitItems[item++] = new QStandardItem(tr("nanometers in Y vs nanometers in Z"));
 
   psfPropertyItems[item] = new QStandardItem(tr("Emission Wavelength"));
   unitItems[item++] = new QStandardItem(tr("nanometers"));
@@ -198,8 +206,8 @@ VisualPSFOptimizer
     m_GibsonLanniPSFSettingsTableModel->setItem(i, 3, item);
   }
 
-  psfSettingsTableView->setModel(m_GibsonLanniPSFSettingsTableModel);
-  psfSettingsTableView->setColumnWidth(0, 300);
+  gui->psfSettingsTableView->setModel(m_GibsonLanniPSFSettingsTableModel);
+  gui->psfSettingsTableView->setColumnWidth(0, 300);
 
   // Refresh the UI
   RefreshUI();
@@ -208,7 +216,7 @@ VisualPSFOptimizer
   m_Renderer->ResetCamera();
   
   // Render
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -291,7 +299,7 @@ VisualPSFOptimizer
   // Set status bar with info about the file.
   QString imageInfo("Loaded image '");
   imageInfo.append(fileName.c_str()); imageInfo.append("'.");
-  statusbar->showMessage(imageInfo);
+  gui->statusbar->showMessage(imageInfo);
 
   SetupRenderer();
 
@@ -317,6 +325,10 @@ VisualPSFOptimizer
   m_Visualization->SetYPlane(CLAMP(yPlaneEdit->text().toInt()-1,0,dims[1]-1));
   m_Visualization->SetZPlane(CLAMP(zPlaneEdit->text().toInt()-1,0,dims[2]-1));
 
+  gui->measuredPSFRadioButton->setEnabled(true);
+  gui->calculatedPSFRadioButton->setEnabled(true);
+  gui->calculatedBSFRadioButton->setEnabled(true);
+
   // Refresh the UI
   RefreshUI();
 
@@ -324,7 +336,7 @@ VisualPSFOptimizer
   m_Renderer->ResetCamera();
   
   // Render
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -429,7 +441,7 @@ VisualPSFOptimizer
   QChar copyright(169);
   QString title = QString("About VisualPSFOptimizer ").append(version);
   QString text  = QString("VisualPSFOptimizer ").append(version).append("\n");
-  text.append(copyright).append(" 2009, UNC CISMM\n\n");
+  text.append(copyright).append(" 2010, UNC CISMM\n\n");
   text.append("Developed by:\n");
   text.append("Cory Quammen");
   QMessageBox::about(this, title, text);
@@ -462,8 +474,8 @@ VisualPSFOptimizer
 ::SetDisplayedImageToMeasuredPSF() {
   m_DisplayedImage = MEASURED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
+  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -474,8 +486,8 @@ VisualPSFOptimizer
 ::SetDisplayedImageToCalculatedPSF() {
   m_DisplayedImage = CALCULATED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
+  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -486,8 +498,8 @@ VisualPSFOptimizer
 ::SetDisplayedImageToCalculatedBSF() {
   m_DisplayedImage = CALCULATED_BSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
+  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -497,7 +509,7 @@ void
 VisualPSFOptimizer
 ::on_showXPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowXPlane(show);
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -505,8 +517,8 @@ void
 VisualPSFOptimizer
 ::on_xPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetXPlane(plane-1);
-  xPlaneEdit->setText(QString().sprintf("%d", plane));
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->xPlaneEdit->setText(QString().sprintf("%d", plane));
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -518,9 +530,9 @@ VisualPSFOptimizer
   m_DataModel->GetMeasuredImageDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[0]) {
-    xPlaneSlider->setValue(value);
+    gui->xPlaneSlider->setValue(value);
     m_Visualization->SetXPlane(plane);
-    qvtkWidget->GetRenderWindow()->Render();
+    gui->qvtkWidget->GetRenderWindow()->Render();
   }
 }
 
@@ -529,7 +541,7 @@ void
 VisualPSFOptimizer
 ::on_showYPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowYPlane(show);
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -537,8 +549,8 @@ void
 VisualPSFOptimizer
 ::on_yPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetYPlane(plane-1);
-  yPlaneEdit->setText(QString().sprintf("%d", plane));
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->yPlaneEdit->setText(QString().sprintf("%d", plane));
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -550,9 +562,9 @@ VisualPSFOptimizer
   m_DataModel->GetMeasuredImageDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[1]) {
-    yPlaneSlider->setValue(value);
+    gui->yPlaneSlider->setValue(value);
     m_Visualization->SetYPlane(plane);
-    qvtkWidget->GetRenderWindow()->Render();
+    gui->qvtkWidget->GetRenderWindow()->Render();
   }
 }
 
@@ -561,7 +573,7 @@ void
 VisualPSFOptimizer
 ::on_showZPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowZPlane(show);
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -569,8 +581,8 @@ void
 VisualPSFOptimizer
 ::on_zPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetZPlane(plane-1);
-  zPlaneEdit->setText(QString().sprintf("%d", plane));
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->zPlaneEdit->setText(QString().sprintf("%d", plane));
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -582,9 +594,9 @@ VisualPSFOptimizer
   m_DataModel->GetMeasuredImageDimensions(dims);
   int plane = value-1;
   if (plane >= 0 && plane < dims[2]) {
-    zPlaneSlider->setValue(value);
+    gui->zPlaneSlider->setValue(value);
     m_Visualization->SetZPlane(plane);
-    qvtkWidget->GetRenderWindow()->Render();
+    gui->qvtkWidget->GetRenderWindow()->Render();
   }
 }
 
@@ -593,7 +605,7 @@ void
 VisualPSFOptimizer
 ::on_mapsToBlackSlider_valueChanged(int value) {
   SetMapsToBlackValueFromSliderPosition(value);
-  qvtkWidget->GetRenderWindow()->Render();  
+  gui->qvtkWidget->GetRenderWindow()->Render();  
 }
 
 
@@ -601,7 +613,7 @@ void
 VisualPSFOptimizer
 ::on_mapsToWhiteSlider_valueChanged(int value) {
   SetMapsToWhiteValueFromSliderPosition(value);
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -609,7 +621,7 @@ void
 VisualPSFOptimizer
 ::on_showDataOutlineCheckBox_toggled(bool show) {
   m_Visualization->SetShowOutline(show);
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -617,7 +629,7 @@ void
 VisualPSFOptimizer
 ::on_xPlusButton_clicked() {
   m_Visualization->SetViewToXPlus();
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -625,7 +637,7 @@ void
 VisualPSFOptimizer
 ::on_xMinusButton_clicked() {
   m_Visualization->SetViewToXMinus();
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -633,7 +645,7 @@ void
 VisualPSFOptimizer
 ::on_yPlusButton_clicked() {
   m_Visualization->SetViewToYPlus();
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -641,7 +653,7 @@ void
 VisualPSFOptimizer
 ::on_yMinusButton_clicked() {
   m_Visualization->SetViewToYMinus();
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -649,7 +661,7 @@ void
 VisualPSFOptimizer
 ::on_zPlusButton_clicked() {
   m_Visualization->SetViewToZPlus();
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -657,7 +669,7 @@ void
 VisualPSFOptimizer
 ::on_zMinusButton_clicked() {
   m_Visualization->SetViewToZMinus();
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -703,6 +715,12 @@ VisualPSFOptimizer
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   pointCenter[2] = item->text().toDouble();
   m_DataModel->SetPSFPointCenter(pointCenter);
+
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  m_DataModel->SetShearX(item->text().toFloat());
+
+  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
+  m_DataModel->SetShearY(item->text().toFloat());
 
   item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
   value = item->text().toFloat();
@@ -794,8 +812,8 @@ VisualPSFOptimizer
     m_DataModel->UpdateGibsonLanniBSFImage();
   }
   
-  SetMapsToBlackValueFromSliderPosition(mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(mapsToWhiteSlider->sliderPosition());
+  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
   
@@ -807,7 +825,7 @@ VisualPSFOptimizer
 ::on_estimatePSFCenterButton_clicked() {
   DataModel::Float3DPointType center = m_DataModel->GetMeasuredImageDataMaximumCoordinates();
 
-  char* decimalFormat = "%.3f";
+  char decimalFormat[] = "%.3f";
   int item = 6;
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, center[0]));
@@ -863,26 +881,26 @@ VisualPSFOptimizer
   const char* decimalFormat = "%.3f";
   const char* intFormat = "%d";
 
-  showDataOutlineCheckBox->setChecked(m_Visualization->GetShowOutline());
+  gui->showDataOutlineCheckBox->setChecked(m_Visualization->GetShowOutline());
   
   ///////////////// Image planes stuff /////////////////
   int dim[3];
   m_DataModel->GetMeasuredImageDimensions(dim);
   
-  showXPlaneCheckBox->setChecked(m_Visualization->GetShowXPlane());
-  xPlaneSlider->setMinimum(1);
-  xPlaneSlider->setMaximum(dim[0]);
-  xPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetXPlane()+1));
+  gui->showXPlaneCheckBox->setChecked(m_Visualization->GetShowXPlane());
+  gui->xPlaneSlider->setMinimum(1);
+  gui->xPlaneSlider->setMaximum(dim[0]);
+  gui->xPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetXPlane()+1));
   
-  showYPlaneCheckBox->setChecked(m_Visualization->GetShowYPlane());
-  yPlaneSlider->setMinimum(1);
-  yPlaneSlider->setMaximum(dim[1]);
-  yPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetYPlane()+1));
+  gui->showYPlaneCheckBox->setChecked(m_Visualization->GetShowYPlane());
+  gui->yPlaneSlider->setMinimum(1);
+  gui->yPlaneSlider->setMaximum(dim[1]);
+  gui->yPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetYPlane()+1));
   
-  showZPlaneCheckBox->setChecked(m_Visualization->GetShowZPlane());
-  zPlaneSlider->setMinimum(1);
-  zPlaneSlider->setMaximum(dim[2]);
-  zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
+  gui->showZPlaneCheckBox->setChecked(m_Visualization->GetShowZPlane());
+  gui->zPlaneSlider->setMinimum(1);
+  gui->zPlaneSlider->setMaximum(dim[2]);
+  gui->zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
   
   ///////////////// Image information update /////////////////
   int item = 0;
@@ -936,6 +954,14 @@ VisualPSFOptimizer
   QString zPointCenter = QString().sprintf(decimalFormat, pointCenter[2]);
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(zPointCenter);
 
+  float xShear = m_DataModel->GetShearX();
+  QString xShearStr = QString().sprintf(decimalFormat, xShear);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(xShearStr);
+
+  float yShear = m_DataModel->GetShearY();
+  QString yShearStr = QString().sprintf(decimalFormat, yShear);
+  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(yShearStr);
+
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
     setText(QString().sprintf(decimalFormat, m_DataModel->GetGLEmissionWavelength()));
   m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
@@ -978,7 +1004,7 @@ VisualPSFOptimizer
     m_Visualization->AddToRenderer();
   }
 
-  qvtkWidget->GetRenderWindow()->Render();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -1016,7 +1042,7 @@ VisualPSFOptimizer
   double dataMin = GetDisplayedImageDataMinimum();
   double dataMax = GetDisplayedImageDataMaximum();
   double dd = dataMax - dataMin;
-  double sliderMax = static_cast<double>(mapsToBlackSlider->maximum());
+  double sliderMax = static_cast<double>(gui->mapsToBlackSlider->maximum());
   double dvalue = static_cast<double>(position);
   double mapped = (dvalue/sliderMax) * dd + dataMin;
   m_Visualization->SetImagePlanesBlackValue(mapped);
@@ -1029,7 +1055,7 @@ VisualPSFOptimizer
   double dataMin = GetDisplayedImageDataMinimum();
   double dataMax = GetDisplayedImageDataMaximum();
   double dd = dataMax - dataMin;
-  double sliderMax = static_cast<double>(mapsToWhiteSlider->maximum());
+  double sliderMax = static_cast<double>(gui->mapsToWhiteSlider->maximum());
   double dvalue = static_cast<double>(position);
   double mapped = (dvalue/sliderMax) * dd + dataMin;
   m_Visualization->SetImagePlanesWhiteValue(mapped);

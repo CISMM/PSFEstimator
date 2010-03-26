@@ -1,3 +1,9 @@
+2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.cxx: GUI class is now a member variable instead of
+   parent class. This should speed up compile times whenever this class is
+   changed.
+
 2009-10-07  Cory Quammen <cquammen@cs.unc.edu>
 
    * CMakeLists.txt: Added NewImageDialog.ui interface file.

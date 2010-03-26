@@ -14,7 +14,7 @@ class DataModel;
 class Visualization;
 class vtkRenderer;
 
-class VisualPSFOptimizer : public QMainWindow, private Ui_MainWindow {
+class VisualPSFOptimizer : public QMainWindow {
   Q_OBJECT
 
 public:
@@ -78,6 +78,8 @@ public slots:
 
 
 protected:
+  Ui_MainWindow* gui;
+
   /** Dirty bit on the session. */
   bool m_Dirty;
 
