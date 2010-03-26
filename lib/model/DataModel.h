@@ -3,13 +3,11 @@
 
 #include <string>
 
-#include "Configuration.h"
+#include <Configuration.h>
 
 #include <itkGridImageSource.h>
 #include <itkGibsonLanniBSFImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
-#include <itkScanImageFilter.h>
-#include <itkSumProjectionImageFilter.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
@@ -21,7 +19,8 @@
 
 #include <vtkAlgorithmOutput.h>
 
-#include "ITKImageToVTKImage.h"
+#include <ITKImageToVTKImage.h>
+
 
 // This is the data model for the PSF Optimizer library.
 class DataModel {
@@ -166,6 +165,23 @@ public:
   void GetPSFPointCenter(double center[3]);
   void SetBSFPointCenter(double center[3]);
   void GetBSFPointCenter(double center[3]);
+
+  // Sets the X and Y shear
+  void SetShearX(float shear) {
+    m_GibsonLanniPSFSource->SetShearX(shear);
+    m_GibsonLanniBSFSource->SetShearX(shear);
+  }
+  float GetShearX() {
+    return m_GibsonLanniPSFSource->GetShearX();
+  }
+
+  void SetShearY(float shear) {
+    m_GibsonLanniPSFSource->SetShearY(shear);
+    m_GibsonLanniBSFSource->SetShearY(shear);
+  }
+  float GetShearY() {
+    return m_GibsonLanniPSFSource->GetShearY();
+  }
 
   void UpdateGibsonLanniPSFImage();
   void UpdateGibsonLanniBSFImage();

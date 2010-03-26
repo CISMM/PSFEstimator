@@ -7,10 +7,11 @@
 
 #include <cstdlib>
 
-#include "DataModel.h"
-
 #include <itkMultiThreader.h>
 #include <itkPoint.h>
+#include <itkImageFileWriter.h>
+
+#include <DataModel.h>
 
 
 DataModel
@@ -32,6 +33,7 @@ DataModel
   m_ImageToImageCostFunction->SubtractMeanOn();
   m_CostFunction = ParameterizedCostFunctionType::New();
   m_CostFunction->SetImageToImageMetric(m_ImageToImageCostFunction);
+  m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
   // ITK will detect the number of cores on the system and set it by default.
   // Here we can override that setting if the proper environment variable is
@@ -169,7 +171,6 @@ DataModel
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
-  m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
   // Set up optimizer, but don't connect it to the cost function just yet.
   m_Optimizer = OptimizerType::New();
@@ -506,9 +507,8 @@ DataModel
     return 0.0;
   }
 
-  Float3DImageType::RegionType region = m_GibsonLanniPSFSource->GetOutput()
-    ->GetLargestPossibleRegion();
-  m_PSFImageMinMaxFilter->SetRegion(region);
+  m_GibsonLanniPSFSource->UpdateLargestPossibleRegion();
+
   m_PSFImageMinMaxFilter->Compute();
   return m_PSFImageMinMaxFilter->GetMinimum();
 }
@@ -521,9 +521,8 @@ DataModel
     return 0.0;
   }
 
-  Float3DImageType::RegionType region = m_GibsonLanniPSFSource->GetOutput()
-    ->GetLargestPossibleRegion();
-  m_PSFImageMinMaxFilter->SetRegion(region);
+  m_GibsonLanniPSFSource->UpdateLargestPossibleRegion();
+
   m_PSFImageMinMaxFilter->Compute();
   return m_PSFImageMinMaxFilter->GetMaximum();  
 }
@@ -536,9 +535,8 @@ DataModel
     return 0.0;
   }
 
-  Float3DImageType::RegionType region = m_GibsonLanniBSFSource->GetOutput()
-    ->GetLargestPossibleRegion();
-  m_BSFImageMinMaxFilter->SetRegion(region);
+  m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
+
   m_BSFImageMinMaxFilter->Compute();
   return m_BSFImageMinMaxFilter->GetMinimum();
 }
@@ -551,9 +549,8 @@ DataModel
     return 0.0;
   }
 
-  Float3DImageType::RegionType region = m_GibsonLanniBSFSource->GetOutput()
-    ->GetLargestPossibleRegion();
-  m_BSFImageMinMaxFilter->SetRegion(region);
+  m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
+
   m_BSFImageMinMaxFilter->Compute();
   return m_BSFImageMinMaxFilter->GetMaximum();  
 }
@@ -834,15 +831,14 @@ DataModel
 void
 DataModel
 ::UpdateGibsonLanniPSFImage() {
-  m_GibsonLanniPSFSource->Update();
+  m_GibsonLanniPSFSource->UpdateLargestPossibleRegion();
   m_PSFImageMinMaxFilter->Compute();
 }
-
 
 void
 DataModel
 ::UpdateGibsonLanniBSFImage() {
-  m_GibsonLanniBSFSource->Update();
+  m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
   m_BSFImageMinMaxFilter->Compute();
 }
 

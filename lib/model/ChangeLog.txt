@@ -1,3 +1,11 @@
+2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h: Added shear components.
+   
+   * DataModel.cxx: Now connects the moving image source to the cost function
+   right away to make sure the parameter mask is initialized before any other
+   class asks for it. Streamlined calls for updating the PSF and BSF sources.
+
 2009-10-07  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added method CreateImageFile() to support creation of 
