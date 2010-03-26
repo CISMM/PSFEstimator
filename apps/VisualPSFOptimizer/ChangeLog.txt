@@ -1,5 +1,13 @@
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Now turns GUI widgets on/off where appropriate to
+   avoid letting user do something that will crash the program.
+   
+   * VisualPSFOptimizer.ui: Disabled GUI widgets that should be disabled at
+   program startup.
+
+2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Fixed up some references to GUI member variables
    which used to be inherited from the Ui_MainWindow class.
 

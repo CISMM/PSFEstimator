@@ -242,10 +242,6 @@ VisualPSFOptimizer
     float ySpacing = m_NewFileDialogUI.ySpacingEdit->text().toFloat();
     float zSpacing = m_NewFileDialogUI.zSpacingEdit->text().toFloat();
     CreateFile(xSize, ySize, zSize, xSpacing, ySpacing, zSpacing);
-
-    // Disable the measured image radio button
-    gui->calculatedPSFRadioButton->click();
-    gui->measuredPSFRadioButton->setEnabled(false);
   }
 
 }
@@ -282,9 +278,13 @@ VisualPSFOptimizer
 
   SetupRenderer();
 
+  // Enable/disable appropriate GUI widgets
   gui->measuredPSFRadioButton->setEnabled(false);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
+
+  gui->estimatePSFCenterButton->setEnabled(false);
+  gui->optimizePSFParametersButton->setEnabled(false);
 
   gui->calculatedPSFRadioButton->click();
 }
@@ -293,7 +293,6 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::OpenFile(std::string fileName) {
-  std::cout << "Loading file '" << fileName << "'" << std::endl;
   m_DataModel->LoadImageFile(fileName);
   
   // Set status bar with info about the file.
@@ -306,6 +305,9 @@ VisualPSFOptimizer
   gui->measuredPSFRadioButton->setEnabled(true);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
+
+  gui->estimatePSFCenterButton->setEnabled(true);
+  gui->optimizePSFParametersButton->setEnabled(true);
 
   gui->measuredPSFRadioButton->click();
 }

@@ -72,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>1001</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -149,8 +149,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>652</height>
+          <width>297</width>
+          <height>654</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -767,6 +767,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="estimatePSFCenterButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Estimate PSF Center</string>
           </property>
@@ -774,6 +777,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="optimizePSFParametersButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Optimize PSF Parameters</string>
           </property>
