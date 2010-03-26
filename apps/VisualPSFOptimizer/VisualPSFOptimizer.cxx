@@ -244,8 +244,8 @@ VisualPSFOptimizer
     CreateFile(xSize, ySize, zSize, xSpacing, ySpacing, zSpacing);
 
     // Disable the measured image radio button
-    calculatedPSFRadioButton->click();
-    measuredPSFRadioButton->setEnabled(false);
+    gui->calculatedPSFRadioButton->click();
+    gui->measuredPSFRadioButton->setEnabled(false);
   }
 
 }
@@ -278,15 +278,15 @@ VisualPSFOptimizer
 
   // Set status bar.
   QString imageInfo("Created new image.");
-  statusbar->showMessage(imageInfo);
+  gui->statusbar->showMessage(imageInfo);
 
   SetupRenderer();
 
-  measuredPSFRadioButton->setEnabled(false);
-  calculatedPSFRadioButton->setEnabled(true);
-  calculatedBSFRadioButton->setEnabled(true);
+  gui->measuredPSFRadioButton->setEnabled(false);
+  gui->calculatedPSFRadioButton->setEnabled(true);
+  gui->calculatedBSFRadioButton->setEnabled(true);
 
-  calculatedPSFRadioButton->click();
+  gui->calculatedPSFRadioButton->click();
 }
 
 
@@ -303,11 +303,11 @@ VisualPSFOptimizer
 
   SetupRenderer();
 
-  measuredPSFRadioButton->setEnabled(true);
-  calculatedPSFRadioButton->setEnabled(true);
-  calculatedBSFRadioButton->setEnabled(true);
+  gui->measuredPSFRadioButton->setEnabled(true);
+  gui->calculatedPSFRadioButton->setEnabled(true);
+  gui->calculatedBSFRadioButton->setEnabled(true);
 
-  measuredPSFRadioButton->click();
+  gui->measuredPSFRadioButton->click();
 }
 
 
@@ -321,9 +321,9 @@ VisualPSFOptimizer
   int dims[3];
   m_DataModel->GetMeasuredImageDimensions(dims);
 
-  m_Visualization->SetXPlane(CLAMP(xPlaneEdit->text().toInt()-1,0,dims[0]-1));
-  m_Visualization->SetYPlane(CLAMP(yPlaneEdit->text().toInt()-1,0,dims[1]-1));
-  m_Visualization->SetZPlane(CLAMP(zPlaneEdit->text().toInt()-1,0,dims[2]-1));
+  m_Visualization->SetXPlane(CLAMP(gui->xPlaneEdit->text().toInt()-1,0,dims[0]-1));
+  m_Visualization->SetYPlane(CLAMP(gui->yPlaneEdit->text().toInt()-1,0,dims[1]-1));
+  m_Visualization->SetZPlane(CLAMP(gui->zPlaneEdit->text().toInt()-1,0,dims[2]-1));
 
   gui->measuredPSFRadioButton->setEnabled(true);
   gui->calculatedPSFRadioButton->setEnabled(true);
@@ -806,9 +806,9 @@ VisualPSFOptimizer
   m_DataModel->SetBSFImageOrigin(origin);
 
   // Now update
-  if (calculatedPSFRadioButton->isChecked()) {
+  if (gui->calculatedPSFRadioButton->isChecked()) {
     m_DataModel->UpdateGibsonLanniPSFImage();
-  } else if (calculatedBSFRadioButton->isChecked()) {
+  } else if (gui->calculatedBSFRadioButton->isChecked()) {
     m_DataModel->UpdateGibsonLanniBSFImage();
   }
   

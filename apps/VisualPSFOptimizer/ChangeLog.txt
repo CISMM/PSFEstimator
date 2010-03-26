@@ -1,5 +1,10 @@
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Fixed up some references to GUI member variables
+   which used to be inherited from the Ui_MainWindow class.
+
+2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.h,.cxx: GUI class is now a member variable instead of
    parent class. This should speed up compile times whenever this class is
    changed.
