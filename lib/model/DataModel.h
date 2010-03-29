@@ -119,6 +119,8 @@ public:
 
   void GetMeasuredImageDimensions(int dimensions[3]);
 
+  int GetNumberOfProperties();
+
   void SetMeasuredImageVoxelSpacing(double spacing[3]);
   void SetMeasuredImageVoxelSpacing(int dimension, double spacing);
   void GetMeasuredImageVoxelSpacing(double spacing[3]);

@@ -1,3 +1,7 @@
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added method GetNumberOfProperties().
+
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h: Added shear components.

@@ -420,6 +420,13 @@ DataModel
 }
 
 
+int
+DataModel
+::GetNumberOfProperties() {
+  return m_GibsonLanniBSFSource->GetNumberOfParameters();
+}
+
+
 void
 DataModel
 ::GetMeasuredImageDimensions(int dimensions[3]) {
