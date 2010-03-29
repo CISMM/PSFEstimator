@@ -148,9 +148,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-460</y>
           <width>297</width>
-          <height>654</height>
+          <height>624</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -556,34 +556,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="applyButton">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string>Apply changes to the image filter and visualization.</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Apply</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -756,12 +728,15 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="applyButton2">
+         <widget class="QPushButton" name="applyButton">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="text">
            <string>Apply</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -1071,22 +1046,6 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>applyButton2</sender>
-   <signal>clicked()</signal>
-   <receiver>applyButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>169</x>
-     <y>647</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>162</x>
-     <y>168</y>
     </hint>
    </hints>
   </connection>

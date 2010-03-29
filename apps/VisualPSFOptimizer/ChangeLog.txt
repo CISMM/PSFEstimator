@@ -1,3 +1,19 @@
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Add source files for QPointSpreadFunctionPropertyTableModel.
+   
+   * QPointSpreadFunctionPropertyTableModel.,.cxx: Table model for PSF
+   properties. Using this class cleans up the main application class a bunch.
+   
+   * VisualPSFOptimizer.h,.cxx: Added QPointSpreadFunctionPropertyTableModel
+   and a slot for its dataChanged signal. Changed property table editor so that
+   the current value of the property populates the editor (before, the value
+   would be cleared). Added enabling/disabling certain interface buttons when
+   appropriate to avoid user accidentally crashing the program.
+   
+   * VisualPSFOptimizer.ui: Removed a leftover "Apply" button that no longer
+   fit. 
+
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: Now turns GUI widgets on/off where appropriate to

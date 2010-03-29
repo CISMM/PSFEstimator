@@ -1,20 +1,23 @@
-#include "VisualPSFOptimizer.h"
-#include "Version.h"
+#include <VisualPSFOptimizer.h>
+#include <Version.h>
 
-#include <qmessagebox.h>
+#include <QMessageBox>
 
 #if defined(_WIN32) // Turn off deprecation warnings in Visual Studio
 #pragma warning( disable : 4996 )
 #endif
 
-#include "Configuration.h"
-#include "DataModel.h"
-#include "Visualization.h"
+#include <Configuration.h>
+#include <DataModel.h>
+#include <Visualization.h>
 
-#include <qapplication.h>
-#include <qfiledialog.h>
-#include <qsettings.h>
-#include <qvariant.h>
+#include <QApplication>
+#include <QFileDialog>
+#include <QItemEditorFactory>
+#include <QSettings>
+#include <QStandardItemEditorCreator>
+#include <QVariant>
+
 
 #include <vtkActor.h>
 #include <vtkCamera.h>
@@ -25,6 +28,7 @@
 
 #define CLAMP(value, min, max) (value < min ? min : (value > max ? max : value))
 
+
 // Constructor
 VisualPSFOptimizer
 ::VisualPSFOptimizer(QWidget* p)
@@ -33,6 +37,11 @@ VisualPSFOptimizer
   gui = new Ui_MainWindow();
   gui->setupUi(this);
 
+  // Change the double item editor to QLineEdit
+  QItemEditorFactory* factory = new QItemEditorFactory();
+  factory->registerEditor(QVariant::Double, new QStandardItemEditorCreator<QLineEdit>());
+  QItemEditorFactory::setDefaultFactory(factory);
+  
   // Mark as initially clean
   m_Dirty = false;
   m_DisplayedImage = MEASURED_PSF_IMAGE;
@@ -86,127 +95,21 @@ VisualPSFOptimizer
   }
   gui->imageDataView->setModel(m_ImageInformationTableModel);
   
-  connect(m_ImageInformationTableModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handle_imageInformationTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
-  
+  connect(m_ImageInformationTableModel, 
+          SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), 
+          this, SLOT(handle_imageInformationTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
+
   int LEFT_COLUMN_WIDTH = 160;
   gui->imageDataView->setColumnWidth(LEFT_COLUMN, LEFT_COLUMN_WIDTH);
 
-  // Create and popuplate Gibson-Lanni PSF settings table model.
-  int column = 0;
-  m_GibsonLanniPSFSettingsTableModel = new QStandardItemModel(24, 4, this);
-  m_GibsonLanniPSFSettingsTableModel->
-    setHeaderData(column++, Qt::Horizontal, tr("Property"));
-  m_GibsonLanniPSFSettingsTableModel->
-    setHeaderData(column++, Qt::Horizontal, tr("Value"));
-  m_GibsonLanniPSFSettingsTableModel->
-    setHeaderData(column++, Qt::Horizontal, tr("Units"));
-  m_GibsonLanniPSFSettingsTableModel->
-    setHeaderData(column++, Qt::Horizontal, tr("Optimize?"));
+  m_PSFPropertyTableModel = new QPointSpreadFunctionPropertyTableModel();
+  m_PSFPropertyTableModel->SetDataModel(m_DataModel);
 
-  QStandardItem* psfPropertyItems[26];
-  QStandardItem* unitItems[26];
-
-  int item = 0;
-  psfPropertyItems[item] = new QStandardItem(tr("X pixel size"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Y pixel size"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Z slice spacing"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("CCD border X"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("CCD border Y"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Bead radius"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Bead center X"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Bead center Y"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Bead center Z"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Shear X"));
-  unitItems[item++] = new QStandardItem(tr("nanometers in X vs nanometers in Z"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Shear Y"));
-  unitItems[item++] = new QStandardItem(tr("nanometers in Y vs nanometers in Z"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Emission Wavelength"));
-  unitItems[item++] = new QStandardItem(tr("nanometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Numerical Aperture"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Magnification"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Design Cover Slip Refractive Index"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Cover Slip Refractive Index"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Design Cover Slip Thickness"));
-  unitItems[item++] = new QStandardItem(tr("micrometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Cover Slip Thickness"));
-  unitItems[item++] = new QStandardItem(tr("micrometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Design Immersion Oil Refractive Index"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Immersion Oil Refractive Index"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Design Immersion Oil Thickness"));
-  unitItems[item++] = new QStandardItem(tr("micrometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Design Specimen Layer Refractive Index"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Specimen Layer Refractive Index"));
-  unitItems[item++] = new QStandardItem(tr("unitless"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Point Source Depth in Specimen Layer"));
-  unitItems[item++] = new QStandardItem(tr("micrometers"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Design Distance from Back Focal Plane to Detector"));
-  unitItems[item++] = new QStandardItem(tr("millimeters"));
-
-  psfPropertyItems[item] = new QStandardItem(tr("Actual Distance from Back Focal Plane to Detector"));
-  unitItems[item++] = new QStandardItem(tr("millimeters"));
-
-  for (unsigned int i = 0; i < sizeof(psfPropertyItems) / sizeof(QStandardItem*); i++) {
-
-    // Property column
-    psfPropertyItems[i]->setEditable(false);
-    m_GibsonLanniPSFSettingsTableModel->setItem(i, 0, psfPropertyItems[i]);
-
-    // Value column
-    QStandardItem* item = new QStandardItem(tr(""));
-    m_GibsonLanniPSFSettingsTableModel->setItem(i, 1, item);
-
-    // Units column
-    unitItems[i]->setEditable(false);
-    m_GibsonLanniPSFSettingsTableModel->setItem(i, 2, unitItems[i]);
-
-    // Optimize checkbox column
-    item = new QStandardItem();
-    item->setCheckable(true);
-    item->setEditable(false);
-    m_GibsonLanniPSFSettingsTableModel->setItem(i, 3, item);
-  }
-
-  gui->psfSettingsTableView->setModel(m_GibsonLanniPSFSettingsTableModel);
+  connect(m_PSFPropertyTableModel,
+          SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+          this, SLOT(handle_PSFPropertyTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
+  
+  gui->psfSettingsTableView->setModel(m_PSFPropertyTableModel);
   gui->psfSettingsTableView->setColumnWidth(0, 300);
 
   // Refresh the UI
@@ -287,6 +190,9 @@ VisualPSFOptimizer
   gui->optimizePSFParametersButton->setEnabled(false);
 
   gui->calculatedPSFRadioButton->click();
+
+  m_PSFPropertyTableModel->InitializeSettingsCache();
+  m_PSFPropertyTableModel->Refresh();
 }
 
 
@@ -310,6 +216,9 @@ VisualPSFOptimizer
   gui->optimizePSFParametersButton->setEnabled(true);
 
   gui->measuredPSFRadioButton->click();
+
+  m_PSFPropertyTableModel->InitializeSettingsCache();
+  m_PSFPropertyTableModel->Refresh();
 }
 
 
@@ -680,134 +589,11 @@ VisualPSFOptimizer
 ::on_applyButton_clicked() {
   m_Dirty = false;
 
-  float value = 0.0f;
-  QStandardItem* item = NULL;
-  int COLUMN = 1;
-  int itemRow = 0;
+  gui->applyButton->setEnabled(false);
 
-  double vec3[3];
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  vec3[0] = item->text().toDouble();
+  m_PSFPropertyTableModel->SaveSettingsCache();
 
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  vec3[1] = item->text().toDouble();
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  vec3[2] = item->text().toDouble();
-  m_DataModel->SetMeasuredImageVoxelSpacing(vec3);
-  m_DataModel->SetPSFImageVoxelSpacing(vec3);
-  m_DataModel->SetBSFImageVoxelSpacing(vec3);
-
-  double ccdBorder[2];
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  ccdBorder[0] = item->text().toDouble();
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  ccdBorder[1] = item->text().toDouble();
-  m_DataModel->SetCCDBorderWidth(ccdBorder);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  double beadRadius = item->text().toDouble();
-  m_DataModel->SetBeadRadius(beadRadius);
-
-  double pointCenter[3];
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  pointCenter[0] = item->text().toDouble();
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  pointCenter[1] = item->text().toDouble();
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  pointCenter[2] = item->text().toDouble();
-  m_DataModel->SetPSFPointCenter(pointCenter);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  m_DataModel->SetShearX(item->text().toFloat());
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  m_DataModel->SetShearY(item->text().toFloat());
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLEmissionWavelength(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLNumericalAperture(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLMagnification(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLDesignCoverSlipRefractiveIndex(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLActualCoverSlipRefractiveIndex(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLDesignCoverSlipThickness(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLActualCoverSlipThickness(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLDesignImmersionOilRefractiveIndex(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLActualImmersionOilRefractiveIndex(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLDesignImmersionOilThickness(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLDesignSpecimenLayerRefractiveIndex(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLActualSpecimenLayerRefractiveIndex(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLActualPointSourceDepthInSpecimenLayer(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLDesignDistanceFromBackFocalPlaneToDetector(value);
-
-  item = m_GibsonLanniPSFSettingsTableModel->item(itemRow++, COLUMN);
-  value = item->text().toFloat();
-  m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(value);
-
-  // Now update which parameters should be optimized
-  for (int i = 0; i < m_GibsonLanniPSFSettingsTableModel->rowCount(); i++) {
-    item = m_GibsonLanniPSFSettingsTableModel->item(i, 3);
-    m_DataModel->SetGLParameterEnabled(i, item->checkState() == Qt::Checked);
-  }
-    
-  // General image parameters
-  COLUMN = 1;
-  itemRow = 5;
-
-  // Set up origin so that (0, 0, 0) is centered in the image volume.
-  int dimensions[3];
-  double spacing[3], origin[3];
-  m_DataModel->GetPSFImageDimensions(dimensions);
-  m_DataModel->GetPSFImageVoxelSpacing(spacing);
-  for (int i = 0; i < 3; i++) {
-    origin[i] = -0.5*static_cast<double>(dimensions[i]-1)*spacing[i];
-  }
-
-  m_DataModel->SetMeasuredImageOrigin(origin);
-  m_DataModel->SetPSFImageOrigin(origin);
-  m_DataModel->SetBSFImageOrigin(origin);
-
-  // Now update
+  // Now update the image
   if (gui->calculatedPSFRadioButton->isChecked()) {
     m_DataModel->UpdateGibsonLanniPSFImage();
   } else if (gui->calculatedBSFRadioButton->isChecked()) {
@@ -818,7 +604,6 @@ VisualPSFOptimizer
   SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
-  
 }
 
 
@@ -826,15 +611,17 @@ void
 VisualPSFOptimizer
 ::on_estimatePSFCenterButton_clicked() {
   DataModel::Float3DPointType center = m_DataModel->GetMeasuredImageDataMaximumCoordinates();
+  double triplet[3];
 
-  char decimalFormat[] = "%.3f";
-  int item = 6;
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, center[0]));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, center[1]));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, center[2]));
+  for (int i = 0; i < 3; i++)
+    triplet[i] = static_cast<double>(center[i]);
+  m_DataModel->SetPSFPointCenter(triplet);
+  m_DataModel->SetBSFPointCenter(triplet);
+
+  m_PSFPropertyTableModel->InitializeSettingsCache();
+  m_PSFPropertyTableModel->Refresh();
+
+  gui->applyButton->setEnabled(true);
 
   Sully();
 }
@@ -852,11 +639,26 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::handle_imageInformationTableModel_dataChanged(const QModelIndex& topLeft,
-    const QModelIndex& bottomRight) {
+                                                const QModelIndex& bottomRight) {
 
   if (topLeft != bottomRight) {
     return;
   }
+
+  Sully();
+}
+
+
+void
+VisualPSFOptimizer
+::handle_PSFPropertyTableModel_dataChanged(const QModelIndex& topLeft,
+                                           const QModelIndex& bottomRight) {
+
+  if (topLeft != bottomRight) {
+    return;
+  }
+
+  gui->applyButton->setEnabled(true);
 
   Sully();
 }
@@ -919,85 +721,6 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->item(item++, 1)->setText(yDim);
   QString zDim = QString().sprintf(intFormat, dims[2]);
   m_ImageInformationTableModel->item(item++, 1)->setText(zDim);
-
-  ///////////////// PSF settings update /////////////////
-  item = 0;
-
-  double spacing[3];
-  m_DataModel->GetMeasuredImageVoxelSpacing(spacing);
-  QString xSpacing = QString().sprintf(decimalFormat, spacing[0]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(xSpacing);
-
-  QString ySpacing = QString().sprintf(decimalFormat, spacing[1]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ySpacing);
-
-  QString zSpacing = QString().sprintf(decimalFormat, spacing[2]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(zSpacing);
-
-  double ccdBorder[2];
-  m_DataModel->GetCCDBorderWidth(ccdBorder);
-  QString ccdBorderX = QString().sprintf(decimalFormat, ccdBorder[0]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ccdBorderX);
-
-  QString ccdBorderY = QString().sprintf(decimalFormat, ccdBorder[1]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(ccdBorderY);
-
-  QString beadRadius = QString().sprintf(decimalFormat, m_DataModel->GetBeadRadius());
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(beadRadius);
-
-  double pointCenter[3];
-  m_DataModel->GetPSFPointCenter(pointCenter);
-  QString xPointCenter = QString().sprintf(decimalFormat, pointCenter[0]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(xPointCenter);
-
-  QString yPointCenter = QString().sprintf(decimalFormat, pointCenter[1]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(yPointCenter);
-
-  QString zPointCenter = QString().sprintf(decimalFormat, pointCenter[2]);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(zPointCenter);
-
-  float xShear = m_DataModel->GetShearX();
-  QString xShearStr = QString().sprintf(decimalFormat, xShear);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(xShearStr);
-
-  float yShear = m_DataModel->GetShearY();
-  QString yShearStr = QString().sprintf(decimalFormat, yShear);
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->setText(yShearStr);
-
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLEmissionWavelength()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLNumericalAperture()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLMagnification()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignCoverSlipRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualCoverSlipRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignCoverSlipThickness()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualCoverSlipThickness()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignImmersionOilRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualImmersionOilRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignImmersionOilThickness()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignSpecimenLayerRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualSpecimenLayerRefractiveIndex()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualPointSourceDepthInSpecimenLayer()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLDesignDistanceFromBackFocalPlaneToDetector()));
-  m_GibsonLanniPSFSettingsTableModel->item(item++, 1)->
-    setText(QString().sprintf(decimalFormat, m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector()));
-  
-  for (int i = 0; i < m_GibsonLanniPSFSettingsTableModel->rowCount(); i++) {
-    m_GibsonLanniPSFSettingsTableModel->item(i, 3)->setCheckState(m_DataModel->GetGLParameterEnabled(i) ? Qt::Checked : Qt::Unchecked);
-  }
 
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();

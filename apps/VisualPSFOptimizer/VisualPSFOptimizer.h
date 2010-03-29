@@ -6,6 +6,8 @@
 #include <qmainwindow.h>
 #include <qstandarditemmodel.h>
 
+#include <QPointSpreadFunctionPropertyTableModel.h>
+
 #include "ui_VisualPSFOptimizer.h"
 #include "ui_NewImageDialog.h"
 
@@ -70,8 +72,11 @@ public slots:
   virtual void on_estimatePSFCenterButton_clicked();
   virtual void on_optimizePSFParametersButton_clicked();
 
-  virtual void handle_imageInformationTableModel_dataChanged(const QModelIndex& topLeft,
-    const QModelIndex& bottomRight);
+  virtual void handle_imageInformationTableModel_dataChanged
+    (const QModelIndex& topLeft, const QModelIndex& bottomRight);
+  
+  virtual void handle_PSFPropertyTableModel_dataChanged
+    (const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
   /** Mark the session state as changed. */
   void Sully();
@@ -95,7 +100,7 @@ protected:
   
   QStandardItemModel* m_ImageInformationTableModel;
 
-  QStandardItemModel* m_GibsonLanniPSFSettingsTableModel;
+  QPointSpreadFunctionPropertyTableModel* m_PSFPropertyTableModel;
   
   DisplayImageType m_DisplayedImage;
 

@@ -14,6 +14,7 @@ ENDIF(QT_USE_FILE)
 
 SET (QtGuiSrcs
   Main.cxx
+  QPointSpreadFunctionPropertyTableModel.cxx
   VisualPSFOptimizer.cxx
 )
 
@@ -30,6 +31,7 @@ SET(UIS
 )
 SET (ApplicationHeaders
   VisualPSFOptimizer.h
+  QPointSpreadFunctionPropertyTableModel.h
 )
 QT4_WRAP_UI(UIHeaders ${UIS})
 QT4_WRAP_CPP(MOCSrcs ${ApplicationHeaders} )
