@@ -895,6 +895,20 @@ DataModel
 }
 
 
+void
+DataModel
+::SetZCoordinate(unsigned int index, double coordinate) {
+  m_GibsonLanniBSFSource->SetZCoordinate(index, coordinate);
+}
+
+
+double
+DataModel
+::GetZCoordinate(unsigned int index) {
+  return m_GibsonLanniBSFSource->GetZCoordinate(index);
+}
+
+
 double
 DataModel
 ::GetImageComparisonMetric() {

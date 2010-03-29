@@ -170,19 +170,17 @@ public:
 
   // Sets the X and Y shear
   void SetShearX(float shear) {
-    m_GibsonLanniPSFSource->SetShearX(shear);
     m_GibsonLanniBSFSource->SetShearX(shear);
   }
   float GetShearX() {
-    return m_GibsonLanniPSFSource->GetShearX();
+    return m_GibsonLanniBSFSource->GetShearX();
   }
 
   void SetShearY(float shear) {
-    m_GibsonLanniPSFSource->SetShearY(shear);
     m_GibsonLanniBSFSource->SetShearY(shear);
   }
   float GetShearY() {
-    return m_GibsonLanniPSFSource->GetShearY();
+    return m_GibsonLanniBSFSource->GetShearY();
   }
 
   void UpdateGibsonLanniPSFImage();
@@ -293,6 +291,9 @@ public:
 
   void SetGLParameterEnabled(unsigned int index, bool enabled);
   bool GetGLParameterEnabled(unsigned int index);
+
+  void SetZCoordinate(unsigned int index, double coordinate);
+  double GetZCoordinate(unsigned int index);
 
   double GetImageComparisonMetric();
 
