@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/26 17:29:09 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2010/03/29 05:36:32 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -139,6 +139,10 @@ public:
   /** Get the shear in the Y direction. */
   itkGetMacro(ShearY,float);
 
+  /** Get/set the z-coordinate of the image z-plane at the given index. */
+  void SetZCoordinate(unsigned int index, double coordinate);
+  double GetZCoordinate(unsigned int index);
+
 protected:
   SphereConvolutionFilter();
   ~SphereConvolutionFilter();
@@ -149,8 +153,10 @@ protected:
   float         *m_Origin;       // the origin of the image
   float         *m_SphereCenter; // the center of the sphere
   float         m_SphereRadius;  // the radius of the sphere
+
   float         m_ShearX;        // amount of shear in the x direction with respect to z
   float         m_ShearY;        // amount of shear in the y direction with respect to z
+  std::vector<double> m_ZCoordinate;   // z-slice coordinates
 
   ScanImageFilterPointer  m_ScanImageFilter;
   

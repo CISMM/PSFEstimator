@@ -1,3 +1,9 @@
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkGibsonLanniBSFImageSource.h,.cxx, itkSphereConvolutionFilter.h,.cxx:
+   Added methods SetZCoordinate() and GetZCoordinate() to set/get z-coordinates
+   for the slices.
+
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniBSFImageSource.h,.cxx: Added ShearX and ShearY parameters.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/26 17:29:09 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2010/03/29 05:36:32 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -276,6 +276,10 @@ public:
 
   /** Gets the total number of parameters. */
   virtual unsigned int GetNumberOfParameters() const;
+
+  /** Get/set the z-coordinate of the image z-plane at the given index. */
+  void SetZCoordinate(unsigned int index, double coordinate);
+  double GetZCoordinate(unsigned int);
 
 protected:
   GibsonLanniBSFImageSource();

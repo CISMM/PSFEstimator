@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/26 17:29:09 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2010/03/29 05:36:32 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -178,6 +178,22 @@ unsigned int
 GibsonLanniBSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const {
   return 26;
+}
+
+
+template <class TOutputImage>
+void
+GibsonLanniBSFImageSource<TOutputImage>
+::SetZCoordinate(unsigned int index, double coordinate) {
+  m_Convolver->SetZCoordinate(index, coordinate);
+}
+
+
+template <class TOutputImage>
+double
+GibsonLanniBSFImageSource<TOutputImage>
+::GetZCoordinate(unsigned int index) {
+  return m_Convolver->GetZCoordinate(index);
 }
 
 

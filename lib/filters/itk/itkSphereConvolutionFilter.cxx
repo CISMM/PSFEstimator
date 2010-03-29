@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/26 17:29:09 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2010/03/29 05:36:32 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -61,6 +61,30 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   delete [] m_Spacing;
   delete [] m_Origin;
   delete [] m_SphereCenter;
+}
+
+
+template <class TInputImage, class TOutputImage>
+void
+SphereConvolutionFilter<TInputImage,TOutputImage>
+::SetZCoordinate(unsigned int index, double coordinate) {
+  if (index >= m_ZCoordinate.size()) {
+    m_ZCoordinate.resize(index+1);
+  }
+
+  m_ZCoordinate[index] = coordinate;
+  this->Modified();
+}
+
+
+template <class TInputImage, class TOutputImage>
+double
+SphereConvolutionFilter<TInputImage,TOutputImage>
+::GetZCoordinate(unsigned int index) {
+  if (index < m_ZCoordinate.size())
+    return m_ZCoordinate[index];
+
+  return 0.0;
 }
 
 
@@ -167,6 +191,9 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     // Apply shear here
     point[0] -= m_ShearX * (point[2] - m_SphereCenter[2]);
     point[1] -= m_ShearY * (point[2] - m_SphereCenter[2]);
+
+    // Change the z coordinate here
+    point[2] = GetZCoordinate(index[2]);
     
     it.Set( ComputeIntegratedVoxelValue(point) );
     progress.CompletedPixel();
