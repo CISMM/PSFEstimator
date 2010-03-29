@@ -1,5 +1,10 @@
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniBSFImageSource.cxx: Fixed bug caused by applying shear
+   according to evenly-spaced z-slices instead of per-slice z-coordinates.
+
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniBSFImageSource.h,.cxx, itkSphereConvolutionFilter.h,.cxx:
    Added methods SetZCoordinate() and GetZCoordinate() to set/get z-coordinates
    for the slices.

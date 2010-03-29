@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/29 05:36:32 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2010/03/29 05:46:43 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -188,12 +188,12 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     OutputImagePointType point;
     image->TransformIndexToPhysicalPoint(index, point);
 
+    // Change the z coordinate here
+    point[2] = GetZCoordinate(index[2]);
+
     // Apply shear here
     point[0] -= m_ShearX * (point[2] - m_SphereCenter[2]);
     point[1] -= m_ShearY * (point[2] - m_SphereCenter[2]);
-
-    // Change the z coordinate here
-    point[2] = GetZCoordinate(index[2]);
     
     it.Set( ComputeIntegratedVoxelValue(point) );
     progress.CompletedPixel();
