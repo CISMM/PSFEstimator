@@ -1,5 +1,10 @@
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
+   * QPointSpreadFunctionPropertyTableModel.cxx: Added z slice coordinates
+   to the model.
+
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
    * CMakeLists.txt: Add source files for QPointSpreadFunctionPropertyTableModel.
    
    * QPointSpreadFunctionPropertyTableModel.,.cxx: Table model for PSF

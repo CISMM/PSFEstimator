@@ -121,10 +121,17 @@ QPointSpreadFunctionPropertyTableModel
 bool
 QPointSpreadFunctionPropertyTableModel
 ::setData(const QModelIndex& index, const QVariant& value, int role) {
+  int numPSFProperties = m_DataModel->GetNumberOfProperties();
+
   int row = index.row();
   int col = index.column();
   if (col == 1) {
-    m_PropertyValues[row] = value.toDouble();
+
+    if (row < numPSFProperties)
+      m_PropertyValues[row] = value.toDouble();
+    else
+      m_DataModel->SetZCoordinate(row - numPSFProperties, value.toDouble());
+
   } else if (col == 3) {
     m_OptimizeValues[row] = value.toBool();
   }
@@ -148,22 +155,41 @@ QPointSpreadFunctionPropertyTableModel
   if (row < 0 || row >= this->rowCount() || col < 0 || col >= this->columnCount())
     return QVariant();
 
+  int numPSFProperties = m_DataModel->GetNumberOfProperties();
+
   if (role == Qt::DisplayRole || role == Qt::EditRole) {
-    if (col == 0) {
-      return m_PropertyNameList[row];
-    } else if (col == 1) {
-      return QVariant(m_PropertyValues[row]);
-    } else if (col == 2) {
-      return m_UnitsList[row];
+    if (col == 0) { /** Property name **/
+
+      if (row < numPSFProperties)
+        return m_PropertyNameList[row];
+      else
+        return QString().sprintf("Z slice %d position", row - numPSFProperties);
+
+    } else if (col == 1) { /** Property value **/
+
+      if (row < numPSFProperties)
+        return QVariant(m_PropertyValues[row]);
+      else
+        return QVariant(m_DataModel->GetZCoordinate(row - numPSFProperties));
+
+    } else if (col == 2) { /** Property unit **/
+
+      if (row < numPSFProperties)
+        return m_UnitsList[row];
+      else
+        return QString("nanometers");
+
     } else {
       return QVariant();
     }
   } else if (role == Qt::CheckStateRole) {
-    if (col == 3) {
+
+    if (col == 3 && row < numPSFProperties) { /** Optimize column **/
       return m_OptimizeValues[row] ? Qt::Checked : Qt::Unchecked;
     } else {
       return QVariant();
     }
+
   }
 
   return QVariant();
@@ -210,7 +236,11 @@ QPointSpreadFunctionPropertyTableModel
 ::rowCount(const QModelIndex& parent) const {
   if (m_DataModel == NULL)
     return 0;
-  return m_DataModel->GetNumberOfProperties();
+
+  int dims[3];
+  m_DataModel->GetMeasuredImageDimensions(dims);
+
+  return m_DataModel->GetNumberOfProperties() + dims[2];
 }
 
 
