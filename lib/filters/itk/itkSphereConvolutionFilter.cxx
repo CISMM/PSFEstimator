@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/29 05:46:43 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2010/03/30 02:53:22 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -44,7 +44,8 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   m_SphereRadius = 1.0f;
   m_ShearX = 0.0f;
   m_ShearY = 0.0f;
-
+  m_UseCustomZCoordinates = false;
+  
   m_ScanImageFilter = ScanImageFilterType::New();
   m_ScanImageFilter->SetScanDimension(2);
   m_ScanImageFilter->SetScanOrderToIncreasing();
@@ -188,8 +189,9 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     OutputImagePointType point;
     image->TransformIndexToPhysicalPoint(index, point);
 
-    // Change the z coordinate here
-    point[2] = GetZCoordinate(index[2]);
+    // Change the z coordinate here if using custom z coordinates
+    if (m_UseCustomZCoordinates)
+      point[2] = GetZCoordinate(index[2]);
 
     // Apply shear here
     point[0] -= m_ShearX * (point[2] - m_SphereCenter[2]);

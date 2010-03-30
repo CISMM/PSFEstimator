@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/29 05:36:32 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2010/03/30 02:53:22 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,9 +21,11 @@
 #define __itkGibsonLanniBSFImageSource_h
 
 #include "itkGibsonLanniPSFImageSource.h"
-#include "itkSphereConvolutionFilter.h"
-#include "itkParameterizedImageSource.h"
+#include "itkMinimumMaximumImageCalculator.h"
 #include "itkNumericTraits.h"
+#include "itkParameterizedImageSource.h"
+#include "itkShiftScaleInPlaceImageFilter.h"
+#include "itkSphereConvolutionFilter.h"
 
 
 #define DelegateSetMacro(name, type) \
@@ -84,10 +86,14 @@ public:
 		      unsigned int,
 		      TOutputImage::ImageDimension);
 
-  typedef GibsonLanniPSFImageSource<TOutputImage> PSFSourceType;
-  typedef typename PSFSourceType::Pointer         PSFSourcePointer;
+  typedef GibsonLanniPSFImageSource<TOutputImage>            PSFSourceType;
+  typedef typename PSFSourceType::Pointer                    PSFSourcePointer;
   typedef SphereConvolutionFilter<TOutputImage,TOutputImage> ConvolverType;
   typedef typename ConvolverType::Pointer                    ConvolverPointer;
+  typedef MinimumMaximumImageCalculator<TOutputImage>        MinMaxCalculatorType;
+  typedef typename MinMaxCalculatorType::Pointer             MinMaxCalculatorPointer;
+  typedef ShiftScaleInPlaceImageFilter<TOutputImage>         ShiftScaleType;
+  typedef typename ShiftScaleType::Pointer                   ShiftScalePointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GibsonLanniBSFImageSource,ParameterizedImageSource);
@@ -176,6 +182,26 @@ public:
   /** Get the shear in the Y direction. */
   float GetShearY() const {
     return m_Convolver->GetShearY();
+  }
+
+  /** Specify the background value. */
+  void SetBackgroundIntensity(double intensity) {
+    m_BackgroundIntensity = intensity;
+  }
+
+  /** Get the background value. */
+  double GetBackgroundIntensity() {
+    return m_BackgroundIntensity;
+  }
+
+  /** Specify the maximum intensity. */
+  void SetMaximumIntensity(double intensity) {
+    m_MaximumIntensity = intensity;
+  }
+
+  /** Get the maximum intensity. */
+  double GetMaximumIntensity() {
+    return m_MaximumIntensity;
   }
 
   /** Specify the emission wavelength (in nanometers). */
@@ -281,6 +307,10 @@ public:
   void SetZCoordinate(unsigned int index, double coordinate);
   double GetZCoordinate(unsigned int);
 
+  /** Get/set use of custom z coordinates. */
+  void SetUseCustomZCoordinates(bool use);
+  bool GetUseCustomZCoordinates();
+
 protected:
   GibsonLanniBSFImageSource();
   ~GibsonLanniBSFImageSource();
@@ -297,14 +327,19 @@ private:
   GibsonLanniBSFImageSource(const GibsonLanniBSFImageSource&); //purposely not implemented
   void operator=(const GibsonLanniBSFImageSource&); //purposely not implemented
 
-  unsigned long *m_Size;        // Size of the output image
-  float         *m_Spacing;     // Spacing
-  float         *m_Origin;      // Origin
-  float         *m_BeadCenter;  // The center of the bead
-  float          m_BeadRadius;  // The radius of the bead
+  unsigned long *m_Size;  // Size of the output image
+  float         *m_Spacing;
+  float         *m_Origin;              
+  float         *m_BeadCenter;          // The center of the bead
+  float          m_BeadRadius;          // The radius of the bead
+  double         m_BackgroundIntensity; // Additive background constant
+  double         m_MaximumIntensity;    // The maximum intensity value
 
-  PSFSourcePointer m_PSFSource;
-  ConvolverPointer  m_Convolver;
+  PSFSourcePointer        m_PSFSource;
+  ConvolverPointer        m_Convolver;
+  MinMaxCalculatorPointer m_MinMaxCalculator;
+  ShiftScalePointer       m_ShiftScaleFilter;
+  
   
 };
 

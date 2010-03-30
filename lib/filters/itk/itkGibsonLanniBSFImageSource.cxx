@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/29 05:36:32 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2010/03/30 02:53:22 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -53,9 +53,19 @@ GibsonLanniBSFImageSource<TOutputImage>
     }
 
   m_BeadRadius = 200.0;
+
+  m_BackgroundIntensity = 0.0;
+  m_MaximumIntensity = 1.0;
+
   m_PSFSource = PSFSourceType::New();
   m_Convolver = ConvolverType::New();
   m_Convolver->SetInput(m_PSFSource->GetOutput());
+
+  m_MinMaxCalculator = MinMaxCalculatorType::New();
+  m_MinMaxCalculator->SetImage(m_Convolver->GetOutput());
+
+  m_ShiftScaleFilter = ShiftScaleType::New();
+  m_ShiftScaleFilter->SetInput(m_Convolver->GetOutput());
 }
 
 
@@ -200,6 +210,23 @@ GibsonLanniBSFImageSource<TOutputImage>
 template <class TOutputImage>
 void 
 GibsonLanniBSFImageSource<TOutputImage>
+::SetUseCustomZCoordinates(bool use) {
+  m_Convolver->SetUseCustomZCoordinates(use);
+  this->Modified();
+}
+
+
+template <class TOutputImage>
+bool
+GibsonLanniBSFImageSource<TOutputImage>
+::GetUseCustomZCoordinates() {
+  return m_Convolver->GetUseCustomZCoordinates();
+}
+
+
+template <class TOutputImage>
+void 
+GibsonLanniBSFImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
@@ -303,9 +330,17 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_PSFSource->SetOrigin(psfOrigin);
   m_PSFSource->UpdateLargestPossibleRegion();
 
-  m_Convolver->GraftOutput(this->GetOutput());
   m_Convolver->UpdateLargestPossibleRegion();
-  this->GraftOutput(m_Convolver->GetOutput());
+
+  // Update image maximum
+  m_MinMaxCalculator->ComputeMaximum();
+
+  m_ShiftScaleFilter->SetShift(m_BackgroundIntensity); // make this additive background
+  double scale = (m_MaximumIntensity + m_BackgroundIntensity) / m_MinMaxCalculator->GetMaximum();
+  m_ShiftScaleFilter->SetScale(scale);
+  m_ShiftScaleFilter->GraftOutput(this->GetOutput());
+  m_ShiftScaleFilter->UpdateLargestPossibleRegion();
+  this->GraftOutput(m_ShiftScaleFilter->GetOutput());
 }
 
 

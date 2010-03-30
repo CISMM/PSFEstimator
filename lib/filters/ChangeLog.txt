@@ -1,5 +1,14 @@
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
+   * itk/itkGibsonLanniBSFImageSource.cxx: Added methods Set/GetBackgroundIntensity(),
+   Set/GetMaximumIntensity(), and Set/GetUseCustomZCoordinates(). Added intensity
+   rescaling according to background and maximum intensities.
+   
+   * itkSphereConvolutionFilter.h,.cxx: Added methods Set/GetUseCustomZCoordinates()
+   and changed generation of sample positions based on the flag set by this method.
+
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
    * itk/itkGibsonLanniBSFImageSource.cxx: Fixed bug caused by applying shear
    according to evenly-spaced z-slices instead of per-slice z-coordinates.
 
