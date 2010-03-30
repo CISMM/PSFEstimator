@@ -4,6 +4,7 @@ SET(filterSrc
   itk/itkGibsonLanniPSFImageSource.cxx
   itk/itkImageToParameterizedImageSourceMetric.cxx
   itk/itkParameterizedImageSource.cxx
+  itk/itkPoissonNoiseImageToImageMetric.cxx
   itk/itkScanImageFilter.cxx
   itk/itkSphereConvolutionFilter.cxx
 )

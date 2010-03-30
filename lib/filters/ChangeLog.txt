@@ -1,3 +1,10 @@
+2010-03-30  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkPoissonNoiseImageToImageMetric.h,.cxx: Initial check-in, copied from
+   the MicroscopeSimulator source.
+   
+   * CMakeLists.txt: Added above source files.
+
 2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkSphereConvolutionFilter.h: SetSize() now resizes the vector holding
