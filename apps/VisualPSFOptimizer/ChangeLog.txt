@@ -1,3 +1,8 @@
+2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: Fixed problem with PSF settings loaded from a
+   session file not being shown.
+
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
    * QPointSpreadFunctionPropertyTableModel.cxx: Now shows table entries for

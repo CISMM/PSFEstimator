@@ -301,6 +301,8 @@ VisualPSFOptimizer
   OpenFile(config.GetValue("FileInfo", "FileName"));
   m_DataModel->SetConfiguration(config);
 
+  m_PSFPropertyTableModel->InitializeSettingsCache();
+
   RefreshUI();
   on_applyButton_clicked();
 }
@@ -756,6 +758,10 @@ VisualPSFOptimizer
   m_ImageInformationTableModel->item(item++, 1)->setText(yDim);
   QString zDim = QString().sprintf(intFormat, dims[2]);
   m_ImageInformationTableModel->item(item++, 1)->setText(zDim);
+
+  ///////////////// Other widgets //////////////////////////////
+  gui->useCustomZSlicePositions->
+    setCheckState(m_DataModel->GetUseCustomZCoordinates() ? Qt::Checked : Qt::Unchecked);
 
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();
