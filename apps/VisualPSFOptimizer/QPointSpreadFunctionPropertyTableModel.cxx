@@ -127,10 +127,12 @@ QPointSpreadFunctionPropertyTableModel
   int col = index.column();
   if (col == 1) {
 
-    if (row < numPSFProperties)
+    if (row < numPSFProperties) {
       m_PropertyValues[row] = value.toDouble();
-    else
-      m_DataModel->SetZCoordinate(row - numPSFProperties, value.toDouble());
+    } else {
+      if (m_DataModel->GetUseCustomZCoordinates())
+        m_DataModel->SetZCoordinate(row - numPSFProperties, value.toDouble());
+    }
 
   } else if (col == 3) {
     m_OptimizeValues[row] = value.toBool();
@@ -160,24 +162,30 @@ QPointSpreadFunctionPropertyTableModel
   if (role == Qt::DisplayRole || role == Qt::EditRole) {
     if (col == 0) { /** Property name **/
 
-      if (row < numPSFProperties)
+      if (row < numPSFProperties) {
         return m_PropertyNameList[row];
-      else
-        return QString().sprintf("Z slice %d position", row - numPSFProperties);
+      } else {
+        if (m_DataModel->GetUseCustomZCoordinates())
+          return QString().sprintf("Z slice %d position", row - numPSFProperties);
+      }
 
     } else if (col == 1) { /** Property value **/
 
-      if (row < numPSFProperties)
+      if (row < numPSFProperties) {
         return QVariant(m_PropertyValues[row]);
-      else
-        return QVariant(m_DataModel->GetZCoordinate(row - numPSFProperties));
+      } else {
+        if (m_DataModel->GetUseCustomZCoordinates())
+          return QVariant(m_DataModel->GetZCoordinate(row - numPSFProperties));
+      }
 
     } else if (col == 2) { /** Property unit **/
 
-      if (row < numPSFProperties)
+      if (row < numPSFProperties) {
         return m_UnitsList[row];
-      else
-        return QString("nanometers");
+      } else {
+        if (m_DataModel->GetUseCustomZCoordinates())
+          return QString("nanometers");
+      }
 
     } else {
       return QVariant();
@@ -237,10 +245,14 @@ QPointSpreadFunctionPropertyTableModel
   if (m_DataModel == NULL)
     return 0;
 
-  int dims[3];
-  m_DataModel->GetMeasuredImageDimensions(dims);
+  int count, dims[3];
+  count = m_DataModel->GetNumberOfProperties();
+  if (m_DataModel->GetUseCustomZCoordinates()) {
+    m_DataModel->GetMeasuredImageDimensions(dims);
+    count += dims[2];
+  }
 
-  return m_DataModel->GetNumberOfProperties() + dims[2];
+  return count;
 }
 
 

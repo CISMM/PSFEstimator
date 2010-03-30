@@ -1,5 +1,14 @@
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
+   * QPointSpreadFunctionPropertyTableModel.cxx: Now shows table entries for
+   custom z slice positions only if the UseCustomZCoordinates is set to true.
+   
+   * VisualPSFOptimizer.h,.cxx,.ui: Added check box to toggle UseCustomZCoordinates.
+   Added button to populate the custom z coordinates with equal spacing equivalent
+   to the z spacing of the ITK image data object.
+
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
    * QPointSpreadFunctionPropertyTableModel.cxx: Added z slice coordinates
    to the model.
 

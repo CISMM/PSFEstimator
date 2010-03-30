@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1001</width>
-    <height>778</height>
+    <height>823</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -670,7 +670,7 @@
    <property name="minimumSize">
     <size>
      <width>340</width>
-     <height>309</height>
+     <height>354</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -728,15 +728,19 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="applyButton">
+         <widget class="QCheckBox" name="useCustomZSlicePositions">
+          <property name="text">
+           <string>Use custom Z slice positions</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="resetCustomSlicePositionsButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>Apply</string>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
+           <string>Reset Custom Slice Positions</string>
           </property>
          </widget>
         </item>
@@ -750,17 +754,30 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="optimizePSFParametersButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Optimize PSF Parameters</string>
-          </property>
-         </widget>
-        </item>
        </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="applyButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Apply Changes</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="optimizePSFParametersButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Optimize PSF Parameters</string>
+       </property>
       </widget>
      </item>
     </layout>

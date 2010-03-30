@@ -586,24 +586,36 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::on_applyButton_clicked() {
-  m_Dirty = false;
+::on_useCustomZSlicePositions_toggled(bool use) {
+  m_DataModel->SetUseCustomZCoordinates(use);
+  gui->resetCustomSlicePositionsButton->setEnabled(use);
 
-  gui->applyButton->setEnabled(false);
+  m_PSFPropertyTableModel->Refresh();
 
-  m_PSFPropertyTableModel->SaveSettingsCache();
+  on_applyButton_clicked();
+}
 
-  // Now update the image
-  if (gui->calculatedPSFRadioButton->isChecked()) {
-    m_DataModel->UpdateGibsonLanniPSFImage();
-  } else if (gui->calculatedBSFRadioButton->isChecked()) {
-    m_DataModel->UpdateGibsonLanniBSFImage();
-  }
+
+void
+VisualPSFOptimizer
+::on_resetCustomSlicePositionsButton_clicked() {
   
-  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
+  // Reset the individual slice z positions with even increments centered
+  // about z = 0
+  int dims[3];
+  m_DataModel->GetBSFImageDimensions(dims);
+  double spacing[3];
+  m_DataModel->GetBSFImageVoxelSpacing(spacing);
 
-  RefreshUI();
+  double zMax = 0.5*(dims[2]-1)*spacing[2];
+  for (unsigned int i = 0; i < static_cast<unsigned int>(dims[2]); i++) {
+    double z = zMax - static_cast<double>(i)*spacing[2];
+    m_DataModel->SetZCoordinate(i, z);
+  }
+
+  m_PSFPropertyTableModel->Refresh();
+
+  gui->applyButton->setEnabled(true);
 }
 
 
@@ -624,6 +636,29 @@ VisualPSFOptimizer
   gui->applyButton->setEnabled(true);
 
   Sully();
+}
+
+
+void
+VisualPSFOptimizer
+::on_applyButton_clicked() {
+  m_Dirty = false;
+
+  gui->applyButton->setEnabled(false);
+
+  m_PSFPropertyTableModel->SaveSettingsCache();
+
+  // Now update the image
+  if (gui->calculatedPSFRadioButton->isChecked()) {
+    m_DataModel->UpdateGibsonLanniPSFImage();
+  } else if (gui->calculatedBSFRadioButton->isChecked()) {
+    m_DataModel->UpdateGibsonLanniBSFImage();
+  }
+  
+  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
+
+  RefreshUI();
 }
 
 
