@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/30 02:53:22 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2010/03/30 18:46:20 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -339,6 +339,7 @@ private:
   ConvolverPointer        m_Convolver;
   MinMaxCalculatorPointer m_MinMaxCalculator;
   ShiftScalePointer       m_ShiftScaleFilter;
+  ShiftScalePointer       m_BackgroundShiftFilter;
   
   
 };
