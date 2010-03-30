@@ -100,9 +100,10 @@ Configuration
 void
 Configuration
 ::SetValueFromBool(std::string section, std::string key, bool value) {
-  std::stringstream stream;
-  stream << value;
-  m_SectionMap[section][key] = stream.str();
+  if (value)
+    m_SectionMap[section][key] = std::string("true");
+  else
+    m_SectionMap[section][key] = std::string("false");
 }
 
 
