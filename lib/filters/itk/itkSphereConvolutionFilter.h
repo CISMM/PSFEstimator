@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereConvolutionFilter.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/30 02:53:22 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2010/03/30 03:58:43 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -98,7 +98,14 @@ public:
   itkNewMacro(Self);
 
   /** Specify the size of the output image. */
-  itkSetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
+  void SetSize(unsigned long size[TOutputImage::ImageDimension]) {
+    for (int i = 0; i < TOutputImage::ImageDimension; i++) {
+      m_Size[i] = size[i];
+    }
+
+    this->Modified();
+    m_ZCoordinate.resize(size[TOutputImage::ImageDimension-1]);
+  }
 
   /** Get the size of the output image. */
   itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);

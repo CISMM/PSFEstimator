@@ -1,3 +1,8 @@
+2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itk/itkSphereConvolutionFilter.h: SetSize() now resizes the vector holding
+   the custom z-slices to the number of voxels in the z dimension.
+
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkGibsonLanniBSFImageSource.cxx: Added methods Set/GetBackgroundIntensity(),
