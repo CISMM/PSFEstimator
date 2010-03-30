@@ -292,8 +292,19 @@ public:
   void SetGLParameterEnabled(unsigned int index, bool enabled);
   bool GetGLParameterEnabled(unsigned int index);
 
-  void SetZCoordinate(unsigned int index, double coordinate);
-  double GetZCoordinate(unsigned int index);
+  void SetZCoordinate(unsigned int index, double coordinate) {
+    m_GibsonLanniBSFSource->SetZCoordinate(index, coordinate);
+  }
+  double GetZCoordinate(unsigned int index) {
+    return m_GibsonLanniBSFSource->GetZCoordinate(index);
+  }
+
+  void SetUseCustomZCoordinates(bool use) {
+    m_GibsonLanniBSFSource->SetUseCustomZCoordinates(use);
+  }
+  bool GetUseCustomZCoordinates() {
+    return m_GibsonLanniBSFSource->GetUseCustomZCoordinates();
+  }
 
   double GetImageComparisonMetric();
 

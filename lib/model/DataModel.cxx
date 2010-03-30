@@ -161,6 +161,10 @@ DataModel
   m_GibsonLanniBSFSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
 
+  // Set the shifting and scaling for the BSF source to that of the measured image
+  m_GibsonLanniBSFSource->SetBackgroundIntensity(m_MeasuredImageMinMaxFilter->GetMinimum());
+  m_GibsonLanniBSFSource->SetMaximumIntensity(m_MeasuredImageMinMaxFilter->GetMaximum());
+
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
   m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());  
@@ -589,12 +593,17 @@ DataModel
 void
 DataModel
 ::GetPSFImageDimensions(int dimensions[3]) {
-  Float3DImageType::RegionType region 
+  if (GetMeasuredImageData()) {
+    Float3DImageType::RegionType region 
       = GetMeasuredImageData()->GetLargestPossibleRegion();
-  itk::Size<3> size = region.GetSize();
+    itk::Size<3> size = region.GetSize();
 
-  for (int i = 0; i < 3; i++)
-    dimensions[i] = size[i];
+    for (int i = 0; i < 3; i++)
+      dimensions[i] = size[i];
+  } else {
+    for (int i = 0; i < 3; i++)
+      dimensions[i] = 0;
+  }
 }
 
 
@@ -624,12 +633,18 @@ DataModel
 void
 DataModel
 ::GetBSFImageDimensions(int dimensions[3]) {
-  Float3DImageType::RegionType region 
+  if (GetMeasuredImageData()) {
+    Float3DImageType::RegionType region 
       = GetMeasuredImageData()->GetLargestPossibleRegion();
-  itk::Size<3> size = region.GetSize();
+    itk::Size<3> size = region.GetSize();
 
-  for (int i = 0; i < 3; i++)
-    dimensions[i] = size[i];
+    for (int i = 0; i < 3; i++)
+      dimensions[i] = size[i];
+
+  } else {
+    for (int i = 0; i < 3; i++)
+      dimensions[i] = 0;
+  }
 }
 
 
@@ -892,20 +907,6 @@ DataModel
   } catch (...) {}
 
   return enabled;
-}
-
-
-void
-DataModel
-::SetZCoordinate(unsigned int index, double coordinate) {
-  m_GibsonLanniBSFSource->SetZCoordinate(index, coordinate);
-}
-
-
-double
-DataModel
-::GetZCoordinate(unsigned int index) {
-  return m_GibsonLanniBSFSource->GetZCoordinate(index);
 }
 
 

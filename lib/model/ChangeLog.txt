@@ -1,5 +1,13 @@
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
+   * DataModel.h,.cxx: Added methods Set/GetUseCustomZCoordinates().
+   Now sets background and maximum intensity values for the bead-spread function
+   to the background and maximum intensity of the measured image. Added checks
+   for non-null measured data in GetPSFImageDimensions() and 
+   GetBSFImageDimensions().
+
+2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
+
    * DataModel.h, .cxx: Added methods SetZCoordinate() and GetZCoordinate().
    No longer applies shear to the PSF image (just the bead-spread function image)
    so that user can see the unsheared PSF recovered by the fitting process and
