@@ -276,6 +276,16 @@ DataModel
     (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
   SetGLActualDistanceFromBackFocalPlaneToDetector
     (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
+
+  sec = std::string("ZSliceCoordinates");
+  
+  SetUseCustomZCoordinates(c.GetValueAsBool(sec, "UseCustomZCoordinates"));
+
+  for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
+    char name[128];
+    sprintf(name, "ZCoordinate%d", i);
+    SetZCoordinate(i, c.GetValueAsDouble(sec, name));
+  }
 }
 
 
@@ -328,6 +338,16 @@ DataModel
 		      GetGLDesignDistanceFromBackFocalPlaneToDetector());
   c.SetValueFromFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
 		      GetGLActualDistanceFromBackFocalPlaneToDetector());
+
+  sec = std::string("ZSliceCoordinates");
+  
+  c.SetValueFromBool(sec, "UseCustomZCoordinates", GetUseCustomZCoordinates());
+
+  for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
+    char name[128];
+    sprintf(name, "ZCoordinate%d", i);
+    c.SetValueFromDouble(sec, name, GetZCoordinate(i));
+  }
 }
 
 

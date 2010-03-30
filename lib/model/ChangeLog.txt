@@ -1,3 +1,8 @@
+2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.cxx: Now saves custom z slice coordinates and whether they
+   should be used.
+
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added methods Set/GetUseCustomZCoordinates().
