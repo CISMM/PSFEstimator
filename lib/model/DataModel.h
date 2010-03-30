@@ -14,7 +14,7 @@
 #include <itkShiftScaleImageFilter.h>
 
 #include <itkAmoebaOptimizer.h>
-#include <itkNormalizedCorrelationImageToImageMetric.h>
+#include <itkPoissonNoiseImageToImageMetric.h>
 #include <itkImageToParameterizedImageSourceMetric.h>
 
 #include <vtkAlgorithmOutput.h>
@@ -74,7 +74,7 @@ public:
   // Types for optimization.
   typedef itk::ImageToParameterizedImageSourceMetric<TImage, GibsonLanniBSFImageSourceType>
     ParameterizedCostFunctionType;
-  typedef itk::NormalizedCorrelationImageToImageMetric<TImage, TImage>
+  typedef itk::PoissonNoiseImageToImageMetric<TImage, TImage>
     ImageToImageCostFunctionType;
   typedef itk::AmoebaOptimizer OptimizerType;
 
