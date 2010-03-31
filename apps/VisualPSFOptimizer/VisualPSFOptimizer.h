@@ -1,5 +1,5 @@
-#ifndef _QTVTKITK_GENERIC_APPLICATION_H_
-#define _QTVTKITK_GENERIC_APPLICATION_H_
+#ifndef _VISUAL_PSF_OPTIMIZER_H_
+#define _VISUAL_PSF_OPTIMIZER_H_
 
 #include <qdialog.h>
 #include <qerrormessage.h>
@@ -139,4 +139,4 @@ private:
   
 };
 
-#endif // _QTVTKITK_GENERIC_APPLICATION_H_
+#endif // _VISUAL_PSF_OPTIMIZER_H_

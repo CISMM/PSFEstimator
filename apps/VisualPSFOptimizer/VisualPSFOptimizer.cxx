@@ -145,6 +145,8 @@ VisualPSFOptimizer
     float ySpacing = m_NewFileDialogUI.ySpacingEdit->text().toFloat();
     float zSpacing = m_NewFileDialogUI.zSpacingEdit->text().toFloat();
     CreateFile(xSize, ySize, zSize, xSpacing, ySpacing, zSpacing);
+    
+    on_applyButton_clicked();
   }
 
 }
@@ -661,6 +663,14 @@ VisualPSFOptimizer
   SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
+
+  if (gui->measuredPSFRadioButton->isEnabled()) {
+    double value = m_DataModel->GetImageComparisonMetricValue();
+    gui->comparisonMetricLineEdit->setText(QString().sprintf("%.3f", value));
+  } else {
+    gui->comparisonMetricLineEdit->setText(QString("-"));
+  }
+
 }
 
 

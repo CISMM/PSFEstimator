@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1001</width>
-    <height>823</height>
+    <height>947</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -148,7 +148,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-460</y>
+          <y>0</y>
           <width>297</width>
           <height>624</height>
          </rect>
@@ -660,6 +660,29 @@
           </attribute>
          </widget>
         </item>
+        <item>
+         <widget class="QWidget" name="widget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Comparison Metric:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="comparisonMetricLineEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -670,7 +693,7 @@
    <property name="minimumSize">
     <size>
      <width>340</width>
-     <height>354</height>
+     <height>388</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -788,7 +811,7 @@
     <string>&amp;Open Image...</string>
    </property>
    <property name="shortcut">
-    <string/>
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionExit">
@@ -936,7 +959,7 @@
     <string>Load Session...</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionSaveSession">

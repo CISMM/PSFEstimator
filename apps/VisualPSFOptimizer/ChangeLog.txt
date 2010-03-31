@@ -1,3 +1,10 @@
+2010-03-31  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.cxx,.ui: Added widget that displays the image 
+   comparison metric value. The value is updated whenever the Apply button
+   is clicked. This provides a good objective way to see what parameters give
+   a better fit.
+
 2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: Fixed problem with PSF settings loaded from a
