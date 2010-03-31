@@ -1,3 +1,12 @@
+2010-03-31  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Discovered ITK's method for instantiating templates only
+   when called for. Added #define ITK_MANUAL_INSTANTIATION in front of includes
+   for ITK header files. This prevents the class implementation from being
+   instantiated, drastically reducing compile times. The only thing you have to
+   do differently is include the ITK source (*.txx) files you use in the class
+   implementation files that use those ITK classes.
+   
 2010-03-30  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Swapped NormalizedCorrelationImageToImageMetric for

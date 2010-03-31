@@ -11,6 +11,17 @@
 #include <itkPoint.h>
 #include <itkImageFileWriter.h>
 
+#include <itkGibsonLanniBSFImageSource.cxx>
+#include <itkGibsonLanniPSFImageSource.cxx>
+#include <itkGridImageSource.txx>
+#include <itkImageFileReader.txx>
+#include <itkImageFileWriter.txx>
+#include <itkImageToParameterizedImageSourceMetric.cxx>
+#include <itkMinimumMaximumImageCalculator.txx>
+#include <itkPoissonNoiseImageToImageMetric.h>
+#include <itkShiftScaleImageFilter.txx>
+
+
 #include <DataModel.h>
 
 
@@ -931,7 +942,7 @@ DataModel
 
 double
 DataModel
-::GetImageComparisonMetric() {
+::GetImageComparisonMetricValue() {
   return m_CostFunction->GetValue(m_GibsonLanniBSFSource->GetParameters());
 }
 

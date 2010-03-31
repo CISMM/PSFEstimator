@@ -5,6 +5,7 @@
 
 #include <Configuration.h>
 
+#define ITK_MANUAL_INSTANTIATION
 #include <itkGridImageSource.h>
 #include <itkGibsonLanniBSFImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
@@ -16,6 +17,7 @@
 #include <itkAmoebaOptimizer.h>
 #include <itkPoissonNoiseImageToImageMetric.h>
 #include <itkImageToParameterizedImageSourceMetric.h>
+#undef ITK_MANUAL_INSTANTIATION
 
 #include <vtkAlgorithmOutput.h>
 
@@ -306,7 +308,7 @@ public:
     return m_GibsonLanniBSFSource->GetUseCustomZCoordinates();
   }
 
-  double GetImageComparisonMetric();
+  double GetImageComparisonMetricValue();
 
   void Optimize();
 
