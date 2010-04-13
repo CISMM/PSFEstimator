@@ -1,3 +1,8 @@
+2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: Added call to Sully() after the optimize button
+   has been pressed.
+
 2010-03-31  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.h,.cxx,.ui: Added widget that displays the image 

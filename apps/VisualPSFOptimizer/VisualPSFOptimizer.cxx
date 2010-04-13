@@ -679,6 +679,7 @@ VisualPSFOptimizer
 ::on_optimizePSFParametersButton_clicked() {
   m_DataModel->Optimize();
 
+  Sully();
   RefreshUI();
 }
 
