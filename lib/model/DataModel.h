@@ -17,11 +17,10 @@
 #include <itkAmoebaOptimizer.h>
 #include <itkPoissonNoiseImageToImageMetric.h>
 #include <itkImageToParameterizedImageSourceMetric.h>
+#include <ITKImageToVTKImage.h>
 #undef ITK_MANUAL_INSTANTIATION
 
 #include <vtkAlgorithmOutput.h>
-
-#include <ITKImageToVTKImage.h>
 
 
 // This is the data model for the PSF Optimizer library.

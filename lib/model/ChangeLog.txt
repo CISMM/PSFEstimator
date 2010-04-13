@@ -1,3 +1,8 @@
+2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added saving/loading of shear parameters to settings
+   file.
+
 2010-03-31  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Discovered ITK's method for instantiating templates only

@@ -18,9 +18,12 @@
 #include <itkImageFileWriter.txx>
 #include <itkImageToParameterizedImageSourceMetric.cxx>
 #include <itkMinimumMaximumImageCalculator.txx>
-#include <itkPoissonNoiseImageToImageMetric.h>
+#include <itkPoissonNoiseImageToImageMetric.cxx>
 #include <itkShiftScaleImageFilter.txx>
 
+#include <ITKImageToVTKImage.cxx>
+
+#include <vtkAlgorithm.h>
 
 #include <DataModel.h>
 
@@ -260,6 +263,11 @@ DataModel
   double beadRadius = c.GetValueAsDouble(sec, "BeadRadius");
   SetBeadRadius(beadRadius);
 
+  double shearX = c.GetValueAsDouble(sec, "ShearX");
+  m_GibsonLanniBSFSource->SetShearX(shearX);
+  double shearY = c.GetValueAsDouble(sec, "ShearY");
+  m_GibsonLanniBSFSource->SetShearY(shearY);
+  
   SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture"));
   SetGLMagnification(c.GetValueAsFloat(sec, "Magnification"));
   SetGLDesignCoverSlipRefractiveIndex
@@ -319,6 +327,9 @@ DataModel
   c.SetValueFromDoubleArray(sec, "BeadCenter", vec3, 3);
 
   c.SetValueFromDouble(sec, "BeadRadius", GetBeadRadius());
+
+  c.SetValueFromDouble(sec, "ShearX", m_GibsonLanniBSFSource->GetShearX());
+  c.SetValueFromDouble(sec, "ShearY", m_GibsonLanniBSFSource->GetShearY());
 
   c.SetValueFromFloat(sec, "NumericalAperture",
 		      GetGLNumericalAperture());
@@ -972,6 +983,18 @@ DataModel
   m_Optimizer->SetFunctionConvergenceTolerance(1e-3);
   m_Optimizer->SetInitialPosition(activeParameters);
   m_Optimizer->StartOptimization();
+
+  // Write the parameters back to the source object
+  ParametersType optimizedParameters = m_Optimizer->GetCurrentPosition();
+  ParametersType allParameters = m_GibsonLanniBSFSource->GetParameters();
+  activeIndex = 0;
+  for (unsigned int i = 0; i < mask->Size(); i++) {
+    if (mask->GetElement(i)) {
+      allParameters[i] = optimizedParameters[activeIndex++];
+    }
+  }
+
+  m_GibsonLanniBSFSource->SetParameters(allParameters);
 }
 
 #endif // _DATA_MODEL_CXX_
