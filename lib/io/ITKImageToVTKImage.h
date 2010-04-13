@@ -29,6 +29,8 @@ protected:
 	
 };
 
+#ifndef ITK_MANUAL_INSTANTIATION
 #include "ITKImageToVTKImage.cxx"
+#endif
 
 #endif // _ITK_IMAGE_TO_VTK_IMAGE_H_

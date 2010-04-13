@@ -3,6 +3,8 @@
 
 #include "ITKImageToVTKImage.h"
 
+#include "itkVTKImageExport.h"
+
 #include <vtkImageImport.h>
 
 template <class TImage>

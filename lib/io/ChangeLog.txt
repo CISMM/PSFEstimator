@@ -1,3 +1,8 @@
+2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
+
+   * ITKImageToVTKImage.h,.cxx: Added ITK_MANUAL_INSTANTIATION trick to this
+   file.
+
 2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
 
    * Configuration.cxx: Fixed bug in SetValueFromBool().
