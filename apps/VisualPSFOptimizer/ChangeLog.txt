@@ -1,5 +1,10 @@
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Set background color to near Carolina blue to make
+   it easier to see boundaries of the PSF.
+
+2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Added call to Sully() after the optimize button
    has been pressed.
 
