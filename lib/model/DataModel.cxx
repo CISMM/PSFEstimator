@@ -89,8 +89,8 @@ DataModel
   m_InitialSimplexDelta[index++] = 10.0; // Bead center X
   m_InitialSimplexDelta[index++] = 10.0; // Bead center Y
   m_InitialSimplexDelta[index++] = 10.0; // Bead center Z
-  m_InitialSimplexDelta[index++] = 0.01; // Shear X
-  m_InitialSimplexDelta[index++] = 0.01; // Shear Y
+  m_InitialSimplexDelta[index++] = 0.1; // Shear X
+  m_InitialSimplexDelta[index++] = 0.1; // Shear Y
   m_InitialSimplexDelta[index++] = 5.0; // Emission wavelength
   m_InitialSimplexDelta[index++] = 0.05; // NA
   m_InitialSimplexDelta[index++] = 1.0; // Magnification

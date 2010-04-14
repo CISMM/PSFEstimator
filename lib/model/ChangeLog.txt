@@ -1,5 +1,9 @@
 2010-04-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * DataModel.cxx: Increased initial simplex deltas for shearing parameters.
+
+2010-04-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * DataModel.h,.cxx: Made the bead-spread function generator class the
    primary entity from which data values shown in the GUI are retrieved.
    
