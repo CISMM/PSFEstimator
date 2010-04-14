@@ -1,3 +1,16 @@
+2010-04-14  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Made the bead-spread function generator class the
+   primary entity from which data values shown in the GUI are retrieved.
+   
+   Added parameters to control the size of the simplex in the Nelder-Mead
+   optimization routine. This approximately sets the scale of changes made by
+   the Nelder-Mead algorithm for each parameter such that those changes cause
+   approximately the same amount of change to the image comparison function
+   value. For example, changes to the center of the bead-spread function should
+   take place on the scale of 10nm, while changes of the design refractive
+   index should be in the thousandths.
+
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Added saving/loading of shear parameters to settings

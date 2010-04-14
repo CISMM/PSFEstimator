@@ -5,6 +5,7 @@
 #pragma warning( disable : 4996 )
 #endif
 
+#include <cfloat>
 #include <cstdlib>
 
 #include <itkMultiThreader.h>
@@ -48,6 +49,9 @@ DataModel
   m_CostFunction->SetImageToImageMetric(m_ImageToImageCostFunction);
   m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
+  SetInitialSimplexDeltas();
+  
+
   // ITK will detect the number of cores on the system and set it by default.
   // Here we can override that setting if the proper environment variable is
   // set.
@@ -66,6 +70,42 @@ DataModel
   delete m_MeasuredImageITKToVTKFilter;
   delete m_PSFImageITKToVTKFilter;
   delete m_BSFImageITKToVTKFilter;
+}
+
+
+void
+DataModel
+::SetInitialSimplexDeltas() {
+  m_InitialSimplexDelta.
+    SetSize(m_GibsonLanniBSFSource->GetNumberOfParameters());
+  
+  int index = 0;
+  m_InitialSimplexDelta[index++] = 1.0; // X-spacing
+  m_InitialSimplexDelta[index++] = 1.0; // Y-spacing
+  m_InitialSimplexDelta[index++] = 1.0; // Z-spacing
+  m_InitialSimplexDelta[index++] = 1.0; // CCD border X
+  m_InitialSimplexDelta[index++] = 1.0; // CCD border Y
+  m_InitialSimplexDelta[index++] = 5.0; // Bead radius
+  m_InitialSimplexDelta[index++] = 10.0; // Bead center X
+  m_InitialSimplexDelta[index++] = 10.0; // Bead center Y
+  m_InitialSimplexDelta[index++] = 10.0; // Bead center Z
+  m_InitialSimplexDelta[index++] = 0.01; // Shear X
+  m_InitialSimplexDelta[index++] = 0.01; // Shear Y
+  m_InitialSimplexDelta[index++] = 5.0; // Emission wavelength
+  m_InitialSimplexDelta[index++] = 0.05; // NA
+  m_InitialSimplexDelta[index++] = 1.0; // Magnification
+  m_InitialSimplexDelta[index++] = 0.001; // Design cover slip RI
+  m_InitialSimplexDelta[index++] = 0.001; // Actual cover slip RI
+  m_InitialSimplexDelta[index++] = 1.0;   // Design cover slip thickness
+  m_InitialSimplexDelta[index++] = 1.0;   // Actual cover slip thickness
+  m_InitialSimplexDelta[index++] = 0.001; // Design immersion oil RI
+  m_InitialSimplexDelta[index++] = 0.001; // Actual immersion oil RI
+  m_InitialSimplexDelta[index++] = 1.0;   // Design immersion oil thickness
+  m_InitialSimplexDelta[index++] = 0.001; // Design specimen layer RI
+  m_InitialSimplexDelta[index++] = 0.001; // Actual specimen layer RI
+  m_InitialSimplexDelta[index++] = 1.0;   // Actual point source depth
+  m_InitialSimplexDelta[index++] = 1.0;   // Design distance from back focal plane
+  m_InitialSimplexDelta[index++] = 1.0;   // Actual distance from back focal plane
 }
 
 
@@ -191,6 +231,7 @@ DataModel
 
   // Set up optimizer, but don't connect it to the cost function just yet.
   m_Optimizer = OptimizerType::New();
+  m_Optimizer->AutomaticInitialSimplexOff();
 }
 
 
@@ -243,6 +284,7 @@ DataModel
   c.GetValueAsDoubleArray(sec, "VoxelSpacing", vec3, 3);
   SetMeasuredImageVoxelSpacing(vec3);
   SetPSFImageVoxelSpacing(vec3);
+  SetBSFImageVoxelSpacing(vec3);
 
   // Set up origin so that (0, 0, 0) is centered in the image volume.
   int dimensions[3];
@@ -253,11 +295,13 @@ DataModel
   }
   SetMeasuredImageOrigin(origin);
   SetPSFImageOrigin(origin);
+  SetBSFImageOrigin(origin);
 
   c.GetValueAsDoubleArray(sec, "CCDBorderWidth", vec3, 2);
   SetCCDBorderWidth(vec3);
 
   c.GetValueAsDoubleArray(sec, "BeadCenter", vec3, 3);
+  SetPSFPointCenter(vec3);
   SetBSFPointCenter(vec3);
 
   double beadRadius = c.GetValueAsDouble(sec, "BeadRadius");
@@ -317,13 +361,13 @@ DataModel
   sec = std::string("GibsonLanniPSFSettings");
 
   double vec3[3];
-  GetPSFImageVoxelSpacing(vec3);
+  GetBSFImageVoxelSpacing(vec3);
   c.SetValueFromDoubleArray(sec, "VoxelSpacing", vec3, 3);
 
   GetCCDBorderWidth(vec3);
   c.SetValueFromDoubleArray(sec, "CCDBorderWidth", vec3, 2);
 
-  GetPSFPointCenter(vec3);
+  GetBSFPointCenter(vec3);
   c.SetValueFromDoubleArray(sec, "BeadCenter", vec3, 3);
 
   c.SetValueFromDouble(sec, "BeadRadius", GetBeadRadius());
@@ -859,7 +903,6 @@ DataModel
   for (int i = 0; i < 3; i++)
     fCenter[i] = static_cast<float>(center[i]);
   m_GibsonLanniPSFSource->SetPointCenter(fCenter);
-  m_GibsonLanniBSFSource->SetBeadCenter(fCenter);
 }
 
 
@@ -878,7 +921,7 @@ DataModel
   float fCenter[3];
   for (int i = 0; i < 3; i++)
     fCenter[i] = static_cast<float>(center[i]);
-  m_GibsonLanniPSFSource->SetPointCenter(fCenter);
+  m_GibsonLanniBSFSource->SetBeadCenter(fCenter);
 }
 
 
@@ -924,8 +967,6 @@ void
 DataModel
 ::SetGLParameterEnabled(unsigned int index, bool enabled) {
   try {
-    typedef ParameterizedCostFunctionType::ParametersMaskType
-      ParametersMaskType;
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
     if (index < parametersMask->Size()) {
       parametersMask->SetElement(index, enabled ? 1 : 0);
@@ -939,8 +980,6 @@ DataModel
 ::GetGLParameterEnabled(unsigned int index) {
   bool enabled = false;
   try {
-    typedef ParameterizedCostFunctionType::ParametersMaskType
-      ParametersMaskType;
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
     if (index < parametersMask->Size()) {
       enabled = parametersMask->GetElement(index) != 0;
@@ -954,25 +993,40 @@ DataModel
 double
 DataModel
 ::GetImageComparisonMetricValue() {
-  return m_CostFunction->GetValue(m_GibsonLanniBSFSource->GetParameters());
+  // Pass only the active parameter values to the cost function
+  try {
+    ParametersMaskType* mask = m_CostFunction->GetParametersMask();
+    ParametersType activeParameters = 
+      ParametersType(m_CostFunction->GetNumberOfParameters());
+
+    int activeIndex = 0;
+    for (unsigned int i = 0; i < mask->Size(); i++) {
+      if (mask->GetElement(i)) {
+        activeParameters[activeIndex++] = 
+          m_GibsonLanniBSFSource->GetParameters()[i];
+      }
+    }
+
+    return m_CostFunction->GetValue(activeParameters);
+  } catch (...) {}
+
+  return DBL_MAX;
 }
 
 
 void
 DataModel
 ::Optimize() {
-  typedef ParameterizedCostFunctionType::ParametersMaskType
-    ParametersMaskType;
   ParametersMaskType* mask = m_CostFunction->GetParametersMask();
 
   // Pluck out the active parameters
-  typedef ParameterizedCostFunctionType::ParametersType ParametersType;
-  ParametersType activeParameters
-    = ParametersType(m_CostFunction->GetNumberOfParameters());
+  ParametersType activeParameters(m_CostFunction->GetNumberOfParameters());
+  ParametersType initialSimplexDelta(m_CostFunction->GetNumberOfParameters());
   int activeIndex = 0;
   for (unsigned int i = 0; i < mask->Size(); i++) {
     if (mask->GetElement(i)) {
-      activeParameters[activeIndex++] = m_GibsonLanniBSFSource->GetParameters()[i];
+      activeParameters[activeIndex] = m_GibsonLanniBSFSource->GetParameters()[i];
+      initialSimplexDelta[activeIndex++] = m_InitialSimplexDelta[i];
     }
   }
 
@@ -980,8 +1034,10 @@ DataModel
   m_ImageToImageCostFunction
     ->SetFixedImageRegion(m_GibsonLanniBSFSource->GetOutput()->GetLargestPossibleRegion());
   m_Optimizer->SetCostFunction(m_CostFunction);
-  m_Optimizer->SetFunctionConvergenceTolerance(1e-3);
+  m_Optimizer->SetFunctionConvergenceTolerance(1e-1);
   m_Optimizer->SetInitialPosition(activeParameters);
+  m_Optimizer->SetInitialSimplexDelta(initialSimplexDelta);
+
   m_Optimizer->StartOptimization();
 
   // Write the parameters back to the source object
