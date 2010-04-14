@@ -1,5 +1,9 @@
 2010-04-14  Cory Quammen <cquammen@cs.unc.edu>
 
+   * DataModel.cxx: Increased initial simplex deltas for bead center parameters.
+   
+2010-04-14  Cory Quammen <cquammen@cs.unc.edu>
+
    * DataModel.cxx: Increased initial simplex deltas for shearing parameters.
 
 2010-04-14  Cory Quammen <cquammen@cs.unc.edu>

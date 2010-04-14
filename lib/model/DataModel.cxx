@@ -85,10 +85,10 @@ DataModel
   m_InitialSimplexDelta[index++] = 1.0; // Z-spacing
   m_InitialSimplexDelta[index++] = 1.0; // CCD border X
   m_InitialSimplexDelta[index++] = 1.0; // CCD border Y
-  m_InitialSimplexDelta[index++] = 5.0; // Bead radius
-  m_InitialSimplexDelta[index++] = 10.0; // Bead center X
-  m_InitialSimplexDelta[index++] = 10.0; // Bead center Y
-  m_InitialSimplexDelta[index++] = 10.0; // Bead center Z
+  m_InitialSimplexDelta[index++] = 10.0; // Bead radius
+  m_InitialSimplexDelta[index++] = 100.0; // Bead center X
+  m_InitialSimplexDelta[index++] = 100.0; // Bead center Y
+  m_InitialSimplexDelta[index++] = 100.0; // Bead center Z
   m_InitialSimplexDelta[index++] = 0.1; // Shear X
   m_InitialSimplexDelta[index++] = 0.1; // Shear Y
   m_InitialSimplexDelta[index++] = 5.0; // Emission wavelength
