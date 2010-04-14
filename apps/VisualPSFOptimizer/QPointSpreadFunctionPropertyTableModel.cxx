@@ -288,7 +288,7 @@ QPointSpreadFunctionPropertyTableModel
 
   m_PropertyValues.append(m_DataModel->GetBeadRadius());
 
-  m_DataModel->GetPSFPointCenter(triplet);
+  m_DataModel->GetBSFPointCenter(triplet);
   for (int i = 0; i < 3; i++)
     m_PropertyValues.append(triplet[i]);
 
@@ -338,6 +338,7 @@ QPointSpreadFunctionPropertyTableModel
   for (int i = 0; i < 3; i++)
     triplet[i] = m_PropertyValues[item++];
   m_DataModel->SetPSFPointCenter(triplet);
+  m_DataModel->SetBSFPointCenter(triplet);
 
   m_DataModel->SetShearX(m_PropertyValues[item++]);
   m_DataModel->SetShearY(m_PropertyValues[item++]);

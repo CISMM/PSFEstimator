@@ -1,5 +1,13 @@
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
 
+   * QPointSpreadFunctionPropertyTableModel.cxx: Now sets the bead-spread
+   function center and displays it in the GUI.
+   
+   * VisualPSFOptimizer.cxx: Added code to ensure that the parameters found
+   by the optimization routine are displayed in the GUI.
+
+2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Set background color to near Carolina blue to make
    it easier to see boundaries of the PSF.
 

@@ -682,6 +682,12 @@ VisualPSFOptimizer
 
   Sully();
   RefreshUI();
+
+  // Load settings from the data model.
+  m_PSFPropertyTableModel->InitializeSettingsCache();
+  m_PSFPropertyTableModel->Refresh();
+
+  on_applyButton_clicked();
 }
 
 
