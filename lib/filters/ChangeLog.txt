@@ -1,3 +1,8 @@
+2010-04-19  Cory Quammen <cquammen@cs.unc.edu>
+
+   * CMakeLists.txt: Accommodating renaming of itkParametricImageSource and
+   itkImageToParametricImageSourceMetric source files.
+
 2010-03-30  Cory Quammen <cquammen@cs.unc.edu>
 
    * itk/itkPoissonNoiseImageToImageMetric.h,.cxx: Initial check-in, copied from
