@@ -1,9 +1,9 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkParameterizedImageSource.h,v $
+  Module:    $RCSfile: itkParametricImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/17 16:10:19 $
+  Date:      $Date: 2010/04/19 18:50:02 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
@@ -17,8 +17,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkParameterizedImageSource_h
-#define __itkParameterizedImageSource_h
+#ifndef __itkParametricImageSource_h
+#define __itkParametricImageSource_h
 
 #include "itkArray.h"
 #include "itkImageSource.h"
@@ -26,8 +26,8 @@
 namespace itk
 {
 
-/** \class ParameterizedParameterizedImageSource
- *  \brief Extends ParameterizedImageSource so that parameters can be passed 
+/** \class ParametricImageSource
+ *  \brief Extends ImageSource so that parameters can be passed 
  *  to it as a vector of values using the SetParameters() method. This method
  *  enables parameterized image sources to be used within ITK's optimization/
  *  registration framework.
@@ -35,11 +35,11 @@ namespace itk
  * \ingroup DataSources
  */
 template <class TOutputImage>
-class ITK_EXPORT ParameterizedImageSource : public ImageSource< TOutputImage >
+class ITK_EXPORT ParametricImageSource : public ImageSource< TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef ParameterizedImageSource               Self;
+  typedef ParametricImageSource     Self;
   typedef ProcessObject             Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
@@ -48,7 +48,7 @@ public:
   typedef DataObject::Pointer DataObjectPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ParameterizedImageSource,ImageSource);
+  itkTypeMacro(ParametricImageSource,ImageSource);
 
   /** Some convenient typedefs. */
   typedef TOutputImage                         OutputImageType;
@@ -56,42 +56,33 @@ public:
   typedef typename OutputImageType::RegionType OutputImageRegionType;
   typedef typename OutputImageType::PixelType  OutputImagePixelType;
 
-  typedef double                       ParametersValueType;
-  typedef Array< ParametersValueType > ParametersType;
+  typedef double                               ParametersValueType;
+  typedef Array< ParametersValueType >         ParametersType;
 
    /** ImageDimension constant */
   itkStaticConstMacro(OutputImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
 
   /** Set the parameters for this source. */
-  virtual void SetParameters(const ParametersType& parameters) = 0;
+  virtual void           SetParameters(const ParametersType& parameters) = 0;
   virtual ParametersType GetParameters() const = 0;
-  virtual unsigned int GetNumberOfParameters() const = 0;
+  virtual unsigned int   GetNumberOfParameters() const = 0;
   
 protected:
-  ParameterizedImageSource();
-  virtual ~ParameterizedImageSource() {}
+  ParametricImageSource();
+  virtual ~ParametricImageSource() {}
     
 private:
-  ParameterizedImageSource(const Self&); //purposely not implemented
+  ParametricImageSource(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 };
 
 } // end namespace itk
 
-// Define instantiation macro for this template.
-#define ITK_TEMPLATE_ParameterizedImageSource(_, EXPORT, x, y) namespace itk { \
-  _(1(class EXPORT ParameterizedImageSource< ITK_TEMPLATE_1 x >)) \
-  namespace Templates { typedef ParameterizedImageSource< ITK_TEMPLATE_1 x > ParameterizedImageSource##y; } \
-  }
 
-#if ITK_TEMPLATE_EXPLICIT
-# include "Templates/itkParameterizedImageSource+-.h"
-#endif
-
-#if ITK_TEMPLATE_TXX
-# include "itkParameterizedImageSource.cxx"
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkParametricImageSource.txx"
 #endif
 
 #endif

@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkParameterizedImageSource.cxx,v $
+  Module:    $RCSfile: itkParametricImageSource.txx,v $
   Language:  C++
   Date:      $Date: 2009/07/17 16:10:19 $
   Version:   $Revision: 1.1 $
@@ -17,9 +17,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkParameterizedImageSource_txx
-#define __itkParameterizedImageSource_txx
-#include "itkParameterizedImageSource.h"
+#ifndef __itkParametricImageSource_txx
+#define __itkParametricImageSource_txx
+#include "itkParametricImageSource.h"
 
 namespace itk
 {
@@ -28,8 +28,8 @@ namespace itk
  *
  */
 template<class TOutputImage>
-ParameterizedImageSource<TOutputImage>
-::ParameterizedImageSource()
+ParametricImageSource<TOutputImage>
+::ParametricImageSource()
 {
   // Create the output. We use static_cast<> here because we know the default
   // output must be of type TOutputImage

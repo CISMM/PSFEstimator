@@ -1,3 +1,12 @@
+2010-04-19  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itkParametricImageSource.h,.txx: Renamed from itkParameterizedImageSource.
+   
+   * itkImageToParametricImageSource.h,.txx: Renamed from itkImageToParameterizedImageSource.
+
+   * itkGibsonLanniBSFImageSource.h,itkGibsonLanniPSFImageSource.h: 
+   Fixes for above renaming.
+
 2010-03-30  Cory Quammen <cquammen@cs.unc.edu>
 
    * itkGibsonLanniBSFImageSource.h,.cxx: Fixed intensity rescaling math.

@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.cxx,v $
+  Module:    $RCSfile: itkImageToParametricImageSourceMetric.txx,v $
   Language:  C++
   Date:      $Date: 2009/09/17 20:30:15 $
   Version:   $Revision: 1.5 $
@@ -14,15 +14,15 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkImageToParameterizedImageSourceMetric_txx
-#define __itkImageToParameterizedImageSourceMetric_txx
+#ifndef __itkImageToParametricImageSourceMetric_txx
+#define __itkImageToParametricImageSourceMetric_txx
 
 // First, make sure that we include the configuration file.
 // This line may be removed once the ThreadSafeTransform gets
 // integrated into ITK.
 #include "itkConfigure.h"
 
-#include "itkImageToParameterizedImageSourceMetric.h"
+#include "itkImageToParametricImageSourceMetric.h"
 
 namespace itk
 {
@@ -31,34 +31,32 @@ namespace itk
  * Constructor
  */
 template <class TFixedImage, class TMovingImageSource> 
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
-::ImageToParameterizedImageSourceMetric()
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::ImageToParametricImageSourceMetric()
 {
-  m_FixedImage            = 0; // has to be provided by the user.
-  m_MovingImageSource     = 0; // has to be provided by the user.
-  m_ImageToImageMetric    = 0; // has to be provided by the user.
-  m_Transform             = TransformType::New();
-  m_Interpolator          = InterpolatorType::New();
-  m_ParametersMask        = ParametersMaskType(0);
+  m_FixedImage        = 0; // has to be provided by the user.
+  m_MovingImageSource = 0; // has to be provided by the user.
+  m_DelegateMetric    = 0; // has to be provided by the user.
+  m_Transform         = TransformType::New(); // immutable
+  m_Interpolator      = 0; // has to be provided by the user.
+  m_ParametersMask    = ParametersMaskType(0);
 }
+
 
 /**
  * Destructor
  */
 template <class TFixedImage, class TMovingImageSource> 
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
-::~ImageToParameterizedImageSourceMetric()
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::~ImageToParametricImageSourceMetric()
 {
 
 }
 
 
-/**
- * Set the moving image source.
- */
 template <class TFixedImage, class TMovingImageSource>
 void
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::SetMovingImageSource(MovingImageSourceType* source) {
   itkDebugMacro("setting MovingImageSource to " << source );
   if (this->m_MovingImageSource != source) {
@@ -77,53 +75,83 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 }
 
 
-/**
- * Set the ImageToImageMetric.
- */
 template <class TFixedImage, class TMovingImageSource>
 void
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
-::SetImageToImageMetric(ImageToImageMetricType* source) {
-  itkDebugMacro("setting ImageToImageMetric to " << source );
-  if (this->m_ImageToImageMetric != source) {
-    this->m_ImageToImageMetric = source;
-    this->Modified();
-    
-    m_ImageToImageMetric->SetTransform(m_Transform);
-    m_ImageToImageMetric->SetInterpolator(m_Interpolator);
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::SetTransform(TransformType* transform) {
+  itkWarningMacro(<< "Setting the Transform on an "
+                  << "ImageToParametrizedImageSourceMetric has no effect. "
+                  << "Default IdentityTransform still in use."); 
+}
+
+
+template <class TFixedImage, class TMovingImageSource>
+const unsigned long &
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::GetNumberOfPixelsCounted() const {
+  if (m_DelegateMetric) {
+    return m_DelegateMetric->GetNumberOfPixelsCounted();
+  }
+  return 0L;
+}
+
+
+template <class TFixedImage, class TMovingImageSource>
+void
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::SetFixedImageRegion(FixedImageRegionType region) {
+  if (m_DelegateMetric) {
+    m_DelegateMetric->SetFixedImageRegion(region);
   }
 }
 
 
-/**
- * Get the derivative of the cost function.
- */
+template <class TFixedImage, class TMovingImageSource>
+const typename ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>::FixedImageRegionType & 
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::GetFixedImageRegion() {
+  return m_DelegateMetric->GetFixedImageRegion();
+}
+
+
 template <class TFixedImage, class TMovingImageSource>
 void
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
+::SetDelegateMetric(DelegateMetricType* source) {
+  itkDebugMacro("setting DelegateMetric to " << source );
+  if (this->m_DelegateMetric != source) {
+    this->m_DelegateMetric = source;
+    this->Modified();
+    
+    m_DelegateMetric->SetTransform(m_Transform);
+    m_DelegateMetric->SetInterpolator(m_Interpolator);
+  }
+}
+
+
+template <class TFixedImage, class TMovingImageSource>
+void
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::GetDerivative(const ParametersType& parameters, DerivativeType& derivative) const {
   // Do nothing.
 }
 
 
-/**
- * Get the value of the cost function. The parameters passed into this method
- * are assumed to be the active parameters which is a subset of all parameters.
- */
 template <class TFixedImage, class TMovingImageSource>
-typename ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>::MeasureType
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+typename ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>::MeasureType
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::GetValue(const ParametersType& parameters) const {
   // Send the parameters to the parametric image source.
-  //m_MovingImageSource->SetParameters(parameters);
+  std::cout << "Parameters: " << parameters << std::endl;
   SetParameters(parameters);
-  std::cout << "Parameters: " << parameters << " - ";
+
+  // Now update the parametric image source.
   m_MovingImageSource->GetOutput()->SetRequestedRegionToLargestPossibleRegion();
   m_MovingImageSource->Update();
 
-  m_ImageToImageMetric->SetFixedImage(m_FixedImage);
-  m_ImageToImageMetric->SetFixedImageRegion(m_FixedImage->
-					    GetLargestPossibleRegion());
+  m_DelegateMetric->SetFixedImage(m_FixedImage);
+  m_DelegateMetric->SetFixedImageRegion(m_FixedImage->
+                                        GetLargestPossibleRegion());
 
   // Have to set the new moving image in the interpolator manually because
   // the delegate image to image metric does this only at initialization.
@@ -132,20 +160,17 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
   m_Interpolator->SetInputImage(movingImage);
 
   // Now we can set the moving image in the image to image metric.
-  m_ImageToImageMetric->SetMovingImage(movingImage);
+  m_DelegateMetric->SetMovingImage(movingImage);
 
-  MeasureType value = m_ImageToImageMetric->GetValue(parameters);
+  MeasureType value = m_DelegateMetric->GetValue(parameters);
   std::cout << "Value: " << value << std::endl;
   return value;
 }
 
 
-/**
- * Set the active parameters of the moving image source.
- */
 template <class TFixedImage, class TMovingImageSource> 
 void
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::SetParameters( const ParametersType & parameters ) const
 {
   if( !m_MovingImageSource )
@@ -165,14 +190,11 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 }
 
 
-/**
- * Get the number of parameters.
- */
 template <class TFixedImage, class TMovingImageSource>
 unsigned int
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::GetNumberOfParameters(void) const {
-  ParametersMaskType* mask = const_cast< ImageToParameterizedImageSourceMetric< TFixedImage,TMovingImageSource >* >(this)->GetParametersMask();
+  ParametersMaskType* mask = const_cast< ImageToParametricImageSourceMetric< TFixedImage,TMovingImageSource >* >(this)->GetParametersMask();
 
   // Count up the active parameters
   unsigned int activeCount = 0;
@@ -185,12 +207,9 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 }
 
 
-/**
- * Get parameters mask array.
- */
 template <class TFixedImage, class TMovingImageSource> 
-typename ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>::ParametersMaskType*
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+typename ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>::ParametersMaskType*
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::GetParametersMask() throw ( ExceptionObject ) {
   if (m_ParametersMask.Size() == 0) {
     itkExceptionMacro(<<"MovingImageSource is not present so the parameters mask has not been initialized");
@@ -200,12 +219,9 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 }
 
 
-/**
- * Initialize
- */
 template <class TFixedImage, class TMovingImageSource> 
 void
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::Initialize(void) throw ( ExceptionObject )
 {
 
@@ -219,7 +235,7 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
     itkExceptionMacro(<<"FixedImage is not present");
     }
 
-  if( !m_ImageToImageMetric )
+  if( !m_DelegateMetric )
     {
     itkExceptionMacro(<<"ImageToImageMetric is not present");
     }
@@ -230,17 +246,18 @@ ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
 }
 
 
-/**
- * PrintSelf
- */
 template <class TFixedImage, class TMovingImageSource> 
 void
-ImageToParameterizedImageSourceMetric<TFixedImage,TMovingImageSource>
+ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf( os, indent );
-  os << indent << "Moving Image Source: " << m_MovingImageSource.GetPointer()  << std::endl;
-  os << indent << "Fixed  Image: " << m_FixedImage.GetPointer()   << std::endl;
+  os << indent << "Fixed  Image: " << m_FixedImage.GetPointer() << std::endl;
+  os << indent << "Moving Image Source: " << m_MovingImageSource.GetPointer() << std::endl;
+  os << indent << "Image to Image Metric: " << m_DelegateMetric.GetPointer() << std::endl;
+  os << indent << "Transform: " << m_Transform.GetPointer() << std::endl;
+  os << indent << "Interpolator: " << m_Interpolator.GetPointer() << std::endl;
+  os << indent << "ParametersMask: " << m_ParametersMask << std::endl;
 }
 
 

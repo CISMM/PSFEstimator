@@ -1,10 +1,10 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkImageToParameterizedImageSourceMetric.h,v $
+  Module:    $RCSfile: itkImageToParametricImageSourceMetric.h,v $
   Language:  C++
-  Date:      $Date: 2009/07/20 20:26:43 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2010/04/19 18:50:02 $
+  Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkImageToParameterizedImageSourceMetric_h
-#define __itkImageToParameterizedImageSourceMetric_h
+#ifndef __itkImageToParametricImageSourceMetric_h
+#define __itkImageToParametricImageSourceMetric_h
 
 // First make sure that the configuration is available.
 // This line can be removed once the optimized versions
@@ -28,44 +28,47 @@
 #include "itkIdentityTransform.h"
 #include "itkImageBase.h"
 #include "itkImageToImageMetric.h"
-#include "itkNearestNeighborInterpolateImageFunction.h"
+#include "itkInterpolateImageFunction.h"
 #include "itkSingleValuedCostFunction.h"
 
 namespace itk
 {
   
-/** \class ImageToParameterizedImageSourceMetric
+/** \class ImageToParametricImageSourceMetric
  * \brief Computes similarity between two images, one of which is fixed and
- * the other generated from a parameterized image source.
+ * the other generated from a moving ParametricImageSource.
  *
  * This class computes a value that measures the similarity 
- * between the Fixed image and the parameterized Moving image. "Moving"
+ * between the Fixed image and the parametric Moving image. "Moving"
  * in this metric and subclasses refers to changes in the parameters used
  * to generate the image, not movement induced by a spatial transformation.
  *
+ * To compute the similarity, this class uses a delegate ImageToImageMetric
+ * that needs to be set with SetImageToImageMetric method prior to using
+ * this class.
+ *
  * This class is parameterized over two types. The first template class
  * is the fixed image data and the second template class is the source of
- * the moving image source, typically a subclass of 
- * itkParameterizedImageSource.
+ * the moving ParametricImageSource.
  *
  * \ingroup RegistrationMetrics
  *
  */
 
 template <class TFixedImage,  class TMovingImageSource> 
-class ITK_EXPORT ImageToParameterizedImageSourceMetric : public SingleValuedCostFunction 
+class ITK_EXPORT ImageToParametricImageSourceMetric : public SingleValuedCostFunction 
 {
 public:
   /** Standard class typedefs. */
-  typedef ImageToParameterizedImageSourceMetric           Self;
-  typedef SingleValuedCostFunction     Superclass;
-  typedef SmartPointer<Self>           Pointer;
-  typedef SmartPointer<const Self>     ConstPointer;
+  typedef ImageToParametricImageSourceMetric Self;
+  typedef SingleValuedCostFunction           Superclass;
+  typedef SmartPointer<Self>                 Pointer;
+  typedef SmartPointer<const Self>           ConstPointer;
 
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ImageToParameterizedImageSourceMetric, SingleValuedCostFunction);
+  itkTypeMacro(ImageToParametricImageSourceMetric, SingleValuedCostFunction);
 
   /**  Type of the moving Image. */
   typedef TMovingImageSource                         MovingImageSourceType;
@@ -82,8 +85,9 @@ public:
   typedef typename FixedImageType::RegionType        FixedImageRegionType;
 
   /**  Type of the delegate image comparison metric. */
-  typedef ImageToImageMetric<FixedImageType, MovingImageSourceOutputImageType> ImageToImageMetricType;
-  typedef typename ImageToImageMetricType::Pointer ImageToImageMetricTypePointer;
+  typedef ImageToImageMetric<FixedImageType, MovingImageSourceOutputImageType>
+    DelegateMetricType;
+  typedef typename DelegateMetricType::Pointer       DelegateMetricTypePointer;
 
   /** Constants for the image dimensions */
   itkStaticConstMacro(MovingImageSourceDimension, 
@@ -110,62 +114,63 @@ public:
   typedef IdentityTransform<double>        TransformType;
   typedef typename TransformType::Pointer  TransformTypePointer;
 
-  typedef NearestNeighborInterpolateImageFunction<FixedImageType, double>
-    InterpolatorType;
-  typedef typename InterpolatorType::Pointer InterpolatorTypePointer;
+  typedef InterpolateImageFunction<FixedImageType, double>  InterpolatorType;
+  typedef typename InterpolatorType::Pointer                InterpolatorTypePointer;
 
   /** Connect the Fixed Image.  */
-  itkSetConstObjectMacro( FixedImage, FixedImageType );
+  itkSetConstObjectMacro(FixedImage, FixedImageType);
 
   /** Get the Fixed Image. */
-  itkGetConstObjectMacro( FixedImage, FixedImageType );
+  itkGetConstObjectMacro(FixedImage, FixedImageType);
 
   /** Connect the Moving Image Source.  */
   virtual void SetMovingImageSource(MovingImageSourceType* source);
 
   /** Get the Moving Image Source. */
-  itkGetObjectMacro( MovingImageSource, MovingImageSourceType );
+  itkGetObjectMacro(MovingImageSource, MovingImageSourceType);
+
+  /** Overrides SetTransform method of super class. We assume all
+      necessary transformations can be handled by the moving image source,
+      so this method reports that fact and does not overwrite the transform. */
+  void SetTransform(TransformType* transform);
+
+  /** Sets/gets the interpolator to use when accessing values from the
+      fixed image. */
+  itkSetObjectMacro(Interpolator, InterpolatorType);
+  itkGetConstObjectMacro(Interpolator, InterpolatorType);
 
   /** Get the number of pixels considered in the computation. */
-  const unsigned long & GetNumberOfPixelsCounted() const {
-    if (m_ImageToImageMetric) {
-      return m_ImageToImageMetric->GetNumberOfPixelsCounted();
-    }
-    return 0L;
-  }
+  const unsigned long & GetNumberOfPixelsCounted() const;
 
   /** Set the region over which the metric will be computed. Forward to
    * the ImageToImageMetric. */
-  virtual void SetFixedImageRegion(FixedImageRegionType region) {
-    if (m_ImageToImageMetric) {
-      m_ImageToImageMetric->SetFixedImageRegion(region);
-    }
-  }
+  virtual void SetFixedImageRegion(FixedImageRegionType region);
 
   /** Get the region over which the metric will be computed */
-  virtual const FixedImageRegionType & GetFixedImageRegion() {
-    return m_ImageToImageMetric->GetFixedImageRegion();
-  }
+  virtual const FixedImageRegionType & GetFixedImageRegion();
 
   /** Set the delegate ImageToImageMetric. */
-  virtual void SetImageToImageMetric(ImageToImageMetricType* source);
+  virtual void SetDelegateMetric(DelegateMetricType* source);
 
   /** Get the delegate ImageToImageMetric. */
-  itkGetConstObjectMacro( ImageToImageMetric, ImageToImageMetricType );
+  itkGetConstObjectMacro( DelegateMetric, DelegateMetricType );
 
   /** Get the derivative of the cost function (calling this returns an
       undefined derivative); */
   virtual void GetDerivative(const ParametersType& parameters, DerivativeType& derivative) const;
 
-  /** Get the value of the cost function. The parameters argument contains the
-      values of the active parameters only. */
+  /** Get the value of the cost function. The parameters argument should
+      contain the values of the active parameters only (in order), not the
+      full set of parameters. */
   virtual MeasureType GetValue(const ParametersType& parameters) const;
  
-  /** Set active parameters for the Moving Image Source. */
+  /** Set active parameters for the moving image Source. The parameters
+      argument should contain the values of the active parameters only
+      (in order), not the full set of parameters. */
   void SetParameters( const ParametersType & parameters ) const;
 
   /** Return the number of active parameters required by the 
-      ParameterizedImageSource. */
+      ParametricImageSource. */
   virtual unsigned int GetNumberOfParameters(void) const;
 
   /** Get a pointer to the parameter mask. This is the only pathway for
@@ -173,32 +178,32 @@ public:
   ParametersMaskType* GetParametersMask() throw ( ExceptionObject );
 
   /** Initialize the Metric by making sure that all the components
-   *  are present and plugged together correctly     */
+   *  are present and plugged together correctly. */
   virtual void Initialize(void) throw ( ExceptionObject );
 
 
 protected:
-  ImageToParameterizedImageSourceMetric();
-  virtual ~ImageToParameterizedImageSourceMetric();
+  ImageToParametricImageSourceMetric();
+  virtual ~ImageToParametricImageSourceMetric();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  FixedImageConstPointer        m_FixedImage;
-  MovingImageSourcePointer      m_MovingImageSource;
+  FixedImageConstPointer    m_FixedImage;
+  MovingImageSourcePointer  m_MovingImageSource;
   
-  ImageToImageMetricTypePointer m_ImageToImageMetric;
+  DelegateMetricTypePointer m_DelegateMetric;
 
-  /** Disable spatial registration with an identity transform. */
-  TransformTypePointer    m_Transform;
+  /** Disable spatial registration by using an identity transform. */
+  TransformTypePointer      m_Transform;
 
   /** Use nearest neighbor interpolation because we will just be looking up
      pixel values at grid positions. */
-  InterpolatorTypePointer m_Interpolator;
+  InterpolatorTypePointer   m_Interpolator;
 
   /** Mask for parameters. */
-  ParametersMaskType       m_ParametersMask;
+  ParametersMaskType        m_ParametersMask;
 
 private:
-  ImageToParameterizedImageSourceMetric(const Self&); //purposely not implemented
+  ImageToParametricImageSourceMetric(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   
 };
@@ -206,7 +211,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkImageToParameterizedImageSourceMetric.cxx"
+#include "itkImageToParametricImageSourceMetric.txx"
 #endif
 
 #endif

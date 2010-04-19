@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/30 18:46:20 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2010/04/19 18:50:02 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -23,7 +23,7 @@
 #include "itkGibsonLanniPSFImageSource.h"
 #include "itkMinimumMaximumImageCalculator.h"
 #include "itkNumericTraits.h"
-#include "itkParameterizedImageSource.h"
+#include "itkParametricImageSource.h"
 #include "itkShiftScaleInPlaceImageFilter.h"
 #include "itkSphereConvolutionFilter.h"
 
@@ -68,12 +68,12 @@ namespace itk
  */
 template <class TOutputImage>
 class ITK_EXPORT GibsonLanniBSFImageSource : 
-  public ParameterizedImageSource<TOutputImage>
+  public ParametricImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
   typedef GibsonLanniBSFImageSource              Self;
-  typedef ParameterizedImageSource<TOutputImage> Superclass;
+  typedef ParametricImageSource<TOutputImage> Superclass;
   typedef SmartPointer<Self>                     Pointer;
   typedef SmartPointer<const Self>               ConstPointer;
 
@@ -96,7 +96,7 @@ public:
   typedef typename ShiftScaleType::Pointer                   ShiftScalePointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GibsonLanniBSFImageSource,ParameterizedImageSource);
+  itkTypeMacro(GibsonLanniBSFImageSource,ParametricImageSource);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

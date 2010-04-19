@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/03/26 17:29:09 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2010/04/19 18:50:02 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,7 +22,7 @@
 
 #include <complex>
 
-#include "itkParameterizedImageSource.h"
+#include "itkParametricImageSource.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -43,12 +43,12 @@ namespace itk
  */
 template <class TOutputImage>
 class ITK_EXPORT GibsonLanniPSFImageSource : 
-  public ParameterizedImageSource<TOutputImage>
+  public ParametricImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
   typedef GibsonLanniPSFImageSource         Self;
-  typedef ParameterizedImageSource<TOutputImage> Superclass;
+  typedef ParametricImageSource<TOutputImage> Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
@@ -65,7 +65,7 @@ public:
   typedef std::complex<PixelType> complex_t;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GibsonLanniPSFImageSource,ParameterizedImageSource);
+  itkTypeMacro(GibsonLanniPSFImageSource,ParametricImageSource);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
