@@ -1,3 +1,7 @@
+2010-04-19  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Accommdated renaming of member classes.
+
 2010-04-14  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.cxx: Increased initial simplex deltas for bead center parameters.

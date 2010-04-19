@@ -17,7 +17,7 @@
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
 #include <itkImageFileWriter.txx>
-#include <itkImageToParameterizedImageSourceMetric.cxx>
+#include <itkImageToParametricImageSourceMetric.txx>
 #include <itkMinimumMaximumImageCalculator.txx>
 #include <itkPoissonNoiseImageToImageMetric.cxx>
 #include <itkShiftScaleImageFilter.txx>
@@ -45,8 +45,9 @@ DataModel
   m_BSFImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
 
   m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
-  m_CostFunction = ParameterizedCostFunctionType::New();
-  m_CostFunction->SetImageToImageMetric(m_ImageToImageCostFunction);
+  m_CostFunction = ParametricCostFunctionType::New();
+  m_CostFunction->SetInterpolator(InterpolatorType::New());
+  m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
   m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
   SetInitialSimplexDeltas();

@@ -16,7 +16,8 @@
 
 #include <itkAmoebaOptimizer.h>
 #include <itkPoissonNoiseImageToImageMetric.h>
-#include <itkImageToParameterizedImageSourceMetric.h>
+#include <itkImageToParametricImageSourceMetric.h>
+#include <itkNearestNeighborInterpolateImageFunction.h>
 #include <ITKImageToVTKImage.h>
 #undef ITK_MANUAL_INSTANTIATION
 
@@ -73,13 +74,15 @@ public:
     TIFFWriterType;
 
   // Types for optimization.
-  typedef itk::ImageToParameterizedImageSourceMetric<TImage, GibsonLanniBSFImageSourceType>
-    ParameterizedCostFunctionType;
-  typedef ParameterizedCostFunctionType::ParametersMaskType
+  typedef itk::ImageToParametricImageSourceMetric<TImage, GibsonLanniBSFImageSourceType>
+    ParametricCostFunctionType;
+  typedef ParametricCostFunctionType::ParametersMaskType
     ParametersMaskType;
-  typedef ParameterizedCostFunctionType::ParametersType
+  typedef ParametricCostFunctionType::ParametersType
     ParametersType;
 
+  typedef itk::NearestNeighborInterpolateImageFunction<TImage, double>
+    InterpolatorType;
   typedef itk::PoissonNoiseImageToImageMetric<TImage, TImage>
     ImageToImageCostFunctionType;
   typedef itk::AmoebaOptimizer
@@ -338,7 +341,7 @@ protected:
   ITKImageToVTKImage<TImage>* m_BSFImageITKToVTKFilter;
 
   // The cost function used by the optimizer.
-  ParameterizedCostFunctionType::Pointer m_CostFunction;
+  ParametricCostFunctionType::Pointer m_CostFunction;
 
   // The delegate cost function used by m_CostFunction
   ImageToImageCostFunctionType::Pointer  m_ImageToImageCostFunction;
