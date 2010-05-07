@@ -1,0 +1,3 @@
+2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
+
+   * BatchPSFOptimizer.h,.cxx: Initial check-in.
