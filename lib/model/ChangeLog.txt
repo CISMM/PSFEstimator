@@ -1,3 +1,10 @@
+2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Moved totality of session file reading/writing here
+     from the VisualPSFOptimizer class. Will make it easier to build the
+     command-line version of this program. Also added saving/loading of
+     flags indicating which parameters should be optimized.
+
 2010-04-19  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Accommdated renaming of member classes.

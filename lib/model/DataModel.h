@@ -91,6 +91,9 @@ public:
   DataModel();
   virtual ~DataModel();
 
+  bool LoadSessionFile(const std::string& fileName);
+  bool SaveSessionFile(const std::string& fileName);
+
   void SetInitialSimplexDeltas();
 
   void CreateImageFile(int xSize, int ySize, int zSize,
