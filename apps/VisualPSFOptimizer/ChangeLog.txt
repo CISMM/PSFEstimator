@@ -1,3 +1,8 @@
+2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: Changed background color to dark gray instead of
+   bright blue.
+
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
 
    * QPointSpreadFunctionPropertyTableModel.cxx: Now sets the bead-spread

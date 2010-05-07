@@ -48,7 +48,7 @@ VisualPSFOptimizer
   
   // QT/VTK interaction
   m_Renderer = vtkRenderer::New();
-  m_Renderer->SetBackground(0.5, 0.5, 1.0);
+  m_Renderer->SetBackground(0.2, 0.2, 0.2);
   gui->qvtkWidget->GetRenderWindow()->AddRenderer(m_Renderer);
   
   // Instantiate data model.
