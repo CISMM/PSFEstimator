@@ -72,8 +72,8 @@ TARGET_LINK_LIBRARIES( VisualPSFOptimizer
   ITKIO
   ITKNumerics
   vpsfoFilter
-  vpsfoIO
   vpsfoModel
+  vpsfoIO
   vpsfoVisualization
 )
 

@@ -1,5 +1,10 @@
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
+   * CMakeLists.txt: Changed the order of the link libraries so that all the
+   symbols are found.
+
+2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Moved initialization of settings cache in the
    PSF property table model immediately after the image file is opened. Fixed
    up on_actionLoadSession_triggered() so that all settings are read and the
