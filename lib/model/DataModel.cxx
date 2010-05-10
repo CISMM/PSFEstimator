@@ -256,10 +256,6 @@ DataModel
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
-
-  // Set up optimizer, but don't connect it to the cost function just yet.
-  m_Optimizer = OptimizerType::New();
-  m_Optimizer->AutomaticInitialSimplexOff();
 }
 
 
