@@ -202,7 +202,12 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::OpenFile(std::string fileName) {
+
+  m_DataModel->LoadImageFile(fileName);
   
+  m_PSFPropertyTableModel->InitializeSettingsCache();
+  m_PSFPropertyTableModel->Refresh();
+
   // Set status bar with info about the file.
   QString imageInfo("Loaded image '");
   imageInfo.append(fileName.c_str()); imageInfo.append("'.");
@@ -218,9 +223,6 @@ VisualPSFOptimizer
   gui->optimizePSFParametersButton->setEnabled(true);
 
   gui->measuredPSFRadioButton->click();
-
-  m_PSFPropertyTableModel->InitializeSettingsCache();
-  m_PSFPropertyTableModel->Refresh();
 }
 
 
@@ -298,13 +300,18 @@ VisualPSFOptimizer
   }
 
   m_DataModel->LoadSessionFile(fileName.toStdString());
-  Configuration config;
-  m_DataModel->GetConfiguration(config);
-  OpenFile(config.GetValue("FileInfo", "FileName"));
 
   m_PSFPropertyTableModel->InitializeSettingsCache();
+  gui->measuredPSFRadioButton->setEnabled(true);
+  gui->calculatedPSFRadioButton->setEnabled(true);
+  gui->calculatedBSFRadioButton->setEnabled(true);
 
-  RefreshUI();
+  gui->estimatePSFCenterButton->setEnabled(true);
+  gui->optimizePSFParametersButton->setEnabled(true);
+
+  gui->measuredPSFRadioButton->click();
+  SetupRenderer();
+
   on_applyButton_clicked();
 }
 
