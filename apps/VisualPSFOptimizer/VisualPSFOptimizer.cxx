@@ -202,7 +202,6 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::OpenFile(std::string fileName) {
-  m_DataModel->LoadImageFile(fileName);
   
   // Set status bar with info about the file.
   QString imageInfo("Loaded image '");
@@ -298,11 +297,10 @@ VisualPSFOptimizer
     return;
   }
 
+  m_DataModel->LoadSessionFile(fileName.toStdString());
   Configuration config;
-  config.Parse(fileName.toStdString());
-
+  m_DataModel->GetConfiguration(config);
   OpenFile(config.GetValue("FileInfo", "FileName"));
-  m_DataModel->SetConfiguration(config);
 
   m_PSFPropertyTableModel->InitializeSettingsCache();
 
@@ -321,10 +319,7 @@ VisualPSFOptimizer
     return;
   }
 
-  Configuration config;
-  m_DataModel->GetConfiguration(config);
-  std::ofstream os(fileName.toStdString().c_str());
-  config.Write(os);
+  m_DataModel->SaveSessionFile(fileName.toStdString());
 }
 
 
