@@ -1,3 +1,7 @@
+2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.cxx: Added saving/loading of emission wavelength parameter.
+
 2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.h,.cxx: Moved totality of session file reading/writing here

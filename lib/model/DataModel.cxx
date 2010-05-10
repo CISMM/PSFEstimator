@@ -339,6 +339,8 @@ DataModel
   m_GibsonLanniBSFSource->SetShearX(shearX);
   double shearY = c.GetValueAsDouble(sec, "ShearY");
   m_GibsonLanniBSFSource->SetShearY(shearY);
+
+  SetGLEmissionWavelength(c.GetValueAsFloat(sec, "EmissionWavelength"));
   
   SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture"));
   SetGLMagnification(c.GetValueAsFloat(sec, "Magnification"));
@@ -438,6 +440,8 @@ DataModel
   c.SetValueFromDouble(sec, "ShearX", m_GibsonLanniBSFSource->GetShearX());
   c.SetValueFromDouble(sec, "ShearY", m_GibsonLanniBSFSource->GetShearY());
 
+  c.SetValueFromDouble(sec, "EmissionWavelength", m_GibsonLanniBSFSource->GetEmissionWavelength());
+  
   c.SetValueFromFloat(sec, "NumericalAperture",
 		      GetGLNumericalAperture());
   c.SetValueFromFloat(sec, "Magnification",
