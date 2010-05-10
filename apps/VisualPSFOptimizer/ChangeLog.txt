@@ -1,3 +1,9 @@
+2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: Moved comparison metric display to under the Apply
+   button from the image information window. Shrunk some widget spacings to show
+   more controls in a smaller space.
+
 2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: Changed background color to dark gray instead of
