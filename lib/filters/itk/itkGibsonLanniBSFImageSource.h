@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/04/19 18:50:02 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2010/05/10 19:38:40 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,8 +31,10 @@
 #define DelegateSetMacro(name, type) \
 virtual void Set##name(type data) \
 { \
-  m_PSFSource->Set##name(data); \
-  this->Modified(); \
+  if (data != m_PSFSource->Get##name()) { \
+    m_PSFSource->Set##name(data); \
+    this->Modified(); \
+  } \
 }
 
 #define DelegateGetMacro(name, type) \

@@ -1,3 +1,9 @@
+2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itkGibsonLanniBSFImageSource.h: DelegateSetMacro now invokes Modified()
+   method only if the parameter passed in is different from the current value
+   of the parameter.
+
 2010-04-19  Cory Quammen <cquammen@cs.unc.edu>
 
    * CMakeLists.txt: Accommodating renaming of itkParametricImageSource and
