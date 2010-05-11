@@ -320,7 +320,7 @@ DataModel
   SetPSFPointCenter(vec3);
   SetBSFPointCenter(vec3);
 
-  double beadRadius = c.GetValueAsDouble(sec, "BeadRadius", 1.0);
+  double beadRadius = c.GetValueAsDouble(sec, "BeadRadius", GetBeadRadius());
   SetBeadRadius(beadRadius);
 
   double shearX = c.GetValueAsDouble(sec, "ShearX");
@@ -328,38 +328,54 @@ DataModel
   double shearY = c.GetValueAsDouble(sec, "ShearY");
   m_GibsonLanniBSFSource->SetShearY(shearY);
 
-  SetGLEmissionWavelength(c.GetValueAsFloat(sec, "EmissionWavelength", 550.0f));
+  SetGLEmissionWavelength
+    (c.GetValueAsFloat(sec, "EmissionWavelength", GetGLEmissionWavelength()));
 
-  SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture", 1.4f));
-  SetGLMagnification(c.GetValueAsFloat(sec, "Magnification", 60.0f));
+  SetGLNumericalAperture
+    (c.GetValueAsFloat(sec, "NumericalAperture", GetGLNumericalAperture()));
+  SetGLMagnification
+    (c.GetValueAsFloat(sec, "Magnification", GetGLMagnification()));
   SetGLDesignCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex", 1.522));
+    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex", 
+                       GetGLDesignCoverSlipRefractiveIndex()));
   SetGLActualCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex", 1.522));
+    (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex",
+                       GetGLActualCoverSlipRefractiveIndex()));
   SetGLDesignCoverSlipThickness
-    (c.GetValueAsFloat(sec, "DesignCoverSlipThickness", 170.0f));
+    (c.GetValueAsFloat(sec, "DesignCoverSlipThickness",
+                       GetGLDesignCoverSlipThickness()));
   SetGLActualCoverSlipThickness
-    (c.GetValueAsFloat(sec, "ActualCoverSlipThickness", 170.0f));
+    (c.GetValueAsFloat(sec, "ActualCoverSlipThickness",
+                       GetGLActualCoverSlipThickness()));
   SetGLDesignImmersionOilRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignImmersionOilRefractiveIndex", 1.515f));
+    (c.GetValueAsFloat(sec, "DesignImmersionOilRefractiveIndex",
+                       GetGLDesignImmersionOilRefractiveIndex()));
   SetGLActualImmersionOilRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualImmersionOilRefractiveIndex", 1.515f));
+    (c.GetValueAsFloat(sec, "ActualImmersionOilRefractiveIndex",
+                       GetGLActualImmersionOilRefractiveIndex()));
   SetGLDesignImmersionOilThickness
-    (c.GetValueAsFloat(sec, "DesignImmersionOilThickness", 100.0f));
+    (c.GetValueAsFloat(sec, "DesignImmersionOilThickness",
+                       GetGLDesignImmersionOilThickness()));
   SetGLDesignSpecimenLayerRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignSpecimenLayerRefractiveIndex", 1.33f));
+    (c.GetValueAsFloat(sec, "DesignSpecimenLayerRefractiveIndex",
+                       GetGLDesignSpecimenLayerRefractiveIndex()));
   SetGLActualSpecimenLayerRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualSpecimenLayerRefractiveIndex", 1.33f));
+    (c.GetValueAsFloat(sec, "ActualSpecimenLayerRefractiveIndex",
+                       GetGLActualSpecimenLayerRefractiveIndex()));
   SetGLActualPointSourceDepthInSpecimenLayer
-    (c.GetValueAsFloat(sec, "ActualPointSourceDepthInSpecimenLayer", 0.0f));
+    (c.GetValueAsFloat(sec, "ActualPointSourceDepthInSpecimenLayer",
+                       GetGLActualPointSourceDepthInSpecimenLayer()));
   SetGLDesignDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector", 160.0f));
+    (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector",
+                       GetGLDesignDistanceFromBackFocalPlaneToDetector()));
   SetGLActualDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector", 160.0f));
+    (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
+                       GetGLActualDistanceFromBackFocalPlaneToDetector()));
 
   sec = std::string("ZSliceCoordinates");
  
-  SetUseCustomZCoordinates(c.GetValueAsBool(sec, "UseCustomZCoordinates"));
+  SetUseCustomZCoordinates(c.GetValueAsBool(sec, "UseCustomZCoordinates",
+                                            GetUseCustomZCoordinates()));
 
   for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
     char name[128];
