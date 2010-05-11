@@ -1,5 +1,11 @@
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
+   * DataModel.cxx: Removed redundant call to LoadImageFile in SetConfiguration.
+   Added default value arguments to calls to Configuration class's GetValueAs*
+   methods.
+
+2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
+
    * DataModel.cxx: Removed redundant setup of optimizer.
 
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>

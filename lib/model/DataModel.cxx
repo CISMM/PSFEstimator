@@ -79,10 +79,10 @@ DataModel
 ::LoadSessionFile(const std::string& fileName) {
   Configuration config;
   config.Parse(fileName);
-  
+
+  // Read the settings from the configuration structure
   LoadImageFile(config.GetValue("FileInfo", "FileName"));
 
-  // Must do this after the image is loaded
   SetConfiguration(config);
 
   return true;
@@ -200,8 +200,6 @@ DataModel
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
   m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
-  // Set up optimizer, but don't connect it to the cost function just yet.
-  m_Optimizer = OptimizerType::New();  
 }
 
 
@@ -296,14 +294,8 @@ DataModel
 void
 DataModel
 ::SetConfiguration(Configuration & c) {
-  // Read the settings from the configuration structure
-  std::string sec("FileInfo");
+  std::string sec = std::string("GibsonLanniPSFSettings");
 
-  std::string fileName = c.GetValue(sec, "FileName");
-  LoadImageFile(fileName);
-
-  sec = std::string("GibsonLanniPSFSettings");
-  
   double vec3[3];
   c.GetValueAsDoubleArray(sec, "VoxelSpacing", vec3, 3);
   SetMeasuredImageVoxelSpacing(vec3);
@@ -328,7 +320,7 @@ DataModel
   SetPSFPointCenter(vec3);
   SetBSFPointCenter(vec3);
 
-  double beadRadius = c.GetValueAsDouble(sec, "BeadRadius");
+  double beadRadius = c.GetValueAsDouble(sec, "BeadRadius", 1.0);
   SetBeadRadius(beadRadius);
 
   double shearX = c.GetValueAsDouble(sec, "ShearX");
@@ -336,37 +328,37 @@ DataModel
   double shearY = c.GetValueAsDouble(sec, "ShearY");
   m_GibsonLanniBSFSource->SetShearY(shearY);
 
-  SetGLEmissionWavelength(c.GetValueAsFloat(sec, "EmissionWavelength"));
-  
-  SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture"));
-  SetGLMagnification(c.GetValueAsFloat(sec, "Magnification"));
+  SetGLEmissionWavelength(c.GetValueAsFloat(sec, "EmissionWavelength", 550.0f));
+
+  SetGLNumericalAperture(c.GetValueAsFloat(sec, "NumericalAperture", 1.4f));
+  SetGLMagnification(c.GetValueAsFloat(sec, "Magnification", 60.0f));
   SetGLDesignCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex"));
+    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex", 1.522));
   SetGLActualCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex"));
+    (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex", 1.522));
   SetGLDesignCoverSlipThickness
-    (c.GetValueAsFloat(sec, "DesignCoverSlipThickness"));
+    (c.GetValueAsFloat(sec, "DesignCoverSlipThickness", 170.0f));
   SetGLActualCoverSlipThickness
-    (c.GetValueAsFloat(sec, "ActualCoverSlipThickness"));
+    (c.GetValueAsFloat(sec, "ActualCoverSlipThickness", 170.0f));
   SetGLDesignImmersionOilRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignImmersionOilRefractiveIndex"));
+    (c.GetValueAsFloat(sec, "DesignImmersionOilRefractiveIndex", 1.515f));
   SetGLActualImmersionOilRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualImmersionOilRefractiveIndex"));
+    (c.GetValueAsFloat(sec, "ActualImmersionOilRefractiveIndex", 1.515f));
   SetGLDesignImmersionOilThickness
-    (c.GetValueAsFloat(sec, "DesignImmersionOilThickness"));
+    (c.GetValueAsFloat(sec, "DesignImmersionOilThickness", 100.0f));
   SetGLDesignSpecimenLayerRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignSpecimenLayerRefractiveIndex"));
+    (c.GetValueAsFloat(sec, "DesignSpecimenLayerRefractiveIndex", 1.33f));
   SetGLActualSpecimenLayerRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualSpecimenLayerRefractiveIndex"));
+    (c.GetValueAsFloat(sec, "ActualSpecimenLayerRefractiveIndex", 1.33f));
   SetGLActualPointSourceDepthInSpecimenLayer
-    (c.GetValueAsFloat(sec, "ActualPointSourceDepthInSpecimenLayer"));
+    (c.GetValueAsFloat(sec, "ActualPointSourceDepthInSpecimenLayer", 0.0f));
   SetGLDesignDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
+    (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector", 160.0f));
   SetGLActualDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
+    (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector", 160.0f));
 
   sec = std::string("ZSliceCoordinates");
-  
+ 
   SetUseCustomZCoordinates(c.GetValueAsBool(sec, "UseCustomZCoordinates"));
 
   for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
@@ -408,7 +400,6 @@ DataModel
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualPointSourceDepthInSpecimenLayer"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
-
 }
 
 
