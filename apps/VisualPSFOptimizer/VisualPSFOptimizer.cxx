@@ -145,11 +145,22 @@ VisualPSFOptimizer
     float xSpacing = m_NewFileDialogUI.xSpacingEdit->text().toFloat();
     float ySpacing = m_NewFileDialogUI.ySpacingEdit->text().toFloat();
     float zSpacing = m_NewFileDialogUI.zSpacingEdit->text().toFloat();
-    CreateFile(xSize, ySize, zSize, xSpacing, ySpacing, zSpacing);
-    
-    on_applyButton_clicked();
-  }
+    m_DataModel->CreateImageFile(xSize, ySize, zSize,
+                                 xSpacing, ySpacing, zSpacing);
 
+    m_PSFPropertyTableModel->InitializeSettingsCache();
+    m_PSFPropertyTableModel->Refresh();
+   
+    SetupInterface(false);
+    SetupRenderer();
+  
+    on_applyButton_clicked();
+    gui->calculatedPSFRadioButton->click();
+
+    // Set status bar.
+    QString imageInfo("Created new image.");
+    gui->statusbar->showMessage(imageInfo);
+  }
 }
 
 
@@ -159,70 +170,41 @@ VisualPSFOptimizer
 
   // Locate file.
   QString fileName = QFileDialog::getOpenFileName(this, "Open Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
-
-  // Now read the file
   if (fileName == "") {
     return;
   }
 
   // Should probably report if opening the image failed.
-  OpenFile(fileName.toStdString());
-}
-
-
-void
-VisualPSFOptimizer
-::CreateFile(int xSize, int ySize, int zSize,
-             float xSpacing, float ySpacing, float zSpacing) {
-  // Create new image in data model
-  m_DataModel->CreateImageFile(xSize, ySize, zSize,
-                               xSpacing, ySpacing, zSpacing);
-
-  // Set status bar.
-  QString imageInfo("Created new image.");
-  gui->statusbar->showMessage(imageInfo);
-
-  SetupRenderer();
-
-  // Enable/disable appropriate GUI widgets
-  gui->measuredPSFRadioButton->setEnabled(false);
-  gui->calculatedPSFRadioButton->setEnabled(true);
-  gui->calculatedBSFRadioButton->setEnabled(true);
-
-  gui->estimatePSFCenterButton->setEnabled(false);
-  gui->optimizePSFParametersButton->setEnabled(false);
-
-  gui->calculatedPSFRadioButton->click();
-
-  m_PSFPropertyTableModel->InitializeSettingsCache();
-  m_PSFPropertyTableModel->Refresh();
-}
-
-
-void
-VisualPSFOptimizer
-::OpenFile(std::string fileName) {
-
-  m_DataModel->LoadImageFile(fileName);
+  m_DataModel->LoadImageFile(fileName.toStdString());
   
   m_PSFPropertyTableModel->InitializeSettingsCache();
   m_PSFPropertyTableModel->Refresh();
 
-  // Set status bar with info about the file.
-  QString imageInfo("Loaded image '");
-  imageInfo.append(fileName.c_str()); imageInfo.append("'.");
-  gui->statusbar->showMessage(imageInfo);
-
+  SetupInterface(true);
   SetupRenderer();
 
-  gui->measuredPSFRadioButton->setEnabled(true);
+  // Set status bar with info about the file.
+  QString imageInfo("Loaded image '");
+  imageInfo.append(fileName); imageInfo.append("'.");
+  gui->statusbar->showMessage(imageInfo);
+}
+
+
+void
+VisualPSFOptimizer
+::SetupInterface(bool hasMeasuredImage) {
+  gui->measuredPSFRadioButton->setEnabled(hasMeasuredImage);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
 
-  gui->estimatePSFCenterButton->setEnabled(true);
-  gui->optimizePSFParametersButton->setEnabled(true);
+  gui->estimatePSFCenterButton->setEnabled(hasMeasuredImage);
+  gui->optimizePSFParametersButton->setEnabled(hasMeasuredImage);
+  gui->submitOptimizationJobToQueueButton->setEnabled(hasMeasuredImage);
 
-  gui->measuredPSFRadioButton->click();
+  if (hasMeasuredImage)
+    gui->measuredPSFRadioButton->click();
+  else
+    gui->calculatedPSFRadioButton->click();
 }
 
 
@@ -239,10 +221,6 @@ VisualPSFOptimizer
   m_Visualization->SetXPlane(CLAMP(gui->xPlaneEdit->text().toInt()-1,0,dims[0]-1));
   m_Visualization->SetYPlane(CLAMP(gui->yPlaneEdit->text().toInt()-1,0,dims[1]-1));
   m_Visualization->SetZPlane(CLAMP(gui->zPlaneEdit->text().toInt()-1,0,dims[2]-1));
-
-  gui->measuredPSFRadioButton->setEnabled(true);
-  gui->calculatedPSFRadioButton->setEnabled(true);
-  gui->calculatedBSFRadioButton->setEnabled(true);
 
   // Refresh the UI
   RefreshUI();
@@ -294,25 +272,26 @@ VisualPSFOptimizer
 ::on_actionLoadSession_triggered() {
   // Locate file.
   QString fileName = QFileDialog::getOpenFileName(this, "Load Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
-
   if (fileName == "") {
     return;
   }
 
+  // Should probably report if opening the session file failed.
   m_DataModel->LoadSessionFile(fileName.toStdString());
 
   m_PSFPropertyTableModel->InitializeSettingsCache();
-  gui->measuredPSFRadioButton->setEnabled(true);
-  gui->calculatedPSFRadioButton->setEnabled(true);
-  gui->calculatedBSFRadioButton->setEnabled(true);
+  m_PSFPropertyTableModel->Refresh();
 
-  gui->estimatePSFCenterButton->setEnabled(true);
-  gui->optimizePSFParametersButton->setEnabled(true);
-
-  gui->measuredPSFRadioButton->click();
+  SetupInterface(true);
   SetupRenderer();
 
   on_applyButton_clicked();
+  gui->measuredPSFRadioButton->click();
+
+  // Set status bar with info about the file.
+  QString sessionFileInfo("Loaded session file '");
+  sessionFileInfo.append(fileName); sessionFileInfo.append("'.");
+  gui->statusbar->showMessage(sessionFileInfo);
 }
 
 
@@ -320,13 +299,16 @@ void
 VisualPSFOptimizer
 ::on_actionSaveSession_triggered() {
   // Locate file.
-  QString fileName = QFileDialog::getSaveFileName(this, "Save Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
-
+  QString fileName = 
+    QFileDialog::getSaveFileName(this, "Save Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
   if (fileName == "") {
     return;
   }
 
   m_DataModel->SaveSessionFile(fileName.toStdString());
+  QString message("Saved session file '");
+  message.append(fileName); message.append("'.");
+  gui->statusbar->showMessage(message);
 }
 
 
@@ -690,6 +672,13 @@ VisualPSFOptimizer
   m_PSFPropertyTableModel->Refresh();
 
   on_applyButton_clicked();
+}
+
+
+void
+VisualPSFOptimizer
+::on_submitOptimizationJobToQueueButton_clicked() {
+  
 }
 
 

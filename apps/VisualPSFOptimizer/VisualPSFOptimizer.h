@@ -74,6 +74,7 @@ public slots:
   virtual void on_estimatePSFCenterButton_clicked();
   virtual void on_applyButton_clicked();
   virtual void on_optimizePSFParametersButton_clicked();
+  virtual void on_submitOptimizationJobToQueueButton_clicked();
 
   virtual void handle_imageInformationTableModel_dataChanged
     (const QModelIndex& topLeft, const QModelIndex& bottomRight);
@@ -107,9 +108,7 @@ protected:
   
   DisplayImageType m_DisplayedImage;
 
-  void CreateFile(int xSize, int ySize, int zSize,
-                  float xSpacing, float ySpacing, float zSpacing);
-  void OpenFile(std::string fileName);
+  void SetupInterface(bool hasMeasuredImage);
   void SetupRenderer();
   
   void SetDisplayedImageToMeasuredPSF();

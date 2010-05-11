@@ -1,5 +1,14 @@
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.h,.cxx: Made new method SetupInterface that takes care of
+   enabling/disabling UI elements. Deleted methods CreateFile() and OpenFile()
+   and moved their bodies into action handlers directly. Added button for
+   submitting optimization jobs to bass.cs.unc.edu and added empty handlers.
+   
+   * VisualPSFOptimizer.ui: Added button "Submit Optimization Job to Queue".
+
+2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
+
    * CMakeLists.txt: Changed the order of the link libraries so that all the
    symbols are found.
 
