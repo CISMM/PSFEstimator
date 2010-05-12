@@ -12,8 +12,10 @@
 #include <Visualization.h>
 
 #include <QApplication>
+#include <QDateTime>
 #include <QFileDialog>
 #include <QItemEditorFactory>
+#include <QProcess>
 #include <QSettings>
 #include <QStandardItemEditorCreator>
 #include <QVariant>
@@ -316,7 +318,7 @@ void
 VisualPSFOptimizer
 ::on_actionExit_triggered() {
   // Ask if user really wants to quit.
-  QMessageBox messageBox;
+  QMessageBox messageBox(this);
   messageBox.setText("Do you really want to exit?");
   messageBox.setInformativeText("If you exit now, all unsaved settings will be lost.");
   messageBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -678,7 +680,60 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_submitOptimizationJobToQueueButton_clicked() {
+  // Create a working directory in the users home directory if it doesn't exist
+  QDir dir;
+  QString homeDirectory = dir.homePath();
+  QString workingDirectory = homeDirectory;
+  workingDirectory.append("/BatchPSFOptimizer-Files");
   
+  if (!dir.exists(workingDirectory))
+    dir.mkdir(workingDirectory);
+
+  QString dateTimeString = QDateTime::currentDateTime().toString(tr("MM-dd-yyyy-hh-mm-ss")); 
+  QString sessionFile = workingDirectory + dir.separator() + 
+    tr("BatchPSFOptimizer-") + dateTimeString + tr(".vpo");
+
+  // Write the settings file to the working directory
+  m_DataModel->SaveSessionFile(sessionFile.toStdString());
+
+  // Wubmit the job to the queue
+  QProcess qsub;
+  QStringList arguments;
+  arguments << "-N" << "BatchPSFOptimizer";
+
+  QString batchPSFOptimizerExecutable = QCoreApplication::applicationDirPath();
+  batchPSFOptimizerExecutable.append("/BatchPSFOptimizer");
+
+  QStringList script;
+  script <<
+    "#$ -S /bin/bash\n" <<
+    "#$ -o $HOME/BatchPSFOptimizer-Files/$JOB_NAME.$JOB_ID\n" <<
+    "#$ -j y\n" <<
+    "#$ -pe smp 16\n" <<
+
+    "# Run the job.\n" <<
+    "date\n" <<
+    batchPSFOptimizerExecutable << " " << sessionFile << "\n" <<
+    "date\n"
+    ;
+
+  qsub.start("qsub", arguments);
+  qsub.waitForStarted();
+  
+  QString stdin = script.join(tr(""));
+  std::cout << stdin.toStdString() << std::endl;
+  qsub.write(stdin);
+  qsub.closeWriteChannel();
+  qsub.waitForFinished();
+ 
+  QString result(qsub.readAllStandardOutput());
+
+  if (qsub.exitCode() == 0) {
+    gui->statusbar->showMessage(result);
+    QMessageBox::information(this, tr("Optimization job submitted"), result);
+  } else {
+    QMessageBox::information(this, tr("Error"), tr("Could not submit job to queue."));
+  }
 }
 
 

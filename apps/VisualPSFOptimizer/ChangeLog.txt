@@ -1,3 +1,8 @@
+2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.cxx: Added event handler for submission of jobs to the
+   GridEngine on BASS.
+
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.h,.cxx: Made new method SetupInterface that takes care of
