@@ -126,6 +126,9 @@ protected:
   void writeProgramSettings();
   void readProgramSettings();
 
+  void    SaveFileChooserDirectory(const QString& path);
+  QString GetFileChooserDirectory();
+
 protected slots:
 
 private:

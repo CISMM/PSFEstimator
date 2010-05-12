@@ -1,5 +1,11 @@
 2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Now remembers last directory visited by a file
+   chooser so user doesn't have to keep navigating to the same data directory
+   over and over.
+
+2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
+
    * VisualPSFOptimizer.cxx: Shows the "Submit Optimization Job to Queue" button
    only when on BASS.
 

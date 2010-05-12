@@ -14,6 +14,7 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QItemEditorFactory>
 #include <QProcess>
 #include <QRegExp>
@@ -180,10 +181,13 @@ VisualPSFOptimizer
 ::on_actionOpenImage_triggered() {
 
   // Locate file.
-  QString fileName = QFileDialog::getOpenFileName(this, "Open Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+  QString fileName = 
+    QFileDialog::getOpenFileName
+    (this, "Open Image Data", GetFileChooserDirectory(), "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
   if (fileName == "") {
     return;
   }
+  SaveFileChooserDirectory(fileName);
 
   // Should probably report if opening the image failed.
   m_DataModel->LoadImageFile(fileName.toStdString());
@@ -249,12 +253,16 @@ VisualPSFOptimizer
 ::on_actionSavePSFImage_triggered() {
 
   // Locate file.
-  QString fileName = QFileDialog::getSaveFileName(this, "Save PSF Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+  QString fileName = 
+    QFileDialog::getSaveFileName
+    (this, "Save PSF Image Data", GetFileChooserDirectory(),
+     "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
 
   // Now read the file
   if (fileName == "") {
     return;
   }
+  SaveFileChooserDirectory(fileName);
 
   m_DataModel->SavePSFImageFile(fileName.toStdString());
   
@@ -266,12 +274,16 @@ VisualPSFOptimizer
 ::on_actionSaveBSFImage_triggered() {
 
   // Locate file.
-  QString fileName = QFileDialog::getSaveFileName(this, "Save BSF Image Data", "", "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+  QString fileName = 
+    QFileDialog::getSaveFileName
+    (this, "Save BSF Image Data", GetFileChooserDirectory(),
+     "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
 
   // Now read the file
   if (fileName == "") {
     return;
   }
+  SaveFileChooserDirectory(fileName);
 
   m_DataModel->SaveBSFImageFile(fileName.toStdString());
   
@@ -282,10 +294,14 @@ void
 VisualPSFOptimizer
 ::on_actionLoadSession_triggered() {
   // Locate file.
-  QString fileName = QFileDialog::getOpenFileName(this, "Load Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
+  QString fileName = 
+    QFileDialog::getOpenFileName
+    (this, "Load Settings", GetFileChooserDirectory(), 
+     "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
   if (fileName == "") {
     return;
   }
+  SaveFileChooserDirectory(fileName);
 
   // Should probably report if opening the session file failed.
   m_DataModel->LoadSessionFile(fileName.toStdString());
@@ -311,10 +327,13 @@ VisualPSFOptimizer
 ::on_actionSaveSession_triggered() {
   // Locate file.
   QString fileName = 
-    QFileDialog::getSaveFileName(this, "Save Settings", "", "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
+    QFileDialog::getSaveFileName
+    (this, "Save Settings", GetFileChooserDirectory(),
+     "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
   if (fileName == "") {
     return;
   }
+  SaveFileChooserDirectory(fileName);
 
   m_DataModel->SaveSessionFile(fileName.toStdString());
   QString message("Saved session file '");
@@ -950,4 +969,33 @@ VisualPSFOptimizer
     settings.endGroup();
   }
 
+}
+
+
+void
+VisualPSFOptimizer
+::SaveFileChooserDirectory(const QString& path) {
+  // Strip any file name from the end
+  QString newPath = path;
+
+  QFileInfo fileInfo(path);
+  if (!fileInfo.isDir())
+    newPath = fileInfo.dir().absolutePath();
+
+  QSettings settings;
+  settings.beginGroup("FileChooser");
+  settings.setValue("path", newPath);
+  settings.endGroup();
+}
+
+
+QString
+VisualPSFOptimizer
+::GetFileChooserDirectory() {
+  QSettings settings;
+  settings.beginGroup("FileChooser");
+  QString path = settings.value("path", tr(".")).toString();
+  settings.endGroup();
+  
+  return path;
 }
