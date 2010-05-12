@@ -16,9 +16,11 @@
 #include <QFileDialog>
 #include <QItemEditorFactory>
 #include <QProcess>
+#include <QRegExp>
 #include <QSettings>
 #include <QStandardItemEditorCreator>
 #include <QVariant>
+#include <QtNetwork/QHostInfo>
 
 
 #include <vtkActor.h>
@@ -38,6 +40,13 @@ VisualPSFOptimizer
   
   gui = new Ui_MainWindow();
   gui->setupUi(this);
+
+  // Hide queue submission button if domain is not bass.cs.unc.edu
+  QString hostName = QHostInfo::localHostName();
+  QRegExp regExp("bass-comp\\d*\\.cs\\.unc\\.edu");
+  if (!regExp.exactMatch(hostName)) {
+    gui->submitOptimizationJobToQueueButton->setVisible(false);
+  }
 
   // Change the double item editor to QLineEdit
   QItemEditorFactory* factory = new QItemEditorFactory();
