@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY(VisualPSFOptimizer)
+ADD_SUBDIRECTORY(BatchPSFOptimizer)

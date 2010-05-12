@@ -1,4 +1,4 @@
-2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
+2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
 
    * Added BatchPSFOptimizer directory.
 
