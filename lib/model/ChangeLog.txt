@@ -1,3 +1,8 @@
+2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
+
+   * DataModel.h,.cxx: Added PSF background and maximum intensities as user-
+   settable and optimizable parameters.
+
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
    * DataModel.cxx: Now pulls default value arguments for GetValueAs* calls to

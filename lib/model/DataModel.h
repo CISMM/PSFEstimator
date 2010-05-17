@@ -15,7 +15,8 @@
 #include <itkShiftScaleImageFilter.h>
 
 #include <itkAmoebaOptimizer.h>
-#include <itkPoissonNoiseImageToImageMetric.h>
+#include <itkMeanSquaresImageToImageMetric.h>
+//#include <itkPoissonNoiseImageToImageMetric.h>
 #include <itkImageToParametricImageSourceMetric.h>
 #include <itkNearestNeighborInterpolateImageFunction.h>
 #include <ITKImageToVTKImage.h>
@@ -83,7 +84,8 @@ public:
 
   typedef itk::NearestNeighborInterpolateImageFunction<TImage, double>
     InterpolatorType;
-  typedef itk::PoissonNoiseImageToImageMetric<TImage, TImage>
+  //  typedef itk::PoissonNoiseImageToImageMetric<TImage, TImage>
+  typedef itk::MeanSquaresImageToImageMetric<TImage, TImage>
     ImageToImageCostFunctionType;
   typedef itk::AmoebaOptimizer
     OptimizerType;
@@ -303,6 +305,16 @@ public:
   }
   float GetGLActualDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniBSFSource->GetActualDistanceFromBackFocalPlaneToDetector(); }
+
+  void  SetGLBackgroundIntensity(float intensity) {
+    m_GibsonLanniBSFSource->SetBackgroundIntensity(intensity); }
+  float GetGLBackgroundIntensity() {
+    return m_GibsonLanniBSFSource->GetBackgroundIntensity(); }
+
+  void  SetGLMaximumIntensity(float intensity) {
+    m_GibsonLanniBSFSource->SetMaximumIntensity(intensity); }
+  float GetGLMaximumIntensity() {
+    return m_GibsonLanniBSFSource->GetMaximumIntensity(); }
 
   void SetGLParameterEnabled(unsigned int index, bool enabled);
   bool GetGLParameterEnabled(unsigned int index);

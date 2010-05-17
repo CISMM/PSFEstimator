@@ -18,8 +18,9 @@
 #include <itkImageFileReader.txx>
 #include <itkImageFileWriter.txx>
 #include <itkImageToParametricImageSourceMetric.txx>
+#include <itkMeanSquaresImageToImageMetric.txx>
 #include <itkMinimumMaximumImageCalculator.txx>
-#include <itkPoissonNoiseImageToImageMetric.cxx>
+//#include <itkPoissonNoiseImageToImageMetric.cxx>
 #include <itkShiftScaleImageFilter.txx>
 
 #include <ITKImageToVTKImage.cxx>
@@ -134,6 +135,8 @@ DataModel
   m_InitialSimplexDelta[index++] = 1.0;   // Actual point source depth
   m_InitialSimplexDelta[index++] = 1.0;   // Design distance from back focal plane
   m_InitialSimplexDelta[index++] = 1.0;   // Actual distance from back focal plane
+  m_InitialSimplexDelta[index++] = 1.0;   // Background intensity
+  m_InitialSimplexDelta[index++] = 1.0;   // Maximum intensity
 }
 
 
@@ -241,8 +244,8 @@ DataModel
   m_MeasuredImageData->SetOrigin(origin);
 
   // Set the shifting and scaling for the BSF source to that of the measured image
-  m_GibsonLanniBSFSource->SetBackgroundIntensity(m_MeasuredImageMinMaxFilter->GetMinimum());
-  m_GibsonLanniBSFSource->SetMaximumIntensity(m_MeasuredImageMinMaxFilter->GetMaximum());
+  //m_GibsonLanniBSFSource->SetBackgroundIntensity(m_MeasuredImageMinMaxFilter->GetMinimum());
+  //m_GibsonLanniBSFSource->SetMaximumIntensity(m_MeasuredImageMinMaxFilter->GetMaximum());
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
@@ -371,6 +374,12 @@ DataModel
   SetGLActualDistanceFromBackFocalPlaneToDetector
     (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
                        GetGLActualDistanceFromBackFocalPlaneToDetector()));
+  SetGLBackgroundIntensity
+    (c.GetValueAsFloat(sec, "BackgroundIntensity",
+                       GetGLBackgroundIntensity()));
+  SetGLMaximumIntensity
+    (c.GetValueAsFloat(sec, "MaximumIntensity",
+                       GetGLMaximumIntensity()));
 
   sec = std::string("ZSliceCoordinates");
  
@@ -416,6 +425,8 @@ DataModel
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualPointSourceDepthInSpecimenLayer"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
+  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BackgroundIntensity"));
+  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "MaximumIntensity"));
 }
 
 
@@ -473,6 +484,10 @@ DataModel
 		      GetGLDesignDistanceFromBackFocalPlaneToDetector());
   c.SetValueFromFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
 		      GetGLActualDistanceFromBackFocalPlaneToDetector());
+  c.SetValueFromFloat(sec, "BackgroundIntensity",
+                      GetGLBackgroundIntensity());
+  c.SetValueFromFloat(sec, "MaximumIntensity",
+                      GetGLMaximumIntensity());
 
   sec = std::string("ZSliceCoordinates");
   
@@ -517,7 +532,8 @@ DataModel
   c.SetValueFromBool(sec, "ActualPointSourceDepthInSpecimenLayer", GetGLParameterEnabled(index++));
   c.SetValueFromBool(sec, "DesignDistanceFromBackFocalPlaneToDetector", GetGLParameterEnabled(index++));
   c.SetValueFromBool(sec, "ActualDistanceFromBackFocalPlaneToDetector", GetGLParameterEnabled(index++));
-
+  c.SetValueFromBool(sec, "BackgroundIntensity", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "MaximumIntensity", GetGLParameterEnabled(index++));
 }
 
 
