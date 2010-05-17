@@ -297,7 +297,7 @@ VisualPSFOptimizer
   QString fileName = 
     QFileDialog::getOpenFileName
     (this, "Load Settings", GetFileChooserDirectory(), 
-     "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
+     "Visual PSF Optimizer Settings Files (*.vpo);;All Files (*)");
   if (fileName == "") {
     return;
   }
@@ -329,7 +329,7 @@ VisualPSFOptimizer
   QString fileName = 
     QFileDialog::getSaveFileName
     (this, "Save Settings", GetFileChooserDirectory(),
-     "VisualPSFOptimizer Settings Files (*.vpo);;All Files (*)");
+     "Visual PSF Optimizer Settings Files (*.vpo);;All Files (*)");
   if (fileName == "") {
     return;
   }
@@ -369,8 +369,8 @@ VisualPSFOptimizer
 				      VisualPSFOptimizer_MINOR_NUMBER,
 				      VisualPSFOptimizer_REVISION_NUMBER);
   QChar copyright(169);
-  QString title = QString("About VisualPSFOptimizer ").append(version);
-  QString text  = QString("VisualPSFOptimizer ").append(version).append("\n");
+  QString title = QString("About Visual PSF Optimizer ").append(version);
+  QString text  = QString("Visual PSF Optimizer ").append(version).append("\n");
   text.append(copyright).append(" 2010, UNC CISMM\n\n");
   text.append("Developed by:\n");
   text.append("Cory Quammen");
@@ -806,7 +806,7 @@ VisualPSFOptimizer
 
   ///////////////// Update window title /////////////////
   QFileInfo fileInfo(m_DataModel->GetMeasuredImageFileName().c_str());
-  QString windowTitle("VisualPSFOptimizer");
+  QString windowTitle("Visual PSF Optimizer");
   if (fileInfo.fileName() != "")
     windowTitle.append(tr(" - '").append(fileInfo.fileName()).append("'"));
   setWindowTitle(windowTitle);

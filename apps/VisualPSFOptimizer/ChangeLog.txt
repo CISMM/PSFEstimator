@@ -1,5 +1,9 @@
 2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
 
+   * VisualPSFOptimizer.cxx: Minor formatting changes to GUI text elements.
+
+2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
+
    * QPointSpreadFunctionPropertyTableModel.cxx: Handles setting the
    background and maximum intensity level parameters.
 
