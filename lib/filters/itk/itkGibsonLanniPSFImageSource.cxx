@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniPSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/26 17:29:09 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2010/05/17 15:41:35 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,7 +29,7 @@
 #define M_PI 3.14159265f
 #endif // M_PI
 
-#define INTEGRATE_M 50
+#define INTEGRATE_M 20
 #define INTEGRATE_N (2*INTEGRATE_M+1)
  
 namespace itk

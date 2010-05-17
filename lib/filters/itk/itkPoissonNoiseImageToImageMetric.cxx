@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPoissonNoiseImageToImageMetric.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/30 04:17:57 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2010/05/17 15:41:35 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -23,7 +23,7 @@
 #include "itkConfigure.h"
 
 #ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
-#include "itkOptPoissonNoiseImageToImageMetric.txx"
+//#include "itkOptPoissonNoiseImageToImageMetric.txx"
 #else
 
 #include "itkPoissonNoiseImageToImageMetric.h"

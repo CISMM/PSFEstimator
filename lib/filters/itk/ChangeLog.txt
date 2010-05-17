@@ -1,3 +1,14 @@
+2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itkPoissonNoiseImageToImageMetric.cxx: Commented out inclusion of
+   itkOptPoissonNoiseImageToImageMetric.txx.
+
+   * itkGibsonLanniBSFImageSource.h,.cxx: Added background and maximum intensities as
+   optimizable parameters.
+
+   * itkGibsonLanniPSFImageSource.cxx: Reduced number of integration samples for the
+   diffraction from 50 to 20 to speed things up while minimally impacting accuracy.
+
 2010-04-19  Cory Quammen <cquammen@cs.unc.edu>
 
    * itkParametricImageSource.h,.txx: Renamed from itkParameterizedImageSource.

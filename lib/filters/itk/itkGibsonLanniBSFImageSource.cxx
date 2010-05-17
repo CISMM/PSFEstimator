@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/03/30 18:46:21 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2010/05/17 15:41:35 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -130,6 +130,9 @@ GibsonLanniBSFImageSource<TOutputImage>
   SetActualPointSourceDepthInSpecimenLayer(floatParams[index++]);
   SetDesignDistanceFromBackFocalPlaneToDetector(floatParams[index++]);
   SetActualDistanceFromBackFocalPlaneToDetector(floatParams[index++]);
+
+  SetBackgroundIntensity(floatParams[index++]);
+  SetMaximumIntensity(floatParams[index++]);
 }
 
 
@@ -177,6 +180,9 @@ GibsonLanniBSFImageSource<TOutputImage>
   floatParams[index++] = GetDesignDistanceFromBackFocalPlaneToDetector();
   floatParams[index++] = GetActualDistanceFromBackFocalPlaneToDetector();
 
+  floatParams[index++] = GetBackgroundIntensity();
+  floatParams[index++] = GetMaximumIntensity();
+
   ParametersType parameters(GetNumberOfParameters());
   for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
     parameters[i] = static_cast<double>(floatParams[i]);
@@ -190,7 +196,7 @@ template <class TOutputImage>
 unsigned int
 GibsonLanniBSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const {
-  return 26;
+  return 28;
 }
 
 
@@ -350,9 +356,7 @@ GibsonLanniBSFImageSource<TOutputImage>
 
   m_ShiftScaleFilter->SetShift(shift);
   m_ShiftScaleFilter->SetScale(scale);
-  //m_ShiftScaleFilter->GraftOutput(this->GetOutput());
   m_ShiftScaleFilter->UpdateLargestPossibleRegion();
-  //this->GraftOutput(m_ShiftScaleFilter->GetOutput());
 
   m_BackgroundShiftFilter->GraftOutput(this->GetOutput());
   m_BackgroundShiftFilter->SetShift(m_BackgroundIntensity);

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/05/10 19:38:40 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2010/05/17 15:41:35 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -187,24 +187,16 @@ public:
   }
 
   /** Specify the background value. */
-  void SetBackgroundIntensity(double intensity) {
-    m_BackgroundIntensity = intensity;
-  }
+  itkSetMacro(BackgroundIntensity,double);
 
   /** Get the background value. */
-  double GetBackgroundIntensity() {
-    return m_BackgroundIntensity;
-  }
+  itkGetConstMacro(BackgroundIntensity,double);
 
   /** Specify the maximum intensity. */
-  void SetMaximumIntensity(double intensity) {
-    m_MaximumIntensity = intensity;
-  }
+  itkSetMacro(MaximumIntensity,double);
 
-  /** Get the maximum intensity. */
-  double GetMaximumIntensity() {
-    return m_MaximumIntensity;
-  }
+  /** Get the maximum intensit. */
+  itkGetConstMacro(MaximumIntensity,double);
 
   /** Specify the emission wavelength (in nanometers). */
   DelegateSetMacro(EmissionWavelength,float);
