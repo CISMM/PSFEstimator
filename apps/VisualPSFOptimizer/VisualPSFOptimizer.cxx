@@ -12,10 +12,13 @@
 #include <Visualization.h>
 
 #include <QApplication>
+#include <QClipboard>
 #include <QDateTime>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QItemEditorFactory>
+#include <QList>
+#include <QMimeData>
 #include <QProcess>
 #include <QRegExp>
 #include <QSettings>
@@ -208,6 +211,9 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::SetupInterface(bool hasMeasuredImage) {
+  // Enable the use of custom Z slices positions in any case
+  gui->useCustomZSlicePositions->setEnabled(true);
+
   gui->measuredPSFRadioButton->setEnabled(hasMeasuredImage);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
@@ -356,6 +362,43 @@ VisualPSFOptimizer
   if (selected == QMessageBox::Ok) {
     writeProgramSettings();
     qApp->exit();
+  }
+
+}
+
+
+void
+VisualPSFOptimizer
+::on_actionCopy_triggered() {
+  QItemSelectionModel* selection = gui->psfSettingsTableView->selectionModel();
+  QModelIndexList indices = selection->selectedIndexes();
+  QStringList valueStrings;
+  for (int i = 0; i < indices.length(); i++) {
+    QVariant value = m_PSFPropertyTableModel->data(indices[i], Qt::DisplayRole);
+    valueStrings.append(value.toString());
+  }
+
+  QClipboard* clipboard = QApplication::clipboard();
+  clipboard->setText(valueStrings.join("\n"));
+}
+
+
+void
+VisualPSFOptimizer
+::on_actionPaste_triggered() {
+  // Split strings pasted in. Assumes new rows are separated by newlines.
+  QClipboard* clipboard = QApplication::clipboard();
+  QStringList valueStrings = clipboard->text().split("\n");
+
+  QModelIndex startIndex = gui->psfSettingsTableView->currentIndex();
+  int numModelValues = m_PSFPropertyTableModel->rowCount() - startIndex.row();
+  int numStringValues = valueStrings.length();
+
+  int count = (numModelValues < numStringValues) ? numModelValues : numStringValues;
+  for (int i = 0; i < count; i++) {
+    QVariant value(valueStrings[i]);
+    QModelIndex index = m_PSFPropertyTableModel->index(i+startIndex.row(), 1);
+    m_PSFPropertyTableModel->setData(index, value);
   }
 
 }

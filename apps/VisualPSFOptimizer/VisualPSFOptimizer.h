@@ -38,6 +38,9 @@ public slots:
   virtual void on_actionSaveSession_triggered();
   virtual void on_actionExit_triggered();
   
+  virtual void on_actionCopy_triggered();
+  virtual void on_actionPaste_triggered();
+
   virtual void on_actionAboutApplication_triggered();
 
   virtual void on_measuredPSFRadioButton_clicked(bool state);

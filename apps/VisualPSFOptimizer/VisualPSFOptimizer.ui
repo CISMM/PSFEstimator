@@ -72,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>1002</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -100,7 +100,15 @@
     <addaction name="actionShowImageInformation"/>
     <addaction name="actionShowPSFSettings"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuWindows"/>
   </widget>
   <widget class="QDockWidget" name="displayDockWidget">
@@ -148,9 +156,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-92</y>
-          <width>297</width>
-          <height>523</height>
+          <y>0</y>
+          <width>302</width>
+          <height>557</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -723,7 +731,7 @@
            <bool>true</bool>
           </property>
           <property name="selectionMode">
-           <enum>QAbstractItemView::NoSelection</enum>
+           <enum>QAbstractItemView::ContiguousSelection</enum>
           </property>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
@@ -741,6 +749,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="useCustomZSlicePositions">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Use custom Z slice positions</string>
           </property>
@@ -1003,6 +1014,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

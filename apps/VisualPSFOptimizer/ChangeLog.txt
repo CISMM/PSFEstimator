@@ -1,3 +1,15 @@
+2010-05-18  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.ui: Added Edit menu with Copy and Paste items.
+
+   * VisualPSFOptimizer.h,.cxx: Added action handlers for Copy and Paste menu
+   items. Now you can paste settings, such as non-uniform z spacings, into the
+   PSF parameters table. I can't get it to work when pasting from Excel,
+   however, but a column of numbers pasted in from a text editor makes works.
+   Also, the keyboard shortcuts Ctrl-C and Ctrl-V don't work. I think I would
+   need to write a subclass of QTableView and override the key press handler 
+   make it work correctly.
+
 2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.cxx: Minor formatting changes to GUI text elements.
