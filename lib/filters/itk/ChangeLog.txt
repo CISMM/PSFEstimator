@@ -1,3 +1,8 @@
+2010-05-25  Cory Quammen <cquammen@cs.unc.edu>
+
+   * itkGibsonLanniBSFImageSource.h,.cxx: Simplified the filters used to rescale the
+   image data after Serdar told me about itkRescaleIntensityImageFilter.
+
 2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
 
    * itkPoissonNoiseImageToImageMetric.cxx: Commented out inclusion of

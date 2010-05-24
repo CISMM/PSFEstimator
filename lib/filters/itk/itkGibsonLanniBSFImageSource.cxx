@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.cxx,v $
   Language:  C++
-  Date:      $Date: 2010/05/17 15:41:35 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2010/05/24 19:01:23 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -25,6 +25,7 @@
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 #include "itkGaussianImageSource.h"
+#include "itkRescaleIntensityImageFilter.h"
 #include "itkScanImageFilter.h"
 #include "itkSumProjectionImageFilter.h"
  
@@ -61,14 +62,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_Convolver = ConvolverType::New();
   m_Convolver->SetInput(m_PSFSource->GetOutput());
 
-  m_MinMaxCalculator = MinMaxCalculatorType::New();
-  m_MinMaxCalculator->SetImage(m_Convolver->GetOutput());
-
-  m_ShiftScaleFilter = ShiftScaleType::New();
-  m_ShiftScaleFilter->SetInput(m_Convolver->GetOutput());
-
-  m_BackgroundShiftFilter = ShiftScaleType::New();
-  m_BackgroundShiftFilter->SetInput(m_ShiftScaleFilter->GetOutput());
+  m_RescaleFilter = RescaleImageFilterType::New();
+  m_RescaleFilter->SetInput(m_Convolver->GetOutput());
 }
 
 
@@ -341,27 +336,11 @@ GibsonLanniBSFImageSource<TOutputImage>
 
   m_Convolver->UpdateLargestPossibleRegion();
 
-  // Update image scalar range
-  m_MinMaxCalculator->Compute();
-
-  double iMin  = m_MinMaxCalculator->GetMinimum();
-  double iMax  = m_MinMaxCalculator->GetMaximum();
-  double oMin  = 0;
-  double oMax  = m_MaximumIntensity - m_BackgroundIntensity;
-  double shift = (iMin*oMax - iMax*oMin) / (oMin - oMax);
-  double scale = oMax /(iMax +shift);
-
-  // Update image maximum
-  m_MinMaxCalculator->ComputeMaximum();
-
-  m_ShiftScaleFilter->SetShift(shift);
-  m_ShiftScaleFilter->SetScale(scale);
-  m_ShiftScaleFilter->UpdateLargestPossibleRegion();
-
-  m_BackgroundShiftFilter->GraftOutput(this->GetOutput());
-  m_BackgroundShiftFilter->SetShift(m_BackgroundIntensity);
-  m_BackgroundShiftFilter->UpdateLargestPossibleRegion();
-  this->GraftOutput(m_BackgroundShiftFilter->GetOutput());
+  m_RescaleFilter->GraftOutput(this->GetOutput());
+  m_RescaleFilter->SetOutputMinimum(m_BackgroundIntensity);
+  m_RescaleFilter->SetOutputMaximum(m_MaximumIntensity);
+  m_RescaleFilter->UpdateLargestPossibleRegion();
+  this->GraftOutput(m_RescaleFilter->GetOutput());
 }
 
 

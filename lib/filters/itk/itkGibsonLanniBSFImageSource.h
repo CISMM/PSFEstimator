@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibsonLanniBSFImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2010/05/17 15:41:35 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2010/05/24 19:01:22 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,10 +21,9 @@
 #define __itkGibsonLanniBSFImageSource_h
 
 #include "itkGibsonLanniPSFImageSource.h"
-#include "itkMinimumMaximumImageCalculator.h"
 #include "itkNumericTraits.h"
 #include "itkParametricImageSource.h"
-#include "itkShiftScaleInPlaceImageFilter.h"
+#include "itkRescaleIntensityImageFilter.h"
 #include "itkSphereConvolutionFilter.h"
 
 
@@ -92,10 +91,10 @@ public:
   typedef typename PSFSourceType::Pointer                    PSFSourcePointer;
   typedef SphereConvolutionFilter<TOutputImage,TOutputImage> ConvolverType;
   typedef typename ConvolverType::Pointer                    ConvolverPointer;
-  typedef MinimumMaximumImageCalculator<TOutputImage>        MinMaxCalculatorType;
-  typedef typename MinMaxCalculatorType::Pointer             MinMaxCalculatorPointer;
-  typedef ShiftScaleInPlaceImageFilter<TOutputImage>         ShiftScaleType;
-  typedef typename ShiftScaleType::Pointer                   ShiftScalePointer;
+  typedef RescaleIntensityImageFilter<TOutputImage, TOutputImage>
+    RescaleImageFilterType;
+  typedef typename RescaleImageFilterType::Pointer
+    RescaleImageFilterPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GibsonLanniBSFImageSource,ParametricImageSource);
@@ -331,10 +330,7 @@ private:
 
   PSFSourcePointer        m_PSFSource;
   ConvolverPointer        m_Convolver;
-  MinMaxCalculatorPointer m_MinMaxCalculator;
-  ShiftScalePointer       m_ShiftScaleFilter;
-  ShiftScalePointer       m_BackgroundShiftFilter;
-  
+  RescaleImageFilterPointer m_RescaleFilter;
   
 };
 
