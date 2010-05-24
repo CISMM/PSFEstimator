@@ -1,10 +1,10 @@
 #ifndef _VISUAL_PSF_OPTIMIZER_H_
 #define _VISUAL_PSF_OPTIMIZER_H_
 
-#include <qdialog.h>
-#include <qerrormessage.h>
-#include <qmainwindow.h>
-#include <qstandarditemmodel.h>
+#include <QDialog>
+#include <QErrorMessage>
+#include <QMainWindow>
+#include <QStandardItemModel>
 
 #include <QPointSpreadFunctionPropertyTableModel.h>
 
@@ -15,6 +15,7 @@
 class DataModel;
 class Visualization;
 class vtkRenderer;
+class QCloseEvent;
 
 class VisualPSFOptimizer : public QMainWindow {
   Q_OBJECT
@@ -126,11 +127,16 @@ protected:
   void SetMapsToBlackValueFromSliderPosition(int position);
   void SetMapsToWhiteValueFromSliderPosition(int position);
 
-  void writeProgramSettings();
-  void readProgramSettings();
+  void Exit();
+  void WriteProgramSettings();
+  void ReadProgramSettings();
 
   void    SaveFileChooserDirectory(const QString& path);
   QString GetFileChooserDirectory();
+
+
+  // Override the closeEvent handler.
+  void closeEvent(QCloseEvent* event);
 
 protected slots:
 

@@ -1,3 +1,9 @@
+2010-05-24  Cory Quammen <cquammen@cs.unc.edu>
+
+   * VisualPSFOptimizer.h,.cxx: Simplfied and improved 
+   Read/WriteProgramSettings methods. Added exit handler for when user 
+   clicks the X in the window. 
+
 2010-05-18  Cory Quammen <cquammen@cs.unc.edu>
 
    * VisualPSFOptimizer.ui: Added Edit menu with Copy and Paste items.

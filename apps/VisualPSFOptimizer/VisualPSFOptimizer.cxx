@@ -13,6 +13,7 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QCloseEvent>
 #include <QDateTime>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -77,10 +78,7 @@ VisualPSFOptimizer
   QCoreApplication::setOrganizationName("CISMM");
   QCoreApplication::setOrganizationDomain("cismm.org");
   QCoreApplication::setApplicationName("VisualPSFOptimizer");
-  
-  // Restore inter-session GUI settings.
-  readProgramSettings();
-  
+    
   // Set up dialog boxes.
   m_NewFileDialogUI.setupUi(&m_NewFileDialog);
 
@@ -136,6 +134,10 @@ VisualPSFOptimizer
   
   // Render
   gui->qvtkWidget->GetRenderWindow()->Render();
+
+  // Restore inter-session GUI settings.
+  ReadProgramSettings();
+
 }
 
 
@@ -351,19 +353,7 @@ VisualPSFOptimizer
 void
 VisualPSFOptimizer
 ::on_actionExit_triggered() {
-  // Ask if user really wants to quit.
-  QMessageBox messageBox(this);
-  messageBox.setText("Do you really want to exit?");
-  messageBox.setInformativeText("If you exit now, all unsaved settings will be lost.");
-  messageBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-  messageBox.setDefaultButton(QMessageBox::Cancel);
-  int selected = messageBox.exec();
-
-  if (selected == QMessageBox::Ok) {
-    writeProgramSettings();
-    qApp->exit();
-  }
-
+  Exit();
 }
 
 
@@ -965,53 +955,59 @@ VisualPSFOptimizer
 
 void
 VisualPSFOptimizer
-::writeProgramSettings() {
-  QSettings settings;
+::Exit() {
+  // Ask if user really wants to quit.
+  QMessageBox messageBox(this);
+  messageBox.setText("Do you really want to exit?");
+  messageBox.setInformativeText("If you exit now, all unsaved settings will be lost.");
+  messageBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+  messageBox.setDefaultButton(QMessageBox::Cancel);
+  int selected = messageBox.exec();
 
-  settings.beginGroup("MainWindow");
-  settings.setValue("size", size());
-  settings.setValue("pos", pos());
-  settings.endGroup();
-
-  QList<QDockWidget*> widgets = findChildren<QDockWidget*>();
-  QListIterator<QDockWidget*> iterator(widgets);
-  while (iterator.hasNext()) {
-    QDockWidget* dockWidget = iterator.next();
-    settings.beginGroup(dockWidget->objectName());
-    settings.setValue("size", dockWidget->size());
-    settings.setValue("pos", dockWidget->pos());
-    settings.setValue("visible", dockWidget->isVisible());
-    settings.setValue("floating", dockWidget->isFloating());
-    settings.setValue("dockArea", dockWidgetArea(dockWidget));
-    settings.endGroup();
+  if (selected == QMessageBox::Ok) {
+    WriteProgramSettings();
+    qApp->exit();
   }
-
 }
 
 
 void
 VisualPSFOptimizer
-::readProgramSettings() {
+::WriteProgramSettings() {
   QSettings settings;
 
   settings.beginGroup("MainWindow");
-  resize(settings.value("size", QSize(1000, 743)).toSize());
-  move(settings.value("pos", QPoint(0, 20)).toPoint());
-  settings.endGroup();
+  settings.setValue("WindowSettings", saveState());
+  settings.setValue("Geometry", saveGeometry());
 
-  QList<QDockWidget*> widgets = findChildren<QDockWidget*>();
-  QListIterator<QDockWidget*> iterator(widgets);
-  while (iterator.hasNext()) {
-    QDockWidget* dockWidget = iterator.next();
-    settings.beginGroup(dockWidget->objectName());
-    dockWidget->resize(settings.value("size", QSize(340, 200)).toSize());
-    dockWidget->move(settings.value("pos", QPoint(0, 0)).toPoint());
-    dockWidget->setVisible(settings.value("visible", true).toBool());
-    dockWidget->setFloating(settings.value("floating", false).toBool());
-    addDockWidget(static_cast<Qt::DockWidgetArea>(settings.value("dockArea", Qt::LeftDockWidgetArea).toUInt()), dockWidget);
-    settings.endGroup();
+  for (int i = 0; i < 4; i++) {
+    QString colName;
+    colName.sprintf("PSFSettingsTableViewColumnWidth%0d", i);
+    settings.setValue(colName, gui->psfSettingsTableView->columnWidth(i));
   }
 
+  settings.endGroup();
+}
+
+
+void
+VisualPSFOptimizer
+::ReadProgramSettings() {
+  QSettings settings;
+
+  settings.beginGroup("MainWindow");
+  restoreState(settings.value("WindowSettings").toByteArray());
+  restoreGeometry(settings.value("Geometry").toByteArray());
+
+  for (int i = 0; i < 4; i++) {
+    QString colName;
+    colName.sprintf("PSFSettingsTableViewColumnWidth%0d", i);
+    int width = settings.value(colName).toInt();
+    if (width > 0)
+      gui->psfSettingsTableView->setColumnWidth(i, width);
+  }
+
+  settings.endGroup();
 }
 
 
@@ -1041,4 +1037,14 @@ VisualPSFOptimizer
   settings.endGroup();
   
   return path;
+}
+
+
+void
+VisualPSFOptimizer
+::closeEvent(QCloseEvent* event) {
+  Exit();
+
+  // If we made it past the call above, the user clicked cancel.
+  event->ignore();
 }
