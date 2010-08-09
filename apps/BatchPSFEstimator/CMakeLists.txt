@@ -1,6 +1,6 @@
-ADD_EXECUTABLE( BatchPSFOptimizer BatchPSFOptimizer.cxx )
+ADD_EXECUTABLE( BatchPSFEstimator BatchPSFEstimator.cxx )
 
-TARGET_LINK_LIBRARIES( BatchPSFOptimizer
+TARGET_LINK_LIBRARIES( BatchPSFEstimator
   itksys
   ITKCommon
   ITKBasicFilters
