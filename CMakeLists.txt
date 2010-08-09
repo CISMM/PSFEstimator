@@ -46,11 +46,11 @@ ENDIF (VTK_FOUND)
 #######################################
 INCLUDE_DIRECTORIES (
     ${PSFEstimator_SOURCE_DIR}/lib
-    ${PSFEstimator_SOURCE_DIR}/lib/filters
-    ${PSFEstimator_SOURCE_DIR}/lib/filters/itk
-    ${PSFEstimator_SOURCE_DIR}/lib/io
-    ${PSFEstimator_SOURCE_DIR}/lib/model
-    ${PSFEstimator_SOURCE_DIR}/lib/visualization
+    ${PSFEstimator_SOURCE_DIR}/lib/Filters
+    ${PSFEstimator_SOURCE_DIR}/lib/Filters/itk
+    ${PSFEstimator_SOURCE_DIR}/lib/IO
+    ${PSFEstimator_SOURCE_DIR}/lib/Model
+    ${PSFEstimator_SOURCE_DIR}/lib/Visualization
     ${PSFEstimator_BINARY_DIR}/lib)
 
 ADD_SUBDIRECTORY(lib)
