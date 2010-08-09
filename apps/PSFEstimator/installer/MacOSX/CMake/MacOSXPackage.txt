@@ -30,7 +30,7 @@ FOREACH( PLUGIN ${QT_IMAGEFORMAT_PLUGINS} )
 ENDFOREACH( PLUGIN )
 
 INSTALL( FILES
-  "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/qt.conf"
+  "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/MacOSX/qt.conf"
   DESTINATION ./
 )
 
@@ -55,13 +55,13 @@ ENDFOREACH( LIBRARY )
 
 
 SET( CPACK_GENERATOR "Bundle" )
-SET( CPACK_BUNDLE_PLIST "${VisualPSFOptimizer_BINARY_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/Info.plist" )
-SET( VisualPSFOptimizer_PROGRAM_NAME_WITH_VERSION "VisualPSFOptimizer ${VisualPSFOptimizer_VERSION_STRING}" )
-CONFIGURE_FILE( "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/Info.plist" 
+SET( CPACK_BUNDLE_PLIST "${PSFEstimator_BINARY_DIR}/apps/PSFEstimator/installer/MacOSX/Info.plist" )
+SET( PSFEstimator_PROGRAM_NAME_WITH_VERSION "PSFEstimator ${PSFEstimator_VERSION_STRING}" )
+CONFIGURE_FILE( "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/MacOSX/Info.plist" 
   "${CPACK_BUNDLE_PLIST}" )
-SET( CPACK_BUNDLE_STARTUP_COMMAND "VisualPSFOptimizer" )
-SET( CPACK_BUNDLE_ICON "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/VisualPSFOptimizer.icns" )
-SET( CPACK_BUNDLE_STARTUP_COMMAND "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/startup.sh" )
-SET( CPACK_BUNDLE_NAME "VisualPSFOptimizer ${VisualPSFOptimizer_VERSION_STRING}" )
+SET( CPACK_BUNDLE_STARTUP_COMMAND "PSFEstimator" )
+SET( CPACK_BUNDLE_ICON "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/MacOSX/PSFEstimator.icns" )
+SET( CPACK_BUNDLE_STARTUP_COMMAND "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/MacOSX/startup.sh" )
+SET( CPACK_BUNDLE_NAME "PSFEstimator ${PSFEstimator_VERSION_STRING}" )
 
-SET( CPACK_PACKAGE_ICON "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/MacOSX/VisualPSFOptimizer.icns" )
+SET( CPACK_PACKAGE_ICON "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/MacOSX/PSFEstimator.icns" )

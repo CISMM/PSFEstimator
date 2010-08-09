@@ -1,14 +1,14 @@
 2010-05-24  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: Simplfied and improved 
+   * PSFEstimator.h,.cxx: Simplfied and improved 
    Read/WriteProgramSettings methods. Added exit handler for when user 
    clicks the X in the window. 
 
 2010-05-18  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.ui: Added Edit menu with Copy and Paste items.
+   * PSFEstimator.ui: Added Edit menu with Copy and Paste items.
 
-   * VisualPSFOptimizer.h,.cxx: Added action handlers for Copy and Paste menu
+   * PSFEstimator.h,.cxx: Added action handlers for Copy and Paste menu
    items. Now you can paste settings, such as non-uniform z spacings, into the
    PSF parameters table. I can't get it to work when pasting from Excel,
    however, but a column of numbers pasted in from a text editor makes works.
@@ -18,7 +18,7 @@
 
 2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Minor formatting changes to GUI text elements.
+   * PSFEstimator.cxx: Minor formatting changes to GUI text elements.
 
 2010-05-17  Cory Quammen <cquammen@cs.unc.edu>
 
@@ -27,28 +27,28 @@
 
 2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Now remembers last directory visited by a file
+   * PSFEstimator.cxx: Now remembers last directory visited by a file
    chooser so user doesn't have to keep navigating to the same data directory
    over and over.
 
 2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Shows the "Submit Optimization Job to Queue" button
+   * PSFEstimator.cxx: Shows the "Submit Optimization Job to Queue" button
    only when on BASS.
 
 2010-05-12  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Added event handler for submission of jobs to the
+   * PSFEstimator.cxx: Added event handler for submission of jobs to the
    GridEngine on BASS.
 
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: Made new method SetupInterface that takes care of
+   * PSFEstimator.h,.cxx: Made new method SetupInterface that takes care of
    enabling/disabling UI elements. Deleted methods CreateFile() and OpenFile()
    and moved their bodies into action handlers directly. Added button for
    submitting optimization jobs to bass.cs.unc.edu and added empty handlers.
    
-   * VisualPSFOptimizer.ui: Added button "Submit Optimization Job to Queue".
+   * PSFEstimator.ui: Added button "Submit Optimization Job to Queue".
 
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
@@ -57,25 +57,25 @@
 
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Moved initialization of settings cache in the
+   * PSFEstimator.cxx: Moved initialization of settings cache in the
    PSF property table model immediately after the image file is opened. Fixed
    up on_actionLoadSession_triggered() so that all settings are read and the
    GUI gets updated.
 
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Moved comparison metric display to under the Apply
+   * PSFEstimator.cxx: Moved comparison metric display to under the Apply
    button from the image information window. Shrunk some widget spacings to show
    more controls in a smaller space.
 
 2010-05-10  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Moved session file reading/writing from here
+   * PSFEstimator.cxx: Moved session file reading/writing from here
    to the DataModel.
 
 2010-05-07  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Changed background color to dark gray instead of
+   * PSFEstimator.cxx: Changed background color to dark gray instead of
    bright blue.
 
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
@@ -83,29 +83,29 @@
    * QPointSpreadFunctionPropertyTableModel.cxx: Now sets the bead-spread
    function center and displays it in the GUI.
    
-   * VisualPSFOptimizer.cxx: Added code to ensure that the parameters found
+   * PSFEstimator.cxx: Added code to ensure that the parameters found
    by the optimization routine are displayed in the GUI.
 
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Set background color to near Carolina blue to make
+   * PSFEstimator.cxx: Set background color to near Carolina blue to make
    it easier to see boundaries of the PSF.
 
 2010-04-13  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Added call to Sully() after the optimize button
+   * PSFEstimator.cxx: Added call to Sully() after the optimize button
    has been pressed.
 
 2010-03-31  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx,.ui: Added widget that displays the image 
+   * PSFEstimator.h,.cxx,.ui: Added widget that displays the image 
    comparison metric value. The value is updated whenever the Apply button
    is clicked. This provides a good objective way to see what parameters give
    a better fit.
 
 2010-03-29  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Fixed problem with PSF settings loaded from a
+   * PSFEstimator.cxx: Fixed problem with PSF settings loaded from a
    session file not being shown.
 
 2010-03-28  Cory Quammen <cquammen@cs.unc.edu>
@@ -113,7 +113,7 @@
    * QPointSpreadFunctionPropertyTableModel.cxx: Now shows table entries for
    custom z slice positions only if the UseCustomZCoordinates is set to true.
    
-   * VisualPSFOptimizer.h,.cxx,.ui: Added check box to toggle UseCustomZCoordinates.
+   * PSFEstimator.h,.cxx,.ui: Added check box to toggle UseCustomZCoordinates.
    Added button to populate the custom z coordinates with equal spacing equivalent
    to the z spacing of the ITK image data object.
 
@@ -129,31 +129,31 @@
    * QPointSpreadFunctionPropertyTableModel.,.cxx: Table model for PSF
    properties. Using this class cleans up the main application class a bunch.
    
-   * VisualPSFOptimizer.h,.cxx: Added QPointSpreadFunctionPropertyTableModel
+   * PSFEstimator.h,.cxx: Added QPointSpreadFunctionPropertyTableModel
    and a slot for its dataChanged signal. Changed property table editor so that
    the current value of the property populates the editor (before, the value
    would be cleared). Added enabling/disabling certain interface buttons when
    appropriate to avoid user accidentally crashing the program.
    
-   * VisualPSFOptimizer.ui: Removed a leftover "Apply" button that no longer
+   * PSFEstimator.ui: Removed a leftover "Apply" button that no longer
    fit. 
 
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Now turns GUI widgets on/off where appropriate to
+   * PSFEstimator.cxx: Now turns GUI widgets on/off where appropriate to
    avoid letting user do something that will crash the program.
    
-   * VisualPSFOptimizer.ui: Disabled GUI widgets that should be disabled at
+   * PSFEstimator.ui: Disabled GUI widgets that should be disabled at
    program startup.
 
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Fixed up some references to GUI member variables
+   * PSFEstimator.cxx: Fixed up some references to GUI member variables
    which used to be inherited from the Ui_MainWindow class.
 
 2010-03-26  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: GUI class is now a member variable instead of
+   * PSFEstimator.h,.cxx: GUI class is now a member variable instead of
    parent class. This should speed up compile times whenever this class is
    changed.
 
@@ -163,39 +163,39 @@
 
    * NewImageDialog.ui: Dialog box to specify size of new image.
 
-   * VisualPSFOptimizer.h,.cxx: Added new image dialog and method to
+   * PSFEstimator.h,.cxx: Added new image dialog and method to
    create a new PSF image file. Hooked up the dialog to a "New" file menu
    item. Factored out some common code into new method SetupRenderer().
 
-   * VisualPSFOptimizer.ui: Added "New Image" item to file menu.
+   * PSFEstimator.ui: Added "New Image" item to file menu.
 
 2009-10-06  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: When handling Apply button clicks, now updates 
+   * PSFEstimator.cxx: When handling Apply button clicks, now updates 
    only the PSF if the PSF is set to be displayed or the BSF if it is set
    to be displayed.
 
 2009-09-22  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Fixed off-by-one error when setting estimated
+   * PSFEstimator.cxx: Fixed off-by-one error when setting estimated
    PSF center.
 
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.ui: Changed Ctrl-O keyboard shortcut to open
+   * PSFEstimator.ui: Changed Ctrl-O keyboard shortcut to open
    session file instead of an image file.
 
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: Added method on_actionSaveBSFImage_triggered()
+   * PSFEstimator.h,.cxx: Added method on_actionSaveBSFImage_triggered()
    to save the generated bead-spread function.
    
-   * VisualPSFOptimizer.ui: Added item in File menu to save the bead-spread
+   * PSFEstimator.ui: Added item in File menu to save the bead-spread
    function.
 
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Added initialization of m_DisplayedImage member
+   * PSFEstimator.cxx: Added initialization of m_DisplayedImage member
    variable.
 
 2009-09-14  Cory Quammen <cquammen@cs.unc.edu>
@@ -204,20 +204,20 @@
 
 2009-09-09  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Renamed "PSF center Z" to "Bead center Z".
+   * PSFEstimator.cxx: Renamed "PSF center Z" to "Bead center Z".
 
 2009-09-08  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.ui: Renambed "Settings" to "Session". 
+   * PSFEstimator.h,.ui: Renambed "Settings" to "Session". 
    
-   * VisualPSFOptimizer.cxx: Added bead radius parameter. Changed "PSF Center"
+   * PSFEstimator.cxx: Added bead radius parameter. Changed "PSF Center"
    parameters to "Bead Center". Session files contain the path to the loaded
    PSF image now, which is loaded when the session file is loaded. Started tying
    bead-spread function class into GUI (intermediate check-in).
 
 2009-07-26  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx,.ui: Added radio button for displaying a 
+   * PSFEstimator.h,.cxx,.ui: Added radio button for displaying a 
    bead-spread function (BSF). Moved contrast controls closer to radio button to
    be more conveniently accessible. Added loading/saving of program settings 
    (basically, the Gibson-Lanni parameters). Added CCD border size to list of
@@ -228,69 +228,69 @@
 
 2009-07-22  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx,.ui: Added button and handler for getting an
+   * PSFEstimator.h,.cxx,.ui: Added button and handler for getting an
    initial estimate of the center of the measured PSF.
 
 2009-07-21  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: Moved all the mutable image settings into the
+   * PSFEstimator.h,.cxx: Moved all the mutable image settings into the
    PSF parameters table. Added checkboxes in the PSF parameters table to enable
    selection of which parameters to optimize. Added dirty bit and Sully() method
    to keep track of when the parameter settings have been changed.
 
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: Removed unneeded handler for origin recentering
+   * PSFEstimator.h,.cxx: Removed unneeded handler for origin recentering
    button, which is now gone. On application of user settings, the origin is
    now updated so that (0,0,0) is in the center of the image volume. Updated
    GUI to show PSF center now instead of the image origin.
    
-   * VisualPSFOptimizer.ui: Removed origin recentering button.
+   * PSFEstimator.ui: Removed origin recentering button.
 
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Added call to RefreshUI() after optimization to
+   * PSFEstimator.cxx: Added call to RefreshUI() after optimization to
    display optimal parameters.
 
 2009-07-20  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Connected optimize button to the optimizer's
+   * PSFEstimator.cxx: Connected optimize button to the optimizer's
    Optimize() method.
 
 2009-07-17  Cory Quammen <cquammen@cs.unc.edu>
 
    * CMakeLists.txt: Added ITKNumerics library dependency.
    
-   * VisualPSFOptimizer.h,.cxx: Added handlers for radio buttons controlling
+   * PSFEstimator.h,.cxx: Added handlers for radio buttons controlling
    which image (measured or calculated) is displayed. Added handler for new
    "make it better" button in the GUI. Refactored some code to better deal with
    switching which image is displayed.
    
-   * VisualPSFOptimizer.ui: Added radio buttons for picking which image is
+   * PSFEstimator.ui: Added radio buttons for picking which image is
    displayed (easier to flip back and forth with these than a pop-up menu).
    Added "make it better" button.
 
 2009-07-14  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.h,.cxx: Added button to recenter the origin of an image
+   * PSFEstimator.h,.cxx: Added button to recenter the origin of an image
    after the voxel spacings have been changed. Removed handler for updates to
    image settings and now read settings only when the Apply button is clicked.
    
-   * VisualPSFOptimizer.ui: Added Recenter PSF Origin button.
+   * PSFEstimator.ui: Added Recenter PSF Origin button.
 
 2009-07-09  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.ui: Added buttons for setting canonical camera views
+   * PSFEstimator.ui: Added buttons for setting canonical camera views
    aligned with the x, y, and z axes.
    
-   * VisualPSFOptimizer.h,.cxx: Updated to work with changes to Visualization
+   * PSFEstimator.h,.cxx: Updated to work with changes to Visualization
    class. Made PSF dimension entries in image information table editable and
    connected them to the Gibson-Lanni PSF generator class. Added handlers for
    canonical camera view buttons. 
 
 2009-07-08  Cory Quammen <cquammen@cs.unc.edu>
 
-   * VisualPSFOptimizer.cxx: Changed method calls to match method renaming.
+   * PSFEstimator.cxx: Changed method calls to match method renaming.
 
 2009-07-02  Cory Quammen <cquammen@cs.unc.edu>
 

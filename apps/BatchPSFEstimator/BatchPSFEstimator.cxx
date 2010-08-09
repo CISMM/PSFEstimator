@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
   
   // Save the results to a different file with a modified name
   std::stringstream ss;
-  ss << argv[1] << "-optimized.vpo";
+  ss << argv[1] << "-optimized.psfe";
   model->SaveSessionFile(ss.str());
 
 

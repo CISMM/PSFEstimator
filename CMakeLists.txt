@@ -1,14 +1,14 @@
-PROJECT (VisualPSFOptimizer)
+PROJECT (PSFEstimator)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 # Set version information. Bump this up with every release.
-SET (VisualPSFOptimizer_MAJOR_NUMBER "1")
-SET (VisualPSFOptimizer_MINOR_NUMBER "0")
-SET (VisualPSFOptimizer_REVISION_NUMBER "0")
-SET (VisualPSFOptimizer_VERSION_STRING "${VisualPSFOptimizer_MAJOR_NUMBER}.${VisualPSFOptimizer_MINOR_NUMBER}.${VisualPSFOptimizer_REVISION_NUMBER}")
+SET (PSFEstimator_MAJOR_NUMBER "1")
+SET (PSFEstimator_MINOR_NUMBER "0")
+SET (PSFEstimator_REVISION_NUMBER "0")
+SET (PSFEstimator_VERSION_STRING "${PSFEstimator_MAJOR_NUMBER}.${PSFEstimator_MINOR_NUMBER}.${PSFEstimator_REVISION_NUMBER}")
 
-SET (EXECUTABLE_OUTPUT_PATH "${VisualPSFOptimizer_BINARY_DIR}/bin")
-SET (LIBRARY_OUTPUT_PATH "${VisualPSFOptimizer_BINARY_DIR}/lib")
+SET (EXECUTABLE_OUTPUT_PATH "${PSFEstimator_BINARY_DIR}/bin")
+SET (LIBRARY_OUTPUT_PATH "${PSFEstimator_BINARY_DIR}/lib")
 
 OPTION (CMAKE_VERBOSE_MAKEFILE  "Enable/Disable verbose compiler output" ON)
 OPTION (CMAKE_COLOR_MAKEFILE "Enable/Disable color cues when building" ON)
@@ -45,13 +45,13 @@ ENDIF (VTK_FOUND)
 # apps      - a place for various applications related to the main application
 #######################################
 INCLUDE_DIRECTORIES (
-    ${VisualPSFOptimizer_SOURCE_DIR}/lib
-    ${VisualPSFOptimizer_SOURCE_DIR}/lib/filters
-    ${VisualPSFOptimizer_SOURCE_DIR}/lib/filters/itk
-    ${VisualPSFOptimizer_SOURCE_DIR}/lib/io
-    ${VisualPSFOptimizer_SOURCE_DIR}/lib/model
-    ${VisualPSFOptimizer_SOURCE_DIR}/lib/visualization
-    ${VisualPSFOptimizer_BINARY_DIR}/lib)
+    ${PSFEstimator_SOURCE_DIR}/lib
+    ${PSFEstimator_SOURCE_DIR}/lib/filters
+    ${PSFEstimator_SOURCE_DIR}/lib/filters/itk
+    ${PSFEstimator_SOURCE_DIR}/lib/io
+    ${PSFEstimator_SOURCE_DIR}/lib/model
+    ${PSFEstimator_SOURCE_DIR}/lib/visualization
+    ${PSFEstimator_BINARY_DIR}/lib)
 
 ADD_SUBDIRECTORY(lib)
 
@@ -64,7 +64,7 @@ ADD_SUBDIRECTORY(apps)
 #######################################
 # Testing components
 #######################################
-#OPTION (BUILD_IT_TESTS "Include VisualPSFOptimizer unit tests" ON)
+#OPTION (BUILD_IT_TESTS "Include PSFEstimator unit tests" ON)
 #IF (BUILD_IT_TESTS)
 #    SUBDIRS(TestSuite Tests)
 #ENDIF (BUILD_IT_TESTS)

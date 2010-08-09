@@ -9,4 +9,4 @@ SET(filterSrc
   itk/itkSphereConvolutionFilter.cxx
 )
 
-ADD_LIBRARY(vpsfoFilter ${filterSrc})
+ADD_LIBRARY(psfeFilter ${filterSrc})

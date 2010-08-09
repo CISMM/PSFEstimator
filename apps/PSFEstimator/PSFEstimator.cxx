@@ -1,4 +1,4 @@
-#include <VisualPSFOptimizer.h>
+#include <PSFEstimator.h>
 #include <Version.h>
 
 #include <QMessageBox>
@@ -39,8 +39,8 @@
 
 
 // Constructor
-VisualPSFOptimizer
-::VisualPSFOptimizer(QWidget* p)
+PSFEstimator
+::PSFEstimator(QWidget* p)
  : QMainWindow(p) {
   
   gui = new Ui_MainWindow();
@@ -77,7 +77,7 @@ VisualPSFOptimizer
   // Set application information
   QCoreApplication::setOrganizationName("CISMM");
   QCoreApplication::setOrganizationDomain("cismm.org");
-  QCoreApplication::setApplicationName("VisualPSFOptimizer");
+  QCoreApplication::setApplicationName("PSFEstimator");
     
   // Set up dialog boxes.
   m_NewFileDialogUI.setupUi(&m_NewFileDialog);
@@ -142,15 +142,15 @@ VisualPSFOptimizer
 
 
 // Destructor
-VisualPSFOptimizer
-::~VisualPSFOptimizer() {
+PSFEstimator
+::~PSFEstimator() {
   delete m_DataModel;
   delete m_Visualization;
 }
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionNewImage_triggered() {
   // Create dialog box and show it.
   if (m_NewFileDialog.exec() == QDialog::Accepted) {
@@ -182,7 +182,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionOpenImage_triggered() {
 
   // Locate file.
@@ -211,7 +211,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetupInterface(bool hasMeasuredImage) {
   // Enable the use of custom Z slices positions in any case
   gui->useCustomZSlicePositions->setEnabled(true);
@@ -232,7 +232,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetupRenderer() {
   // Set up m_Visualization pipeline.
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
@@ -257,7 +257,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionSavePSFImage_triggered() {
 
   // Locate file.
@@ -278,7 +278,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionSaveBSFImage_triggered() {
 
   // Locate file.
@@ -299,13 +299,13 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionLoadSession_triggered() {
   // Locate file.
   QString fileName = 
     QFileDialog::getOpenFileName
     (this, "Load Settings", GetFileChooserDirectory(), 
-     "Visual PSF Optimizer Settings Files (*.vpo);;All Files (*)");
+     "PSF Estimator Settings Files (*.psfe);;All Files (*)");
   if (fileName == "") {
     return;
   }
@@ -331,13 +331,13 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionSaveSession_triggered() {
   // Locate file.
   QString fileName = 
     QFileDialog::getSaveFileName
     (this, "Save Settings", GetFileChooserDirectory(),
-     "Visual PSF Optimizer Settings Files (*.vpo);;All Files (*)");
+     "PSF Estimator Settings Files (*.psfe);;All Files (*)");
   if (fileName == "") {
     return;
   }
@@ -351,14 +351,14 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionExit_triggered() {
   Exit();
 }
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionCopy_triggered() {
   QItemSelectionModel* selection = gui->psfSettingsTableView->selectionModel();
   QModelIndexList indices = selection->selectedIndexes();
@@ -374,7 +374,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionPaste_triggered() {
   // Split strings pasted in. Assumes new rows are separated by newlines.
   QClipboard* clipboard = QApplication::clipboard();
@@ -395,15 +395,15 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_actionAboutApplication_triggered() {
   QString version = QString().sprintf("%d.%d.%d", 
-				      VisualPSFOptimizer_MAJOR_NUMBER,
-				      VisualPSFOptimizer_MINOR_NUMBER,
-				      VisualPSFOptimizer_REVISION_NUMBER);
+				      PSFEstimator_MAJOR_NUMBER,
+				      PSFEstimator_MINOR_NUMBER,
+				      PSFEstimator_REVISION_NUMBER);
   QChar copyright(169);
-  QString title = QString("About Visual PSF Optimizer ").append(version);
-  QString text  = QString("Visual PSF Optimizer ").append(version).append("\n");
+  QString title = QString("About PSF Estimator ").append(version);
+  QString text  = QString("PSF Estimator ").append(version).append("\n");
   text.append(copyright).append(" 2010, UNC CISMM\n\n");
   text.append("Developed by:\n");
   text.append("Cory Quammen");
@@ -412,28 +412,28 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_measuredPSFRadioButton_clicked(bool state) {
   SetDisplayedImageToMeasuredPSF();
 }
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_calculatedPSFRadioButton_clicked(bool state) {
   SetDisplayedImageToCalculatedPSF();
 }
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_calculatedBSFRadioButton_clicked(bool state) {
   SetDisplayedImageToCalculatedBSF();
 }
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetDisplayedImageToMeasuredPSF() {
   m_DisplayedImage = MEASURED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
@@ -445,7 +445,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetDisplayedImageToCalculatedPSF() {
   m_DisplayedImage = CALCULATED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
@@ -457,7 +457,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetDisplayedImageToCalculatedBSF() {
   m_DisplayedImage = CALCULATED_BSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
@@ -469,7 +469,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_showXPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowXPlane(show);
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -477,7 +477,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_xPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetXPlane(plane-1);
   gui->xPlaneEdit->setText(QString().sprintf("%d", plane));
@@ -486,7 +486,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_xPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
@@ -501,7 +501,7 @@ VisualPSFOptimizer
 
   
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_showYPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowYPlane(show);
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -509,7 +509,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_yPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetYPlane(plane-1);
   gui->yPlaneEdit->setText(QString().sprintf("%d", plane));
@@ -518,7 +518,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_yPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
@@ -533,7 +533,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_showZPlaneCheckBox_toggled(bool show) {
   m_Visualization->SetShowZPlane(show);
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -541,7 +541,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_zPlaneSlider_valueChanged(int plane) {
   m_Visualization->SetZPlane(plane-1);
   gui->zPlaneEdit->setText(QString().sprintf("%d", plane));
@@ -550,7 +550,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_zPlaneEdit_textEdited(QString text) {
   int value = text.toInt();
   int dims[3];
@@ -565,7 +565,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_mapsToBlackSlider_valueChanged(int value) {
   SetMapsToBlackValueFromSliderPosition(value);
   gui->qvtkWidget->GetRenderWindow()->Render();  
@@ -573,7 +573,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_mapsToWhiteSlider_valueChanged(int value) {
   SetMapsToWhiteValueFromSliderPosition(value);
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -581,7 +581,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_showDataOutlineCheckBox_toggled(bool show) {
   m_Visualization->SetShowOutline(show);
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -589,7 +589,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_xPlusButton_clicked() {
   m_Visualization->SetViewToXPlus();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -597,7 +597,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_xMinusButton_clicked() {
   m_Visualization->SetViewToXMinus();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -605,7 +605,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_yPlusButton_clicked() {
   m_Visualization->SetViewToYPlus();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -613,7 +613,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_yMinusButton_clicked() {
   m_Visualization->SetViewToYMinus();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -621,7 +621,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_zPlusButton_clicked() {
   m_Visualization->SetViewToZPlus();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -629,7 +629,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_zMinusButton_clicked() {
   m_Visualization->SetViewToZMinus();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -637,7 +637,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_useCustomZSlicePositions_toggled(bool use) {
   m_DataModel->SetUseCustomZCoordinates(use);
   gui->resetCustomSlicePositionsButton->setEnabled(use);
@@ -649,7 +649,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_resetCustomSlicePositionsButton_clicked() {
   
   // Reset the individual slice z positions with even increments centered
@@ -672,7 +672,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_estimatePSFCenterButton_clicked() {
   DataModel::Float3DPointType center = m_DataModel->GetMeasuredImageDataMaximumCoordinates();
   double triplet[3];
@@ -692,7 +692,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_applyButton_clicked() {
   m_Dirty = false;
 
@@ -723,7 +723,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_optimizePSFParametersButton_clicked() {
   m_DataModel->Optimize();
 
@@ -739,7 +739,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::on_submitOptimizationJobToQueueButton_clicked() {
   // Create a working directory in the users home directory if it doesn't exist
   QDir dir;
@@ -752,7 +752,7 @@ VisualPSFOptimizer
 
   QString dateTimeString = QDateTime::currentDateTime().toString(tr("MM-dd-yyyy-hh-mm-ss")); 
   QString sessionFile = workingDirectory + dir.separator() + 
-    tr("BatchPSFOptimizer-") + dateTimeString + tr(".vpo");
+    tr("BatchPSFOptimizer-") + dateTimeString + tr(".psfe");
 
   // Write the settings file to the working directory
   m_DataModel->SaveSessionFile(sessionFile.toStdString());
@@ -799,7 +799,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::handle_imageInformationTableModel_dataChanged(const QModelIndex& topLeft,
                                                 const QModelIndex& bottomRight) {
 
@@ -812,7 +812,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::handle_PSFPropertyTableModel_dataChanged(const QModelIndex& topLeft,
                                            const QModelIndex& bottomRight) {
 
@@ -827,19 +827,19 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::Sully() {
   m_Dirty = true;
 }
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::RefreshUI() {
 
   ///////////////// Update window title /////////////////
   QFileInfo fileInfo(m_DataModel->GetMeasuredImageFileName().c_str());
-  QString windowTitle("Visual PSF Optimizer");
+  QString windowTitle("PSF Estimator");
   if (fileInfo.fileName() != "")
     windowTitle.append(tr(" - '").append(fileInfo.fileName()).append("'"));
   setWindowTitle(windowTitle);
@@ -900,7 +900,7 @@ VisualPSFOptimizer
 
 
 double
-VisualPSFOptimizer
+PSFEstimator
 ::GetDisplayedImageDataMinimum() {
   if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
     return m_DataModel->GetMeasuredImageDataMinimum();
@@ -914,7 +914,7 @@ VisualPSFOptimizer
 
 
 double
-VisualPSFOptimizer
+PSFEstimator
 ::GetDisplayedImageDataMaximum() {
   if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
     return m_DataModel->GetMeasuredImageDataMaximum();
@@ -928,7 +928,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetMapsToBlackValueFromSliderPosition(int position) {
   double dataMin = GetDisplayedImageDataMinimum();
   double dataMax = GetDisplayedImageDataMaximum();
@@ -941,7 +941,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SetMapsToWhiteValueFromSliderPosition(int position) {
   double dataMin = GetDisplayedImageDataMinimum();
   double dataMax = GetDisplayedImageDataMaximum();
@@ -954,7 +954,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::Exit() {
   // Ask if user really wants to quit.
   QMessageBox messageBox(this);
@@ -972,7 +972,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::WriteProgramSettings() {
   QSettings settings;
 
@@ -991,7 +991,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::ReadProgramSettings() {
   QSettings settings;
 
@@ -1012,7 +1012,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::SaveFileChooserDirectory(const QString& path) {
   // Strip any file name from the end
   QString newPath = path;
@@ -1029,7 +1029,7 @@ VisualPSFOptimizer
 
 
 QString
-VisualPSFOptimizer
+PSFEstimator
 ::GetFileChooserDirectory() {
   QSettings settings;
   settings.beginGroup("FileChooser");
@@ -1041,7 +1041,7 @@ VisualPSFOptimizer
 
 
 void
-VisualPSFOptimizer
+PSFEstimator
 ::closeEvent(QCloseEvent* event) {
   Exit();
 

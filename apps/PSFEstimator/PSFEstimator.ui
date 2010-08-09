@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>VisualPSFOptimizer</string>
+   <string>PSFEstimator</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -968,7 +968,7 @@
   </action>
   <action name="actionAboutApplication">
    <property name="text">
-    <string>About VisualPSFOptimizer</string>
+    <string>About PSFEstimator</string>
    </property>
   </action>
   <action name="actionShowPSFSettings">

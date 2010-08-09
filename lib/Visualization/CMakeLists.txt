@@ -6,4 +6,4 @@ SET(visualizationSrc
   Visualization.cxx
 )
 
-ADD_LIBRARY(vpsfoVisualization ${visualizationSrc})
+ADD_LIBRARY(psfeVisualization ${visualizationSrc})

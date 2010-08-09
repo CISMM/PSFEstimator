@@ -1,5 +1,5 @@
-#ifndef _VISUAL_PSF_OPTIMIZER_H_
-#define _VISUAL_PSF_OPTIMIZER_H_
+#ifndef _PSF_ESTIMATOR_H_
+#define _PSF_ESTIMATOR_H_
 
 #include <QDialog>
 #include <QErrorMessage>
@@ -8,7 +8,7 @@
 
 #include <QPointSpreadFunctionPropertyTableModel.h>
 
-#include "ui_VisualPSFOptimizer.h"
+#include "ui_PSFEstimator.h"
 #include "ui_NewImageDialog.h"
 
 // Forward class declarations
@@ -17,14 +17,14 @@ class Visualization;
 class vtkRenderer;
 class QCloseEvent;
 
-class VisualPSFOptimizer : public QMainWindow {
+class PSFEstimator : public QMainWindow {
   Q_OBJECT
 
 public:
 
   // Constructor/destructor
-  VisualPSFOptimizer(QWidget* parent=0);
-  virtual ~VisualPSFOptimizer();
+  PSFEstimator(QWidget* parent=0);
+  virtual ~PSFEstimator();
   
 public slots:
 
@@ -150,4 +150,4 @@ private:
   
 };
 
-#endif // _VISUAL_PSF_OPTIMIZER_H_
+#endif // _PSF_ESTIMATOR_H_

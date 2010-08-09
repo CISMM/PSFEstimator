@@ -42,17 +42,17 @@ Next, you'll need to change your project name. Find and replace these strings
 (exluding quotes) throughout the source tree (within files and file names) with
 a string appropriate to your project:
 
-  "VisualPSFOptimizer"   - used in variables and paths
-  "Visual PSF Optimizer" - used for presentation to humans
-  "vpsfo"                        - prefix for library names
+  "PSFEstimator"   - used in variables and paths
+  "PSF Estimator" - used for presentation to humans
+  "psfe"                        - prefix for library names
   
 
 CHANGE ICONS
 
 There are two icon files, one for Mac OS X and one for Windows. These are
 located in 
-  apps/VisualPSFOptimizer/installer/MacOSX/VisualPSFOptimizer.icns
-  apps/VisualPSFOptimizer/installer/Win32/Win32Icon.ico
+  apps/PSFEstimator/installer/MacOSX/PSFEstimator.icns
+  apps/PSFEstimator/installer/Win32/Win32Icon.ico
 
 Modify these icons using appropriate tools. On Mac OS X, Icon Composer works
 well. On Windows, you can download one of numerous icon editors.

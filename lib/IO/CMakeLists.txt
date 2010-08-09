@@ -3,4 +3,4 @@ SET(ioSrc
   ITKImageToVTKImage.cxx
 )
 
-ADD_LIBRARY(vpsfoIO ${ioSrc})
+ADD_LIBRARY(psfeIO ${ioSrc})

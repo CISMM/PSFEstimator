@@ -2,9 +2,9 @@ SET(modelSrc
   DataModel.cxx
 )
 
-ADD_LIBRARY(vpsfoModel ${modelSrc})
+ADD_LIBRARY(psfeModel ${modelSrc})
 
-TARGET_LINK_LIBRARIES( vpsfoModel
+TARGET_LINK_LIBRARIES( psfeModel
   vtksys
   vtkCommon
   vtkFiltering

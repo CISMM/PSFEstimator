@@ -57,7 +57,7 @@ DataModel
   // ITK will detect the number of cores on the system and set it by default.
   // Here we can override that setting if the proper environment variable is
   // set.
-  char *var = getenv("VisualPSFOptimizer_THREADS");
+  char *var = getenv("PSFEstimator_THREADS");
   if (var) {
     int numberOfThreads = atoi(var);
     if (numberOfThreads > 0)

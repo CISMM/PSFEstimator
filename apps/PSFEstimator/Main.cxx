@@ -7,14 +7,14 @@
 
 #include <qapplication.h>
 
-#include "VisualPSFOptimizer.h"
+#include "PSFEstimator.h"
 
 int main(int argc, char** argv) {
 
   // Qt initialization.
   QApplication app(argc, argv);
   
-  VisualPSFOptimizer mainWindow;
+  PSFEstimator mainWindow;
   mainWindow.show();
   
   return app.exec();

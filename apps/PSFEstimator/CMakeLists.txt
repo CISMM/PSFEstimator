@@ -15,7 +15,7 @@ ENDIF(QT_USE_FILE)
 SET (QtGuiSrcs
   Main.cxx
   QPointSpreadFunctionPropertyTableModel.cxx
-  VisualPSFOptimizer.cxx
+  PSFEstimator.cxx
 )
 
 # Use the include path and library for Qt that is used by VTK.
@@ -26,11 +26,11 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(UIS
-  VisualPSFOptimizer.ui
+  PSFEstimator.ui
   NewImageDialog.ui
 )
 SET (ApplicationHeaders
-  VisualPSFOptimizer.h
+  PSFEstimator.h
   QPointSpreadFunctionPropertyTableModel.h
 )
 QT4_WRAP_UI(UIHeaders ${UIS})
@@ -50,12 +50,12 @@ IF (${CMAKE_BUILD_TOOL} MATCHES "devenv")
 ENDIF (${CMAKE_BUILD_TOOL} MATCHES "devenv")
 
 IF ( WIN32 )
-  SET( WinResources "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/Win32/icon.rc" )
+  SET( WinResources "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/Win32/icon.rc" )
 ENDIF ( WIN32 )
 
-ADD_EXECUTABLE( VisualPSFOptimizer ${QtGuiSrcs} ${UISrcs} ${MOCSrcs} ${WinResources} )
+ADD_EXECUTABLE( PSFEstimator ${QtGuiSrcs} ${UISrcs} ${MOCSrcs} ${WinResources} )
 
-TARGET_LINK_LIBRARIES( VisualPSFOptimizer
+TARGET_LINK_LIBRARIES( PSFEstimator
   QVTK
   ${QT_LIBRARIES}
   vtksys
@@ -71,29 +71,29 @@ TARGET_LINK_LIBRARIES( VisualPSFOptimizer
   ITKBasicFilters
   ITKIO
   ITKNumerics
-  vpsfoFilter
-  vpsfoModel
-  vpsfoIO
-  vpsfoVisualization
+  psfeFilter
+  psfeModel
+  psfeIO
+  psfeVisualization
 )
 
 # Set package properties
-SET( CPACK_PACKAGE_NAME "VisualPSFOptimizer" )
+SET( CPACK_PACKAGE_NAME "PSFEstimator" )
 SET( CPACK_PACKAGE_VENDOR "University of North Carolina CISMM" )
-SET( CPACK_PACKAGE_EXECUTABLES "VisualPSFOptimizer;Visual PSF Optimizer ${VisualPSFOptimizer_VERSION_STRING}" )
-SET( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Visual PSF Optimizer" )
-SET( CPACK_PACKAGE_VERSION "${VisualPSFOptimizer_VERSION_STRING}" )
-SET( CPACK_PACKAGE_VERSION_MAJOR "${VisualPSFOptimizer_MAJOR_NUMBER}" )
-SET( CPACK_PACKAGE_VERSION_MINOR "${VisualPSFOptimizer_MINOR_NUMBER}" )
-SET( CPACK_PACKAGE_VERSION_PATCH "${VisualPSFOptimizer_REVISION_NUMBER}" )
-SET( CPACK_PACKAGE_INSTALL_DIRECTORY "Visual PSF Optimizer ${VisualPSFOptimizer_VERSION_STRING}" )
-SET( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Visual PSF Optimizer ${VisualPSFOptimizer_VERSION_STRING}" )
-SET( CPACK_RESOURCE_FILE_LICENSE "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/licenses/VisualPSFOptimizer-license.txt" )
-SET( CPACK_RESOURCE_FILE_README  "${VisualPSFOptimizer_SOURCE_DIR}/apps/VisualPSFOptimizer/installer/licenses/README.txt" )
+SET( CPACK_PACKAGE_EXECUTABLES "PSFEstimator;PSF Estimator ${PSFEstimator_VERSION_STRING}" )
+SET( CPACK_PACKAGE_DESCRIPTION_SUMMARY "PSF Estimator" )
+SET( CPACK_PACKAGE_VERSION "${PSFEstimator_VERSION_STRING}" )
+SET( CPACK_PACKAGE_VERSION_MAJOR "${PSFEstimator_MAJOR_NUMBER}" )
+SET( CPACK_PACKAGE_VERSION_MINOR "${PSFEstimator_MINOR_NUMBER}" )
+SET( CPACK_PACKAGE_VERSION_PATCH "${PSFEstimator_REVISION_NUMBER}" )
+SET( CPACK_PACKAGE_INSTALL_DIRECTORY "PSF Estimator ${PSFEstimator_VERSION_STRING}" )
+SET( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "PSF Estimator ${PSFEstimator_VERSION_STRING}" )
+SET( CPACK_RESOURCE_FILE_LICENSE "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/licenses/PSFEstimator-license.txt" )
+SET( CPACK_RESOURCE_FILE_README  "${PSFEstimator_SOURCE_DIR}/apps/PSFEstimator/installer/licenses/README.txt" )
 
 INCLUDE( installer/CMakeLists.txt )
 
-INSTALL( TARGETS VisualPSFOptimizer
+INSTALL( TARGETS PSFEstimator
   RUNTIME DESTINATION bin
 )
 

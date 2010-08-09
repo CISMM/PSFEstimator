@@ -6,7 +6,7 @@ TARGET_LINK_LIBRARIES( BatchPSFEstimator
   ITKBasicFilters
   ITKIO
   ITKNumerics
-  vpsfoModel
-  vpsfoFilter
-  vpsfoIO
+  psfeModel
+  psfeFilter
+  psfeIO
 )
