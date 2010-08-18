@@ -1,61 +1,59 @@
-# Qt files
-INSTALL( FILES
-  "${QT_LIBRARY_DIR}/QtCore${DESIRED_QT_VERSION}.dll"
-  "${QT_LIBRARY_DIR}/QtGui${DESIRED_QT_VERSION}.dll"
-  "${QT_LIBRARY_DIR}/QtNetwork${DESIRED_QT_VERSION}.dll"
-  "${QT_LIBRARY_DIR}/QtSql${DESIRED_QT_VERSION}.dll"
+# Qt DLLs
+SET( QT_DLLS
+  "${QT_LIBRARY_DIR}/QtCore4.dll"
+  "${QT_LIBRARY_DIR}/QtGui4.dll"
+  "${QT_LIBRARY_DIR}/QtNetwork4.dll"
+  "${QT_LIBRARY_DIR}/QtSql4.dll"
+  "${QT_LIBRARY_DIR}/QtWebKit4.dll"
+  "${QT_LIBRARY_DIR}/QtXmlPatterns4.dll"
+  "${QT_LIBRARY_DIR}/phonon4.dll"
   "${VTK_LIBRARY_DIRS}/release/QVTK.dll"
-  DESTINATION bin
-)
+  )
+FOREACH ( QT_LIB ${QT_DLLS} )
+  IF ( EXISTS ${QT_LIB} )
+    INSTALL( FILES ${QT_LIB} DESTINATION bin )
+  ENDIF ( EXISTS ${QT_LIB} )
+ENDFOREACH ( QT_LIB )
 
 # This should work, but seems to prevent other files from being written 
 # into the bin directory in the installation tree.
 #SET(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${VTK_BINARY_DIR};VTK;ALL;/")
 
-# VTK files
-INSTALL( FILES
-  "${VTK_LIBRARY_DIRS}/release/vtkCommon.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkDICOMParser.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkexoIIc.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkexpat.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkFiltering.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkfreetype.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkftgl.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkGenericFiltering.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkGraphics.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkHybrid.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkImaging.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkInfovis.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkIO.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkjpeg.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtklibxml2.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkmetaio.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkNetCDF.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkParallel.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkpng.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkRendering.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtksys.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtktiff.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkverdict.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkViews.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkVolumeRendering.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkWidgets.dll"
-  "${VTK_LIBRARY_DIRS}/release/vtkzlib.dll"
-  DESTINATION bin
-)
+# VTK DLLs
+FILE( GLOB VTK_DLLS "${VTK_LIBRARY_DIRS}/release/vtk*.dll" )
+INSTALL( FILES ${VTK_DLLS} DESTINATION bin )
 
-# Cg files (need to escape backslashes twice - once for CMake and once for NSIS program).
-SET( CG_DLL_DIR "C:\\\\Program Files\\\\NVIDIA Corporation\\\\Cg\\\\bin")
-INSTALL( FILES
-  "${CG_DLL_DIR}/cg.dll"
-  "${CG_DLL_DIR}/cgGL.dll"
-  DESTINATION bin
-)
+# libxml2 DLL
+# First, find which one VTK was built with
+FILE( READ "${VTK_LIBRARY_DIRS}/../CMakeCache.txt" VTK_CMAKE_CACHE )
+STRING( REGEX REPLACE ".*LIBXML2_LIBRARIES:FILEPATH=([^\n]+).*" "\\1" LIBXML2_DLL ${VTK_CMAKE_CACHE} )
+STRING( REPLACE ".lib" ".dll" LIBXML2_DLL ${LIBXML2_DLL} )
+INSTALL( FILES "${LIBXML2_DLL}" DESTINATION bin )
 
-# Change the default installation directory. To make this work you MUST replace
-# all occurences of $PROGRAMFILES with @CPACK_INSTALL_DIRECTORY@ in
-# C:\Program Files\CMake 2.6\share\cmake-2.6\Modules\NSIS.template.in.
-SET( CPACK_INSTALL_DIRECTORY "C:\\\\NSRG\\\\bin" )
+# ITK DLLs
+FILE( GLOB ITK_DLLS "${ITK_LIBRARY_DIRS}/release/ITKCommon.dll" )
+INSTALL( FILES ${ITK_DLLS} DESTINATION bin )
+
+SET( USER_GUIDE_NAME "PSFEstimator-${PSFEstimator_VERSION_STRING}-UserGuide.pdf" )
+SET( USER_GUIDE_FILE   "${PSFEstimator_BINARY_DIR}/docs/${USER_GUIDE_NAME}" )
+IF ( EXISTS "${USER_GUIDE_FILE}" )
+
+  INSTALL( FILES
+  "${PSFEstimator_BINARY_DIR}/docs/${USER_GUIDE_NAME}"
+    DESTINATION . )
+  SET( CPACK_NSIS_MENU_LINKS 
+    "${USER_GUIDE_NAME}" "PSF Estimator ${PSFEstimator_VERSION_STRING} User Guide" 
+    "http://www.cismm.org/downloads/?dl_cat=5" "PSF Estimator Download Site"
+    "http://www.cismm.org/" "CISMM Web Site"
+  )
+
+ELSE ( EXISTS "${USER_GUIDE_FILE}" )
+
+  MESSAGE( WARNING "Could not find the user guide PDF file. Please generate it by running LaTeX on ${PSFEstimator_BINARY_DIR}/docs/PSFEstimator-${PSFEstimator_VERSION_STRING}-UserGuide.tex" )
+
+ENDIF ( EXISTS "${USER_GUIDE_FILE}" )
+
+SET( CPACK_INSTALL_DIRECTORY "$PROGRAMFILES\\\\CISMM" )
 
 # Save time by just using the NSIS generator
 SET( CPACK_GENERATOR "NSIS" )
