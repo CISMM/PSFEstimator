@@ -31,7 +31,7 @@ class DataModel {
 public:
   typedef float FloatPixelType;
   static const unsigned int Dimension3 = 3;
-  typedef itk::Image<FloatPixelType, Dimension3> 
+  typedef itk::Image<FloatPixelType, Dimension3>
     Float3DImageType;
   typedef itk::ImageFileReader<Float3DImageType>
     Float3DImageReaderType;
@@ -52,7 +52,7 @@ public:
     GibsonLanniBSFImageSourceType;
   typedef GibsonLanniBSFImageSourceType::Pointer
     GibsonLanniBSFImageSourcePointer;
-  
+
   typedef Float3DImageType TImage;
   typedef TImage InputImageType;
 

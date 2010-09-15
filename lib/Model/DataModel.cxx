@@ -33,7 +33,7 @@
 DataModel
 ::DataModel() {
   m_MeasuredImageData = NULL;
-  
+
   m_GibsonLanniPSFSource = GibsonLanniPSFImageSourceType::New();
   m_GibsonLanniBSFSource = GibsonLanniBSFImageSourceType::New();
 
@@ -52,7 +52,6 @@ DataModel
   m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
   SetInitialSimplexDeltas();
-  
 
   // ITK will detect the number of cores on the system and set it by default.
   // Here we can override that setting if the proper environment variable is
@@ -107,7 +106,7 @@ DataModel
 ::SetInitialSimplexDeltas() {
   m_InitialSimplexDelta.
     SetSize(m_GibsonLanniBSFSource->GetNumberOfParameters());
-  
+
   int index = 0;
   m_InitialSimplexDelta[index++] = 1.0; // X-spacing
   m_InitialSimplexDelta[index++] = 1.0; // Y-spacing
@@ -158,18 +157,18 @@ DataModel
   dummySpacing[1] = ySpacing;
   dummySpacing[2] = zSpacing;
   dummy->SetSpacing(dummySpacing);
-  
+
   dummy->SetScale(0.0);
   dummy->Update();
   SetMeasuredImageData(dummy->GetOutput());
-  
+
   // Connect this image data to the various pipelines.
   m_MeasuredImageMinMaxFilter->SetImage(m_MeasuredImageData);
-  Float3DImageType::RegionType region = 
+  Float3DImageType::RegionType region =
     m_MeasuredImageData->GetLargestPossibleRegion();
   m_MeasuredImageMinMaxFilter->SetRegion(region);
   m_MeasuredImageMinMaxFilter->Compute();
-  
+
   m_MeasuredImageITKToVTKFilter->Modified();
   m_MeasuredImageITKToVTKFilter->Update();
 
@@ -183,7 +182,7 @@ DataModel
   GetMeasuredImageDimensions(size);
   SetPSFImageDimensions(size);
   SetBSFImageDimensions(size);
-  
+
   float origin[3];
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
@@ -193,11 +192,11 @@ DataModel
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
-  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());  
+  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
 
   m_BSFImageMinMaxFilter = MinMaxType::New();
   m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
-  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());  
+  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
@@ -214,14 +213,14 @@ DataModel
   reader->SetFileName(fileName.c_str());
   reader->Update();
   SetMeasuredImageData(reader->GetOutput());
-  
+
   // Connect this image data to the various pipelines.
   m_MeasuredImageMinMaxFilter->SetImage(m_MeasuredImageData);
-  Float3DImageType::RegionType region = 
+  Float3DImageType::RegionType region =
     m_MeasuredImageData->GetLargestPossibleRegion();
   m_MeasuredImageMinMaxFilter->SetRegion(region);
   m_MeasuredImageMinMaxFilter->Compute();
-  
+
   m_MeasuredImageITKToVTKFilter->Modified();
   m_MeasuredImageITKToVTKFilter->Update();
 
@@ -235,7 +234,7 @@ DataModel
   GetMeasuredImageDimensions(size);
   SetPSFImageDimensions(size);
   SetBSFImageDimensions(size);
-  
+
   float origin[3];
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
@@ -249,11 +248,11 @@ DataModel
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
-  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());  
+  m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
 
   m_BSFImageMinMaxFilter = MinMaxType::New();
   m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
-  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());  
+  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
@@ -339,7 +338,7 @@ DataModel
   SetGLMagnification
     (c.GetValueAsFloat(sec, "Magnification", GetGLMagnification()));
   SetGLDesignCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex", 
+    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex",
                        GetGLDesignCoverSlipRefractiveIndex()));
   SetGLActualCoverSlipRefractiveIndex
     (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex",
@@ -382,7 +381,7 @@ DataModel
                        GetGLMaximumIntensity()));
 
   sec = std::string("ZSliceCoordinates");
- 
+
   SetUseCustomZCoordinates(c.GetValueAsBool(sec, "UseCustomZCoordinates",
                                             GetUseCustomZCoordinates()));
 
@@ -455,7 +454,7 @@ DataModel
   c.SetValueFromDouble(sec, "ShearY", m_GibsonLanniBSFSource->GetShearY());
 
   c.SetValueFromDouble(sec, "EmissionWavelength", m_GibsonLanniBSFSource->GetEmissionWavelength());
-  
+
   c.SetValueFromFloat(sec, "NumericalAperture",
 		      GetGLNumericalAperture());
   c.SetValueFromFloat(sec, "Magnification",
@@ -490,7 +489,7 @@ DataModel
                       GetGLMaximumIntensity());
 
   sec = std::string("ZSliceCoordinates");
-  
+
   c.SetValueFromBool(sec, "UseCustomZCoordinates", GetUseCustomZCoordinates());
 
   for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
@@ -559,7 +558,7 @@ DataModel
 }
 
 
-void 
+void
 DataModel
 ::SetMeasuredImageData(TImage::Pointer image) {
   m_MeasuredImageData = image;
@@ -646,7 +645,7 @@ DataModel
     return;
   }
 
-  Float3DImageType::RegionType region 
+  Float3DImageType::RegionType region
       = GetMeasuredImageData()->GetLargestPossibleRegion();
   itk::Size<3> size = region.GetSize();
 
@@ -672,7 +671,7 @@ DataModel
 ::SetMeasuredImageVoxelSpacing(int dimension, double spacing) {
   if (!m_MeasuredImageData)
     return;
-  
+
   TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
 
@@ -741,7 +740,7 @@ DataModel
   m_GibsonLanniPSFSource->UpdateLargestPossibleRegion();
 
   m_PSFImageMinMaxFilter->Compute();
-  return m_PSFImageMinMaxFilter->GetMaximum();  
+  return m_PSFImageMinMaxFilter->GetMaximum();
 }
 
 
@@ -769,7 +768,7 @@ DataModel
   m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
 
   m_BSFImageMinMaxFilter->Compute();
-  return m_BSFImageMinMaxFilter->GetMaximum();  
+  return m_BSFImageMinMaxFilter->GetMaximum();
 }
 
 
@@ -791,7 +790,7 @@ DataModel
   GetPSFImageDimensions(dimensions);
   if (index >= 0 && index <= 2) {
     dimensions[index] = dimension;
-    SetPSFImageDimensions(dimensions);  
+    SetPSFImageDimensions(dimensions);
   }
 }
 
@@ -800,7 +799,7 @@ void
 DataModel
 ::GetPSFImageDimensions(int dimensions[3]) {
   if (GetMeasuredImageData()) {
-    Float3DImageType::RegionType region 
+    Float3DImageType::RegionType region
       = GetMeasuredImageData()->GetLargestPossibleRegion();
     itk::Size<3> size = region.GetSize();
 
@@ -831,7 +830,7 @@ DataModel
   GetBSFImageDimensions(dimensions);
   if (index >= 0 && index <= 2) {
     dimensions[index] = dimension;
-    SetBSFImageDimensions(dimensions);  
+    SetBSFImageDimensions(dimensions);
   }
 }
 
@@ -840,7 +839,7 @@ void
 DataModel
 ::GetBSFImageDimensions(int dimensions[3]) {
   if (GetMeasuredImageData()) {
-    Float3DImageType::RegionType region 
+    Float3DImageType::RegionType region
       = GetMeasuredImageData()->GetLargestPossibleRegion();
     itk::Size<3> size = region.GetSize();
 
@@ -871,7 +870,7 @@ DataModel
 ::SetPSFImageVoxelSpacing(int dimension, double spacing) {
   if (!GetMeasuredImageData())
     return;
-  
+
   TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
 
@@ -915,7 +914,7 @@ DataModel
 ::SetBSFImageVoxelSpacing(int dimension, double spacing) {
   if (!GetMeasuredImageData())
     return;
-  
+
   TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
 
@@ -1009,7 +1008,7 @@ DataModel
 
   int size[3];
   GetPSFImageDimensions(size);
-  
+
   float origin[3];
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<float>(size[i]-1)*0.5;
@@ -1117,13 +1116,13 @@ DataModel
   // Pass only the active parameter values to the cost function
   try {
     ParametersMaskType* mask = m_CostFunction->GetParametersMask();
-    ParametersType activeParameters = 
+    ParametersType activeParameters =
       ParametersType(m_CostFunction->GetNumberOfParameters());
 
     int activeIndex = 0;
     for (unsigned int i = 0; i < mask->Size(); i++) {
       if (mask->GetElement(i)) {
-        activeParameters[activeIndex++] = 
+        activeParameters[activeIndex++] =
           m_GibsonLanniBSFSource->GetParameters()[i];
       }
     }
