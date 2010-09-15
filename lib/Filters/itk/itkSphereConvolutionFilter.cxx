@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,6 +22,7 @@
 
 #include "itkSphereConvolutionFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkRectilinearImage.h"
 
 namespace itk {
 
@@ -45,7 +46,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   m_ShearX = 0.0f;
   m_ShearY = 0.0f;
   m_UseCustomZCoordinates = false;
-  
+
   m_ScanImageFilter = ScanImageFilterType::New();
   m_ScanImageFilter->SetScanDimension(2);
   m_ScanImageFilter->SetScanOrderToIncreasing();
@@ -98,7 +99,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   float cz = m_SphereCenter[2];
   float r  = m_SphereRadius;
   float sqrtTerm = -(cx*cx)-(cy*cy)+(r*r)+(2*cx*x)-(x*x)+(2*cy*y)-(y*y);
-  
+
   if (sqrtTerm < 0) {
     z1 = z2 = 0.0f;
     return 0; // no solutions
@@ -143,7 +144,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   OutputImageIndexType index = {{0}};
   OutputImageSizeType size = {{0}};
   size.SetSize( m_Size );
-  
+
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;
@@ -172,7 +173,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-SphereConvolutionFilter<TInputImage,TOutputImage> 
+SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData
 (const OutputImageRegionType& outputRegionForThread, int threadId) {
   itkDebugMacro(<<"Generating a random image of scalars");
@@ -196,10 +197,10 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     // Apply shear here
     point[0] -= m_ShearX * (point[2] - m_SphereCenter[2]);
     point[1] -= m_ShearY * (point[2] - m_SphereCenter[2]);
-    
+
     it.Set( ComputeIntegratedVoxelValue(point) );
     progress.CompletedPixel();
-    }  
+    }
 }
 
 
@@ -237,12 +238,12 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
       float z1 = 0.0f, z2 = 0.0f;
       unsigned int intersections;
       intersections = IntersectWithVerticalLine(xs, ys, z1, z2);
-      
+
       if (intersections == 2) {
         OutputImagePointType p1, p2;
         p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z1;
         p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z2;
-        
+
         // Important: z1 is always less than z2, so p1 is always above p2
 
         // Subtract z-voxel spacing from p2[2] to get the proper behavior
@@ -261,7 +262,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
           p1[2] = tableZMax - 1e-5;
           v1 = m_TableInterpolator->Evaluate(p1);
         }
-        // z - z1 is always larger than z - z2, and integration goes along 
+        // z - z1 is always larger than z - z2, and integration goes along
         // positive z, so we return v1 - v2.
         value += v1 - v2;
 
