@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -109,7 +109,7 @@ public:
 
   /** Get the size of the output image. */
   itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
-  
+
   /** Specify the spacing of the output image. */
   itkSetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
 
@@ -158,7 +158,7 @@ protected:
   SphereConvolutionFilter();
   ~SphereConvolutionFilter();
   void PrintSelf(std::ostream& os, Indent indent) const;
-  
+
   unsigned long *m_Size;         // the number of voxels in each dimension
   float         *m_Spacing;      // the spacing of the voxels
   float         *m_Origin;       // the origin of the image
@@ -172,15 +172,15 @@ protected:
 
 
   ScanImageFilterPointer  m_ScanImageFilter;
-  
+
   InterpolatorPointer     m_KernelInterpolator;
   InterpolatorPointer     m_TableInterpolator;
 
   /** Gets the z-coordinate(s) of the intersection of a sphere with a line
    * parallel to the z-axis specified by the x- and y-coordinates. z1 and z2
-   * are set to the z-coordinates if there are two intersections, only z1 is 
+   * are set to the z-coordinates if there are two intersections, only z1 is
    * set to the z-coordinate if there is one intersection, and neither is set
-   * if there is no intersection. The method returns the number of 
+   * if there is no intersection. The method returns the number of
    * intersections.
    */
   unsigned int IntersectWithVerticalLine(float x, float y, float& z1, float& z2);

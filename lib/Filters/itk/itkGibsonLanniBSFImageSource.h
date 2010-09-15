@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -51,9 +51,9 @@ namespace itk
  * Gibson-Lanni model and convolve it with a spherical bead shape.
  *
  * The Gibson-Lanni point-spread function model takes into account optical
- * path differences caused by imaing conditions differing from the design 
- * conditions of an objective in a widefield fluorescence microscope. This 
- * image source generates images according to this model. IMPORTANT: Please 
+ * path differences caused by imaing conditions differing from the design
+ * conditions of an objective in a widefield fluorescence microscope. This
+ * image source generates images according to this model. IMPORTANT: Please
  * pay attention to the units each method expects. Some take nanometers, some
  * take micrometers, and some take millimeters.
  *
@@ -68,7 +68,7 @@ namespace itk
  * \sa GibsonLanniPSFImageSource.
  */
 template <class TOutputImage>
-class ITK_EXPORT GibsonLanniBSFImageSource : 
+class ITK_EXPORT GibsonLanniBSFImageSource :
   public ParametricImageSource<TOutputImage>
 {
 public:
@@ -104,7 +104,7 @@ public:
 
   typedef typename Superclass::ParametersValueType ParametersValueType;
   typedef typename Superclass::ParametersType      ParametersType;
-  
+
   /** Specify the size of the output image. */
   void SetSize(unsigned long size[TOutputImage::ImageDimension]) {
     for (int i = 0; i < TOutputImage::ImageDimension; i++) {
@@ -117,7 +117,7 @@ public:
 
   /** Get the size of the output image. */
   itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
-  
+
   /** Specify the spacing of the output image (in nanometers). */
   void SetSpacing(float spacing[TOutputImage::ImageDimension]) {
     for (int i = 0; i < TOutputImage::ImageDimension; i++) {
@@ -308,7 +308,7 @@ protected:
   GibsonLanniBSFImageSource();
   ~GibsonLanniBSFImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
-  
+
   /** This class is implicitly multi-threaded because its member filters
    * are mulithreaded, so we go with a "single-threaded" implementation here. */
   virtual void GenerateData();
@@ -322,7 +322,7 @@ private:
 
   unsigned long *m_Size;  // Size of the output image
   float         *m_Spacing;
-  float         *m_Origin;              
+  float         *m_Origin;
   float         *m_BeadCenter;          // The center of the bead
   float          m_BeadRadius;          // The radius of the bead
   double         m_BackgroundIntensity; // Additive background constant
@@ -331,7 +331,7 @@ private:
   PSFSourcePointer        m_PSFSource;
   ConvolverPointer        m_Convolver;
   RescaleImageFilterPointer m_RescaleFilter;
-  
+
 };
 
 } // end namespace itk
