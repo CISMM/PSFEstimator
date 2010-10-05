@@ -32,9 +32,7 @@
 namespace itk
 {
 
-/**
- *
- */
+//----------------------------------------------------------------------------
 template <class TOutputImage>
 GibsonLanniPSFImageSource<TOutputImage>
 ::GibsonLanniPSFImageSource()
@@ -77,6 +75,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 }
 
 
+//----------------------------------------------------------------------------
 template <class TOutputImage>
 GibsonLanniPSFImageSource<TOutputImage>
 ::~GibsonLanniPSFImageSource()
@@ -88,6 +87,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 }
 
 
+//----------------------------------------------------------------------------
 template <class TOutputImage>
 void
 GibsonLanniPSFImageSource<TOutputImage>
@@ -190,6 +190,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 }
 
 
+//----------------------------------------------------------------------------
 template <class TOutputImage>
 unsigned int
 GibsonLanniPSFImageSource<TOutputImage>
@@ -199,55 +200,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 }
 
 
-template <class TOutputImage>
-float
-GibsonLanniPSFImageSource<TOutputImage>
-::BesselFunctionZeroOrderFirstKind(float x)
-{
-  float ax, z;
-  float xx,y,ans,ans1,ans2;
-
-  if ( (ax=fabs(x)) < 8.0 )
-    {
-    float p1 = 57568490574.0, p2 = -13362590354.0,
-      p3 = 651619640.7, p4 = -11214424.18,
-      p5 = 77392.33017, p6 = -184.9052456,
-      p7 = 57568490411.0, p8 = 1029532985.0,
-      p9 = 9494680.718, p10 = 59272.64853,
-      p11 = 267.8532712;
-
-    y = x*x;
-    ans1=p1+y*(p2+y*(p3+y*(p4+y*(p5+y*p6))));
-    ans2=p7+y*(p8+y*(p9+y*(p10+y*(p11+y))));
-    ans=ans1/ans2;
-
-    }
-  else
-    {
-    float p1 = 0.785398164, p2 = -0.1098628627e-2,
-      p3 = 0.2734510407e-4, p4 = -0.2073370639e-5,
-      p5 = 0.2093887211e-6, p6 = -0.1562499995e-1,
-      p7 = 0.1430488765e-3, p8 = -0.6911147651e-5,
-      p9 = 0.7621095161e-6, p10 = 0.934945152e-7,
-      p11 = 0.636619772;
-
-    z=8.0/ax;
-    y=z*z;
-    xx=ax-p1;
-    ans1=1.0+y*(p2+y*(p3+
-		      y*(p4+y*p5)));
-    ans2=p6+y*(p7+
-	       y*(p8+y*(p9 -
-			y*p10)));
-    ans=sqrt(p11/ax)*(cos(xx)*ans1-z*sin(xx)*ans2);
-    }
-  return ans;
-}
-
-
-/**
- *
- */
+//----------------------------------------------------------------------------
 template <class TOutputImage>
 void
 GibsonLanniPSFImageSource<TOutputImage>
@@ -495,7 +448,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 	       int rhoIndex, float h, float r_o, float z_o)
 {
   float rho = static_cast<float>(rhoIndex)*h;
-  float bessel = BesselFunctionZeroOrderFirstKind(K*a*rho*r_o/z_d);
+  float bessel = j0(K*a*rho*r_o/z_d);
 
   return bessel*opdCache[rhoIndex]*rho;
 }
@@ -556,6 +509,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 }
 
 
+//----------------------------------------------------------------------------
 template <typename TOutputImage>
 float
 GibsonLanniPSFImageSource<TOutputImage>

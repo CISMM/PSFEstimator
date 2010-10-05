@@ -216,8 +216,6 @@ public:
   /** Gets the total number of parameters. */
   virtual unsigned int GetNumberOfParameters() const;
 
-  static float BesselFunctionZeroOrderFirstKind(float x);
-
 protected:
   GibsonLanniPSFImageSource();
   ~GibsonLanniPSFImageSource();
