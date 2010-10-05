@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>PSFEstimator</string>
+   <string>PSF Estimator</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -72,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>1002</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -96,7 +96,7 @@
     </property>
     <addaction name="actionAboutApplication"/>
     <addaction name="separator"/>
-    <addaction name="actionShowDisplayWindow"/>
+    <addaction name="actionShowDisplaySettings"/>
     <addaction name="actionShowImageInformation"/>
     <addaction name="actionShowPSFSettings"/>
    </widget>
@@ -140,7 +140,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Display</string>
+    <string>Display Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -157,8 +157,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>557</height>
+          <width>297</width>
+          <height>523</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -689,8 +689,8 @@
   <widget class="QDockWidget" name="psfSettingsDockWidget">
    <property name="minimumSize">
     <size>
-     <width>340</width>
-     <height>424</height>
+     <width>271</width>
+     <height>524</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -713,6 +713,103 @@
         <property name="margin">
          <number>3</number>
         </property>
+        <item>
+         <widget class="QWidget" name="microscopeTypeWidget" native="true">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="microscopeTypeLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Microscope type:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="microscopeTypeComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <item>
+              <property name="text">
+               <string>Widefield</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Confocal</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="useRadialInterpolationCheckBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Use radial interpolation</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="noiseTypeWidget" native="true">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="noiseTypeLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Noise type:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="noiseTypeComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <item>
+              <property name="text">
+               <string>Gaussian noise</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Poisson noise</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item>
          <widget class="QTableView" name="psfSettingsTableView">
           <property name="minimumSize">
@@ -814,20 +911,20 @@
       </widget>
      </item>
      <item>
-      <widget class="QWidget" name="comparisonMetric" native="true">
+      <widget class="QWidget" name="objectiveFunctionWidget" native="true">
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <property name="margin">
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="comparisonMetricLabel">
+         <widget class="QLabel" name="objectiveFunctionValueLabel">
           <property name="text">
-           <string>Comparison Metric:</string>
+           <string>Objective Function Value:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="comparisonMetricLineEdit">
+         <widget class="QLineEdit" name="objectiveFunctionValueEdit">
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -917,7 +1014,7 @@
     <string>Image Analysis Window</string>
    </property>
   </action>
-  <action name="actionShowDisplayWindow">
+  <action name="actionShowDisplaySettings">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -925,7 +1022,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Display Window</string>
+    <string>Display Settings</string>
    </property>
   </action>
   <action name="actionGb2">
@@ -968,7 +1065,7 @@
   </action>
   <action name="actionAboutApplication">
    <property name="text">
-    <string>About PSFEstimator</string>
+    <string>About PSF Estimator</string>
    </property>
   </action>
   <action name="actionShowPSFSettings">
@@ -1043,7 +1140,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>actionShowDisplayWindow</sender>
+   <sender>actionShowDisplaySettings</sender>
    <signal>triggered(bool)</signal>
    <receiver>displayDockWidget</receiver>
    <slot>setVisible(bool)</slot>
@@ -1061,7 +1158,7 @@
   <connection>
    <sender>displayDockWidget</sender>
    <signal>visibilityChanged(bool)</signal>
-   <receiver>actionShowDisplayWindow</receiver>
+   <receiver>actionShowDisplaySettings</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">

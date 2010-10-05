@@ -220,6 +220,10 @@ PSFEstimator
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
 
+  gui->microscopeTypeWidget->setEnabled(true);
+  gui->useRadialInterpolationCheckBox->setEnabled(true);
+  gui->noiseTypeWidget->setEnabled(true);
+
   gui->estimatePSFCenterButton->setEnabled(hasMeasuredImage);
   gui->optimizePSFParametersButton->setEnabled(hasMeasuredImage);
   gui->submitOptimizationJobToQueueButton->setEnabled(hasMeasuredImage);
@@ -714,9 +718,9 @@ PSFEstimator
 
   if (gui->measuredPSFRadioButton->isEnabled()) {
     double value = m_DataModel->GetImageComparisonMetricValue();
-    gui->comparisonMetricLineEdit->setText(QString().sprintf("%.3f", value));
+    gui->objectiveFunctionValueEdit->setText(QString().sprintf("%.3f", value));
   } else {
-    gui->comparisonMetricLineEdit->setText(QString("-"));
+    gui->objectiveFunctionValueEdit->setText(QString("-"));
   }
 
 }
@@ -838,8 +842,15 @@ PSFEstimator
 ::RefreshUI() {
 
   ///////////////// Update window title /////////////////
+  QString version = QString().sprintf("%d.%d.%d",
+                                      PSFEstimator_MAJOR_NUMBER,
+                                      PSFEstimator_MINOR_NUMBER,
+                                      PSFEstimator_REVISION_NUMBER);
+
+  QString windowTitle("PSF Estimator ");
+  windowTitle.append(version);
+
   QFileInfo fileInfo(m_DataModel->GetMeasuredImageFileName().c_str());
-  QString windowTitle("PSF Estimator");
   if (fileInfo.fileName() != "")
     windowTitle.append(tr(" - '").append(fileInfo.fileName()).append("'"));
   setWindowTitle(windowTitle);
