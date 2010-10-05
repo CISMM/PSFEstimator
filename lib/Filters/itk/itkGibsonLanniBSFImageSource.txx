@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,7 +28,7 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkScanImageFilter.h"
 #include "itkSumProjectionImageFilter.h"
- 
+
 namespace itk
 {
 
@@ -45,7 +45,7 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_BeadCenter = new float[TOutputImage::GetImageDimension()];
 
   //Initial image is 63 wide in each direction.
-  for (unsigned int i=0; i<TOutputImage::GetImageDimension(); i++)
+  for ( unsigned int i = 0; i<TOutputImage::GetImageDimension(); i++ )
     {
     m_Size[i] = 63;
     m_Spacing[i] = 65.0f;
@@ -81,11 +81,13 @@ GibsonLanniBSFImageSource<TOutputImage>
 template <class TOutputImage>
 void
 GibsonLanniBSFImageSource<TOutputImage>
-::SetParameters(const ParametersType& parameters) {
+::SetParameters(const ParametersType& parameters)
+{
   Array<float> floatParams(GetNumberOfParameters());
-  for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
+  for ( unsigned int i = 0; i < GetNumberOfParameters(); i++ )
+    {
     floatParams[i] = static_cast<float>(parameters[i]);
-  }
+    }
 
   int index = 0;
   float spacing[3];
@@ -179,9 +181,10 @@ GibsonLanniBSFImageSource<TOutputImage>
   floatParams[index++] = GetMaximumIntensity();
 
   ParametersType parameters(GetNumberOfParameters());
-  for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
+  for (unsigned int i = 0; i < GetNumberOfParameters(); i++)
+    {
     parameters[i] = static_cast<double>(floatParams[i]);
-  }
+    }
 
   return parameters;
 }
@@ -190,7 +193,8 @@ GibsonLanniBSFImageSource<TOutputImage>
 template <class TOutputImage>
 unsigned int
 GibsonLanniBSFImageSource<TOutputImage>
-::GetNumberOfParameters() const {
+::GetNumberOfParameters() const
+{
   return 28;
 }
 
@@ -198,7 +202,8 @@ GibsonLanniBSFImageSource<TOutputImage>
 template <class TOutputImage>
 void
 GibsonLanniBSFImageSource<TOutputImage>
-::SetZCoordinate(unsigned int index, double coordinate) {
+::SetZCoordinate(unsigned int index, double coordinate)
+{
   m_Convolver->SetZCoordinate(index, coordinate);
 }
 
@@ -206,15 +211,17 @@ GibsonLanniBSFImageSource<TOutputImage>
 template <class TOutputImage>
 double
 GibsonLanniBSFImageSource<TOutputImage>
-::GetZCoordinate(unsigned int index) {
+::GetZCoordinate(unsigned int index)
+{
   return m_Convolver->GetZCoordinate(index);
 }
 
 
 template <class TOutputImage>
-void 
+void
 GibsonLanniBSFImageSource<TOutputImage>
-::SetUseCustomZCoordinates(bool use) {
+::SetUseCustomZCoordinates(bool use)
+{
   m_Convolver->SetUseCustomZCoordinates(use);
   this->Modified();
 }
@@ -223,52 +230,53 @@ GibsonLanniBSFImageSource<TOutputImage>
 template <class TOutputImage>
 bool
 GibsonLanniBSFImageSource<TOutputImage>
-::GetUseCustomZCoordinates() {
+::GetUseCustomZCoordinates()
+{
   return m_Convolver->GetUseCustomZCoordinates();
 }
 
 
 template <class TOutputImage>
-void 
+void
 GibsonLanniBSFImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
   unsigned int i;
   os << indent << "Origin: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_Origin[i] << ", ";
     }
   os << m_Origin[i] << "]" << std::endl;
 
   os << indent << "Spacing: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_Spacing[i] << ", ";
     }
   os << m_Spacing[i] << "] (nanometers)" << std::endl;
 
   os << indent << "Size: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_Size[i] << ", ";
     }
   os << m_Size[i] << "]" << std::endl;
 
   os << indent << "BeadCenter: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_BeadCenter[i] << ", ";
     }
   os << m_BeadCenter[i] << "]" << std::endl;
-  
+
   os << m_PSFSource << std::endl;
 }
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-void 
+void
 GibsonLanniBSFImageSource<TOutputImage>
 ::GenerateOutputInformation()
 {
@@ -276,7 +284,7 @@ GibsonLanniBSFImageSource<TOutputImage>
   typename TOutputImage::IndexType index = {{0}};
   typename TOutputImage::SizeType size = {{0}};
   size.SetSize( m_Size );
-  
+
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;
@@ -291,14 +299,14 @@ GibsonLanniBSFImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-void 
+void
 GibsonLanniBSFImageSource<TOutputImage>
-::GenerateData() {
-
+::GenerateData()
+{
   // Set the PSF sampling spacing and size parameters, and update.
   float psfSpacing[3], psfOrigin[3];
 
-  // Determine Nyquist sampling (taken from Heintzmann, R. and Sheppard, C. 
+  // Determine Nyquist sampling (taken from Heintzmann, R. and Sheppard, C.
   // (2007). The sampling limit in fluorescence microscopy. Micron,
   // 38(2):145–149. Actually, sample at twice this rate.
   float NA     = GetNumericalAperture();

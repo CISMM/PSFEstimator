@@ -9,8 +9,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -35,16 +35,16 @@ namespace itk
  * This Class is templated over the type of the fixed and moving
  * images to be compared.
  *
- * This metrics computes the negative log likelihood of the fixed image by 
- * treating voxels in the moving image as the mean (and standard deviation) 
+ * This metrics computes the negative log likelihood of the fixed image by
+ * treating voxels in the moving image as the mean (and standard deviation)
  * of a Poisson distribution and calculating the probability of the intensity
- * of the corresponding voxel in the fixed image according to that 
+ * of the corresponding voxel in the fixed image according to that
  * distribution. Each voxel distribution is treated as independent.
  *
  * \ingroup RegistrationMetrics
  */
-template < class TFixedImage, class TMovingImage > 
-class ITK_EXPORT PoissonNoiseImageToImageMetric : 
+template < class TFixedImage, class TMovingImage >
+class ITK_EXPORT PoissonNoiseImageToImageMetric :
     public ImageToImageMetric< TFixedImage, TMovingImage>
 {
 public:
@@ -57,11 +57,11 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
- 
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(PoissonNoiseImageToImageMetric, ImageToImageMetric);
 
- 
+
   /** Types transferred from the base class */
   typedef typename Superclass::RealType                 RealType;
   typedef typename Superclass::TransformType            TransformType;
@@ -115,11 +115,10 @@ private:
   void operator=(const Self&); //purposely not implemented
 
 };
-
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkPoissonNoiseImageToImageMetric.cxx"
+#include "itkPoissonNoiseImageToImageMetric.txx"
 #endif
 
 #endif

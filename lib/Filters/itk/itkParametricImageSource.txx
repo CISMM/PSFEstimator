@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -34,7 +34,7 @@ ParametricImageSource<TOutputImage>
   // Create the output. We use static_cast<> here because we know the default
   // output must be of type TOutputImage
   typename TOutputImage::Pointer output
-    = static_cast<TOutputImage*>(this->MakeOutput(0).GetPointer()); 
+    = static_cast<TOutputImage*>(this->MakeOutput(0).GetPointer());
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
   this->ProcessObject::SetNthOutput(0, output.GetPointer());
 
@@ -43,7 +43,6 @@ ParametricImageSource<TOutputImage>
   // can be reused (an thus avoid a costly deallocate/allocate cycle).
   this->ReleaseDataBeforeUpdateFlagOff();
 }
-
 
 } // end namespace itk
 

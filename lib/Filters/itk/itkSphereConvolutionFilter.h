@@ -81,14 +81,12 @@ public:
     ScanImageFilterType;
   typedef typename ScanImageFilterType::Pointer
     ScanImageFilterPointer;
-
   typedef LinearInterpolateImageFunction<InputImageType, float>
     InterpolatorType;
   typedef typename InterpolatorType::Pointer
     InterpolatorPointer;
 
-  itkStaticConstMacro(ImageDimension,
-		      unsigned int,
+  itkStaticConstMacro(ImageDimension, unsigned int,
 		      TOutputImage::ImageDimension);
 
   /** Run-time type information (and related methods). */
@@ -98,61 +96,63 @@ public:
   itkNewMacro(Self);
 
   /** Specify the size of the output image. */
-  void SetSize(unsigned long size[TOutputImage::ImageDimension]) {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++) {
+  void SetSize(unsigned long size[TOutputImage::ImageDimension])
+  {
+    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+      {
       m_Size[i] = size[i];
-    }
+      }
 
     this->Modified();
     m_ZCoordinate.resize(size[TOutputImage::ImageDimension-1]);
   }
 
   /** Get the size of the output image. */
-  itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
+  itkGetVectorMacro(Size, unsigned long, TOutputImage::ImageDimension);
 
   /** Specify the spacing of the output image. */
-  itkSetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
+  itkSetVectorMacro(Spacing, float, TOutputImage::ImageDimension);
 
   /** Get the spacing of the output image. */
-  itkGetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
+  itkGetVectorMacro(Spacing, float, TOutputImage::ImageDimension);
 
   /** Specify the origin of the output image. */
-  itkSetVectorMacro(Origin,float,TOutputImage::ImageDimension);
+  itkSetVectorMacro(Origin, float, TOutputImage::ImageDimension);
 
   /** Get the origin of the output image. */
-  itkGetVectorMacro(Origin,float,TOutputImage::ImageDimension);
+  itkGetVectorMacro(Origin, float, TOutputImage::ImageDimension);
 
   /** Specify the sphere center. */
-  itkSetVectorMacro(SphereCenter,float,TOutputImage::ImageDimension);
+  itkSetVectorMacro(SphereCenter, float, TOutputImage::ImageDimension);
 
   /** Get the sphere center. */
-  itkGetVectorMacro(SphereCenter,float,TOutputImage::ImageDimension);
+  itkGetVectorMacro(SphereCenter, float, TOutputImage::ImageDimension);
 
   /** Specify the sphere radius. */
-  itkSetMacro(SphereRadius,float);
+  itkSetMacro(SphereRadius, float);
 
   /** Get the sphere radius. */
-  itkGetMacro(SphereRadius,float);
+  itkGetMacro(SphereRadius, float);
 
   /** Specify the shear in the X direction. */
-  itkSetMacro(ShearX,float);
+  itkSetMacro(ShearX, float);
 
   /** Get the shear in the X direction. */
-  itkGetMacro(ShearX,float);
+  itkGetMacro(ShearX, float);
 
   /** Specify the shear in the Y direction. */
-  itkSetMacro(ShearY,float);
+  itkSetMacro(ShearY, float);
 
   /** Get the shear in the Y direction. */
-  itkGetMacro(ShearY,float);
+  itkGetMacro(ShearY, float);
 
   /** Get/set the z-coordinate of the image z-plane at the given index. */
   void SetZCoordinate(unsigned int index, double coordinate);
   double GetZCoordinate(unsigned int index);
 
     /** Get/set use of custom z coordinates. */
-  itkSetMacro(UseCustomZCoordinates,bool);
-  itkGetMacro(UseCustomZCoordinates,bool);
+  itkSetMacro(UseCustomZCoordinates, bool);
+  itkGetMacro(UseCustomZCoordinates, bool);
 
 protected:
   SphereConvolutionFilter();
@@ -165,14 +165,13 @@ protected:
   float         *m_SphereCenter; // the center of the sphere
   float         m_SphereRadius;  // the radius of the sphere
 
-  float         m_ShearX;        // amount of shear in the x direction with respect to z
-  float         m_ShearY;        // amount of shear in the y direction with respect to z
-  std::vector<double> m_ZCoordinate;   // z-slice coordinates
-  bool          m_UseCustomZCoordinates;
+  float               m_ShearX;      // amount of shear in the x direction with respect to z
+  float               m_ShearY;      // amount of shear in the y direction with respect to z
+  std::vector<double> m_ZCoordinate; // z-slice coordinates
+  bool                m_UseCustomZCoordinates;
 
 
   ScanImageFilterPointer  m_ScanImageFilter;
-
   InterpolatorPointer     m_KernelInterpolator;
   InterpolatorPointer     m_TableInterpolator;
 
@@ -205,9 +204,8 @@ private:
   void operator=(const SphereConvolutionFilter&); //purposely not implemented
 
 }; // end class SphereConvolutionFilter
-
 } // end namespace itk
 
-#include "itkSphereConvolutionFilter.cxx"
+#include "itkSphereConvolutionFilter.txx"
 
 #endif // __itkSphereConvolutionFilter_h

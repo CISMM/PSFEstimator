@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,16 +22,13 @@
 
 #include "itkGibsonLanniPSFImageSource.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkMath.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 
-#ifndef M_PI
-#define M_PI 3.14159265f
-#endif // M_PI
-
 #define INTEGRATE_M 20
 #define INTEGRATE_N (2*INTEGRATE_M+1)
- 
+
 namespace itk
 {
 
@@ -48,7 +45,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   m_PointCenter = new float[TOutputImage::GetImageDimension()];
 
   //Initial image is 63 wide in each direction.
-  for (unsigned int i=0; i<TOutputImage::GetImageDimension(); i++)
+  for ( unsigned int i=0; i<TOutputImage::GetImageDimension(); i++ )
     {
     m_Size[i] = 63;
     m_Spacing[i] = 65.0f;
@@ -68,7 +65,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   m_ActualCoverSlipRefractiveIndex    = 1.522f; // unitless
   m_DesignCoverSlipThickness          = 170.0f; // in micrometers
   m_ActualCoverSlipThickness          = 170.0f; // in micrometers
-  m_DesignImmersionOilRefractiveIndex = 1.515f; // unitless 
+  m_DesignImmersionOilRefractiveIndex = 1.515f; // unitless
   m_ActualImmersionOilRefractiveIndex = 1.515f; // unitless
   m_DesignImmersionOilThickness       = 100.0f; // in micrometers
 
@@ -96,9 +93,10 @@ void
 GibsonLanniPSFImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters) {
   Array<float> floatParams(GetNumberOfParameters());
-  for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
+  for ( unsigned int i = 0; i < GetNumberOfParameters(); i++ )
+    {
     floatParams[i] = static_cast<float>(parameters[i]);
-  }
+    }
 
   int index = 0;
   float spacing[3];
@@ -143,7 +141,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <class TOutputImage>
 typename GibsonLanniPSFImageSource<TOutputImage>::ParametersType
 GibsonLanniPSFImageSource<TOutputImage>
-::GetParameters() const {
+::GetParameters() const
+{
   Array<float> floatParams(GetNumberOfParameters());
 
   int index = 0;
@@ -182,9 +181,10 @@ GibsonLanniPSFImageSource<TOutputImage>
   floatParams[index++] = GetActualDistanceFromBackFocalPlaneToDetector();
 
   ParametersType parameters(GetNumberOfParameters());
-  for (unsigned int i = 0; i < GetNumberOfParameters(); i++) {
+  for (unsigned int i = 0; i < GetNumberOfParameters(); i++)
+    {
     parameters[i] = static_cast<double>(floatParams[i]);
-  }
+    }
 
   return parameters;
 }
@@ -193,7 +193,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <class TOutputImage>
 unsigned int
 GibsonLanniPSFImageSource<TOutputImage>
-::GetNumberOfParameters() const {
+::GetNumberOfParameters() const
+{
   return 25;
 }
 
@@ -201,11 +202,13 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <class TOutputImage>
 float
 GibsonLanniPSFImageSource<TOutputImage>
-::BesselFunctionZeroOrderFirstKind(float x) {
+::BesselFunctionZeroOrderFirstKind(float x)
+{
   float ax, z;
   float xx,y,ans,ans1,ans2;
 
-  if ((ax=fabs(x)) < 8.0) {
+  if ( (ax=fabs(x)) < 8.0 )
+    {
     float p1 = 57568490574.0, p2 = -13362590354.0,
       p3 = 651619640.7, p4 = -11214424.18,
       p5 = 77392.33017, p6 = -184.9052456,
@@ -218,7 +221,9 @@ GibsonLanniPSFImageSource<TOutputImage>
     ans2=p7+y*(p8+y*(p9+y*(p10+y*(p11+y))));
     ans=ans1/ans2;
 
-  } else {
+    }
+  else
+    {
     float p1 = 0.785398164, p2 = -0.1098628627e-2,
       p3 = 0.2734510407e-4, p4 = -0.2073370639e-5,
       p5 = 0.2093887211e-6, p6 = -0.1562499995e-1,
@@ -235,7 +240,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 	       y*(p8+y*(p9 -
 			y*p10)));
     ans=sqrt(p11/ax)*(cos(xx)*ans1-z*sin(xx)*ans2);
-  }
+    }
   return ans;
 }
 
@@ -244,49 +249,49 @@ GibsonLanniPSFImageSource<TOutputImage>
  *
  */
 template <class TOutputImage>
-void 
+void
 GibsonLanniPSFImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
   unsigned int i;
   os << indent << "Origin: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_Origin[i] << ", ";
     }
   os << m_Origin[i] << "]" << std::endl;
 
   os << indent << "Spacing: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_Spacing[i] << ", ";
     }
   os << m_Spacing[i] << "] (nanometers)" << std::endl;
 
   os << indent << "Size: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_Size[i] << ", ";
     }
   os << m_Size[i] << "]" << std::endl;
 
   os << indent << "PointCenter: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
+  for ( i=0; i < TOutputImage::ImageDimension; i++ )
     {
     os << m_PointCenter[i] << ", ";
     }
   os << m_PointCenter[i] << "]" << std::endl;
 
   os << "ShearX: " << m_ShearX << std::endl;
-  os << "ShearY: " << m_ShearY << std::endl;  
+  os << "ShearY: " << m_ShearY << std::endl;
 
   os << indent << "CCDBorderWidth: [" << m_CCDBorderWidth[0]
      << ", " << m_CCDBorderWidth[1] << std::endl;
 
   os << indent << "EmissionWavelength (nanometers): "
      << m_EmissionWavelength << std::endl;
-  
+
   os << indent << "NumericalAperture: "
      << m_NumericalAperture << std::endl;
 
@@ -333,7 +338,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-void 
+void
 GibsonLanniPSFImageSource<TOutputImage>
 ::GenerateOutputInformation()
 {
@@ -341,7 +346,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   typename TOutputImage::IndexType index = {{0}};
   typename TOutputImage::SizeType size = {{0}};
   size.SetSize( m_Size );
-  
+
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;
@@ -355,7 +360,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-void 
+void
 GibsonLanniPSFImageSource<TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        int threadId )
@@ -364,7 +369,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 
   // Support progress methods/callbacks
   ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
-       
+
   typedef typename TOutputImage::PixelType ScalarType;
   typename TOutputImage::Pointer image = this->GetOutput(0);
 
@@ -404,7 +409,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <typename TOutputImage>
 typename GibsonLanniPSFImageSource<TOutputImage>::complex_t
 GibsonLanniPSFImageSource<TOutputImage>
-::OPD_term(float NA, float n_oil, float rho, float n, float t) {
+::OPD_term(float NA, float n_oil, float rho, float n, float t)
+{
   float NA_rho_sq = NA*NA*rho*rho;
   float NA_rho_over_n_sq = NA_rho_sq/(n*n);
   float n_oil_over_n_sq = (n_oil*n_oil) / (n*n);
@@ -424,7 +430,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <typename TOutputImage>
 typename GibsonLanniPSFImageSource<TOutputImage>::complex_t
 GibsonLanniPSFImageSource<TOutputImage>
-::OPD(float rho, float delta_z, float a) {
+::OPD(float rho, float delta_z, float a)
+{
   float NA      = m_NumericalAperture;
   float n_oil_d = m_DesignImmersionOilRefractiveIndex;
   float n_oil   = m_ActualImmersionOilRefractiveIndex;
@@ -461,9 +468,9 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <typename TOutputImage>
 void
 GibsonLanniPSFImageSource<TOutputImage>
-::PrecomputeOPDTerms(complex_t* opdCache, float z_o) {
-
-  float K = 2.0f*M_PI / (m_EmissionWavelength * 1e-9);
+::PrecomputeOPDTerms(complex_t* opdCache, float z_o)
+{
+  float K = 2.0f*itk::Math::pi / (m_EmissionWavelength * 1e-9);
   float h = 1.0f / static_cast<float>(INTEGRATE_N-1);
   float NA = m_NumericalAperture;
   float mag = m_Magnification;
@@ -485,7 +492,8 @@ template <typename TOutputImage>
 typename GibsonLanniPSFImageSource<TOutputImage>::complex_t
 GibsonLanniPSFImageSource<TOutputImage>
 ::IntegralTerm(complex_t* opdCache, float K, float a, float z_d,
-	       int rhoIndex, float h, float r_o, float z_o) {
+	       int rhoIndex, float h, float r_o, float z_o)
+{
   float rho = static_cast<float>(rhoIndex)*h;
   float bessel = BesselFunctionZeroOrderFirstKind(K*a*rho*r_o/z_d);
 
@@ -497,7 +505,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <typename TOutputImage>
 float
 GibsonLanniPSFImageSource<TOutputImage>
-::ComputeSampleValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
+::ComputeSampleValue(complex_t* opdCache, typename TOutputImage::PointType& point)
+{
   typedef typename TOutputImage::PixelType ScalarType;
 
   ScalarType px = point[0] * 1e-9;
@@ -505,7 +514,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   ScalarType pz = point[2] * 1e-9;
 
   /* Compute terms that are independent of terms within the integral. */
-  float K = 2.0f*M_PI / (m_EmissionWavelength * 1e-9);
+  float K = 2.0f*itk::Math::pi / (m_EmissionWavelength * 1e-9);
   float NA = m_NumericalAperture;
   float mag = m_Magnification;
   float z_d = m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
@@ -530,13 +539,15 @@ GibsonLanniPSFImageSource<TOutputImage>
 
   sum += IntegralTerm(opdCache, K, a, z_d, INTEGRATE_N-1, h, r_o, z_o);
 
-  for (int k = 1; k <= INTEGRATE_M-1; k++) {
+  for (int k = 1; k <= INTEGRATE_M-1; k++)
+    {
     sum += 2.0f*IntegralTerm(opdCache, K, a, z_d, 2*k, h, r_o, z_o);
-  }
+    }
 
-  for (int k = 1; k <= INTEGRATE_M; k++) {
+  for (int k = 1; k <= INTEGRATE_M; k++)
+    {
     sum += 4.0f*IntegralTerm(opdCache, K, a, z_d, 2*k-1, h, r_o, z_o);
-  }
+    }
 
   sum *= (h/3.0f);
 
@@ -548,15 +559,18 @@ GibsonLanniPSFImageSource<TOutputImage>
 template <typename TOutputImage>
 float
 GibsonLanniPSFImageSource<TOutputImage>
-::ComputeIntegratedPixelValue(complex_t* opdCache, typename TOutputImage::PointType& point) {
+::ComputeIntegratedPixelValue(complex_t* opdCache, typename TOutputImage::PointType& point)
+{
   float integrated = 0.0f;
 
   // Evaluate over a grid
   int divs = 1;
   float dx = m_Spacing[0] / static_cast<float>(divs);
   float dy = m_Spacing[1] / static_cast<float>(divs);
-  for (int iy = 0; iy < divs; iy++) {
-    for (int ix = 0; ix < divs; ix++) {
+  for (int iy = 0; iy < divs; iy++)
+    {
+    for (int ix = 0; ix < divs; ix++)
+      {
       typename TOutputImage::PointType samplePoint;
       float fx = (static_cast<float>(ix) + 0.5f) * dx;
       float fy = (static_cast<float>(iy) + 0.5f) * dy;
@@ -565,8 +579,8 @@ GibsonLanniPSFImageSource<TOutputImage>
       samplePoint[2] = point[2];
 
       integrated += ComputeSampleValue(opdCache, samplePoint);
+      }
     }
-  }
 
   return integrated;
 }

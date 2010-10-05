@@ -73,10 +73,10 @@ class ITK_EXPORT GibsonLanniBSFImageSource :
 {
 public:
   /** Standard class typedefs. */
-  typedef GibsonLanniBSFImageSource              Self;
+  typedef GibsonLanniBSFImageSource           Self;
   typedef ParametricImageSource<TOutputImage> Superclass;
-  typedef SmartPointer<Self>                     Pointer;
-  typedef SmartPointer<const Self>               ConstPointer;
+  typedef SmartPointer<Self>                  Pointer;
+  typedef SmartPointer<const Self>            ConstPointer;
 
   /** Typedef for output types. */
   typedef TOutputImage                         OutputImageType;
@@ -87,10 +87,14 @@ public:
 		      unsigned int,
 		      TOutputImage::ImageDimension);
 
-  typedef GibsonLanniPSFImageSource<TOutputImage>            PSFSourceType;
-  typedef typename PSFSourceType::Pointer                    PSFSourcePointer;
-  typedef SphereConvolutionFilter<TOutputImage,TOutputImage> ConvolverType;
-  typedef typename ConvolverType::Pointer                    ConvolverPointer;
+  typedef GibsonLanniPSFImageSource<TOutputImage>
+    PSFSourceType;
+  typedef typename PSFSourceType::Pointer
+    PSFSourcePointer;
+  typedef SphereConvolutionFilter<TOutputImage,TOutputImage>
+    ConvolverType;
+  typedef typename ConvolverType::Pointer
+    ConvolverPointer;
   typedef RescaleIntensityImageFilter<TOutputImage, TOutputImage>
     RescaleImageFilterType;
   typedef typename RescaleImageFilterType::Pointer
@@ -106,10 +110,12 @@ public:
   typedef typename Superclass::ParametersType      ParametersType;
 
   /** Specify the size of the output image. */
-  void SetSize(unsigned long size[TOutputImage::ImageDimension]) {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++) {
+  void SetSize(unsigned long size[TOutputImage::ImageDimension])
+  {
+    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+      {
       m_Size[i] = size[i];
-    }
+      }
 
     m_Convolver->SetSize(size);
     this->Modified();
@@ -119,10 +125,12 @@ public:
   itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
 
   /** Specify the spacing of the output image (in nanometers). */
-  void SetSpacing(float spacing[TOutputImage::ImageDimension]) {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++) {
+  void SetSpacing(float spacing[TOutputImage::ImageDimension])
+  {
+    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+      {
       m_Spacing[i] = spacing[i];
-    }
+      }
     m_Convolver->SetSpacing(spacing);
     this->Modified();
   }
@@ -131,10 +139,12 @@ public:
   itkGetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
 
   /** Specify the origin of the output image (in nanometers). */
-  void SetOrigin(float origin[TOutputImage::ImageDimension]) {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++) {
+  void SetOrigin(float origin[TOutputImage::ImageDimension])
+  {
+    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+      {
       m_Origin[i] = origin[i];
-    }
+      }
 
     m_Convolver->SetOrigin(origin);
     this->Modified();
@@ -144,44 +154,52 @@ public:
   itkGetVectorMacro(Origin,float,TOutputImage::ImageDimension);
 
   /** Specify the point source center (in nanometers). */
-  void SetBeadCenter(float center[TOutputImage::ImageDimension]) {
+  void SetBeadCenter(float center[TOutputImage::ImageDimension])
+  {
     m_Convolver->SetSphereCenter(center);
     this->Modified();
   }
 
   /** Get the point source center (in nanometers). */
-  float * GetBeadCenter() const {
+  float * GetBeadCenter() const
+  {
     return m_Convolver->GetSphereCenter();
   }
 
   /** Specify the bead radius (in nanometers). */
-  void SetBeadRadius(float radius) {
+  void SetBeadRadius(float radius)
+  {
     m_Convolver->SetSphereRadius(radius);
     this->Modified();
   }
 
   /** Get the bead radius. */
-  float GetBeadRadius() const {
+  float GetBeadRadius() const
+  {
     return m_Convolver->GetSphereRadius();
   }
 
   /** Specify the shear in the X direction. */
-  void SetShearX(float shear) {
+  void SetShearX(float shear)
+  {
     m_Convolver->SetShearX(shear);
   }
 
   /** Get the shear in the X direction. */
-  float GetShearX() const {
+  float GetShearX() const
+  {
     return m_Convolver->GetShearX();
   }
 
   /** Specify the shear in the Y direction. */
-  void SetShearY(float shear) {
+  void SetShearY(float shear)
+  {
     m_Convolver->SetShearY(shear);
   }
 
   /** Get the shear in the Y direction. */
-  float GetShearY() const {
+  float GetShearY() const
+  {
     return m_Convolver->GetShearY();
   }
 
@@ -310,7 +328,8 @@ protected:
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   /** This class is implicitly multi-threaded because its member filters
-   * are mulithreaded, so we go with a "single-threaded" implementation here. */
+   * are mulithreaded, so we go with a "single-threaded"
+   * implementation here. */
   virtual void GenerateData();
 
   virtual void GenerateOutputInformation();
@@ -328,16 +347,15 @@ private:
   double         m_BackgroundIntensity; // Additive background constant
   double         m_MaximumIntensity;    // The maximum intensity value
 
-  PSFSourcePointer        m_PSFSource;
-  ConvolverPointer        m_Convolver;
+  PSFSourcePointer          m_PSFSource;
+  ConvolverPointer          m_Convolver;
   RescaleImageFilterPointer m_RescaleFilter;
 
 };
-
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkGibsonLanniBSFImageSource.cxx"
+#include "itkGibsonLanniBSFImageSource.txx"
 #endif
 
 #endif

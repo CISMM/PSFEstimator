@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,7 +28,7 @@ namespace itk
 /** \class ScanImageFilter
  * \brief Implements scan operations on an image along a selected direction.
  *
- * This class accumulates an image along a dimension, similar to 
+ * This class accumulates an image along a dimension, similar to
  * ProjectionImageFilter. Unlike ProjectionImageFilter, intermediate results of
  * the accumulation are stored in slices orthogonal to the scan direction. The
  * output image is the same size and dimensions.
@@ -87,12 +87,14 @@ public:
 
   /** Set/Get the order of traversal in the scan calculation. Increasing order
    * refers to increasing the index of the scan direction during the scan. */
-  void SetScanOrderToIncreasing() { 
+  void SetScanOrderToIncreasing()
+  {
     m_ScanOrder = INCREASING_ORDER;
     this->Modified();
   }
 
-  void SetScanOrderToDecreasing() {
+  void SetScanOrderToDecreasing()
+  {
     m_ScanOrder = DECREASING_ORDER;
     this->Modified();
   }
@@ -108,7 +110,7 @@ protected:
   virtual void GenerateInputRequestedRegion();
 
   virtual void GenerateInputRequestedRegionForOutputRequestedRegion
-    (const OutputImageRegionType& outputRegion, 
+    (const OutputImageRegionType& outputRegion,
      InputImageRegionType& inputRegion);
 
   /** Split the region into slices orthogonal to the scan direction. */
@@ -123,14 +125,13 @@ private:
   ScanImageFilter(const Self&); // purposely not implemented
   void operator=(const Self&); // purposely not implemented
 
-  ScanOrder m_ScanOrder;
+  ScanOrder    m_ScanOrder;
 
   unsigned int m_ScanDimension;
 
 }; // end class ScanImageFilter
-
 } // end namespace itk
 
-#include "itkScanImageFilter.cxx"
+#include "itkScanImageFilter.txx"
 
 #endif // __itkScanImageFilter_h

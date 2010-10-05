@@ -12,8 +12,8 @@
   Portions of this code are covered under the VTK copyright.
   See VTKCopyright.txt or http://www.kitware.com/VTKCopyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -27,7 +27,7 @@ namespace itk
 {
 
 /** \class ParametricImageSource
- *  \brief Extends ImageSource so that parameters can be passed 
+ *  \brief Extends ImageSource so that parameters can be passed
  *  to it as a vector of values using the SetParameters() method. This method
  *  enables parameterized image sources to be used within ITK's optimization/
  *  registration framework.
@@ -43,7 +43,7 @@ public:
   typedef ProcessObject             Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
-  
+
   /** Smart Pointer type to a DataObject. */
   typedef DataObject::Pointer DataObjectPointer;
 
@@ -60,24 +60,24 @@ public:
   typedef Array< ParametersValueType >         ParametersType;
 
    /** ImageDimension constant */
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
+  itkStaticConstMacro(OutputImageDimension,
+                      unsigned int,
                       TOutputImage::ImageDimension);
 
   /** Set the parameters for this source. */
   virtual void           SetParameters(const ParametersType& parameters) = 0;
   virtual ParametersType GetParameters() const = 0;
   virtual unsigned int   GetNumberOfParameters() const = 0;
-  
+
 protected:
   ParametricImageSource();
   virtual ~ParametricImageSource() {}
-    
+
 private:
   ParametricImageSource(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 };
-
 } // end namespace itk
 
 

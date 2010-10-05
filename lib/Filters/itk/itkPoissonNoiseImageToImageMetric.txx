@@ -9,8 +9,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -35,7 +35,7 @@ namespace itk
 /**
  * Constructor
  */
-template <class TFixedImage, class TMovingImage> 
+template <class TFixedImage, class TMovingImage>
 PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 ::PoissonNoiseImageToImageMetric()
 {
@@ -45,17 +45,16 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 /**
  * Get the match Measure
  */
-template <class TFixedImage, class TMovingImage> 
+template <class TFixedImage, class TMovingImage>
 typename PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>::MeasureType
 PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 ::GetValue( const TransformParametersType & parameters ) const
 {
-
   itkDebugMacro("GetValue( " << parameters << " ) ");
 
   FixedImageConstPointer fixedImage = this->m_FixedImage;
 
-  if( !fixedImage ) 
+  if( !fixedImage )
     {
     itkExceptionMacro( << "Fixed image has not been assigned" );
     }
@@ -73,15 +72,14 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 
   this->SetTransformParameters( parameters );
 
-  while(!ti.IsAtEnd())
+  while (!ti.IsAtEnd())
     {
-
     index = ti.GetIndex();
-    
+
     InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
-    if( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
+    if ( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
       {
       ++ti;
       continue;
@@ -89,13 +87,13 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 
     OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
 
-    if( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
+    if ( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {
       ++ti;
       continue;
       }
 
-    if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
+    if ( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
       {
       RealType movingValue  = this->m_Interpolator->Evaluate( transformedPoint );
       RealType fixedValue   = ti.Get();
@@ -125,7 +123,7 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 /**
  * Get the Derivative Measure
  */
-template < class TFixedImage, class TMovingImage> 
+template < class TFixedImage, class TMovingImage>
 void
 PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 ::GetDerivative( const TransformParametersType & parameters,
@@ -133,7 +131,7 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 {
 
   itkDebugMacro("GetDerivative( " << parameters << " ) ");
-  
+
   if( !this->GetGradientImage() )
     {
     itkExceptionMacro(<<"The gradient image is null, maybe you forgot to call Initialize()");
@@ -141,7 +139,7 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 
   FixedImageConstPointer fixedImage = this->m_FixedImage;
 
-  if( !fixedImage ) 
+  if( !fixedImage )
     {
     itkExceptionMacro( << "Fixed image has not been assigned" );
     }
@@ -173,7 +171,7 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
     {
 
     index = ti.GetIndex();
-    
+
     InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
@@ -196,14 +194,13 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
       const RealType movingValue  = this->m_Interpolator->Evaluate( transformedPoint );
 
       const TransformJacobianType & jacobian =
-        this->m_Transform->GetJacobian( inputPoint ); 
+        this->m_Transform->GetJacobian( inputPoint );
 
-      
       const RealType fixedValue     = ti.Value();
       this->m_NumberOfPixelsCounted++;
-      const RealType diff = movingValue - fixedValue; 
+      const RealType diff = movingValue - fixedValue;
 
-      // Get the gradient by NearestNeighboorInterpolation: 
+      // Get the gradient by NearestNeighboorInterpolation:
       // which is equivalent to round up the point components.
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
@@ -212,10 +209,10 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
       MovingImageContinuousIndexType tempIndex;
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
-      typename MovingImageType::IndexType mappedIndex; 
+      typename MovingImageType::IndexType mappedIndex;
       mappedIndex.CopyWithRound( tempIndex );
 
-      const GradientPixelType gradient = 
+      const GradientPixelType gradient =
         this->GetGradientImage()->GetPixel( mappedIndex );
 
 
@@ -250,12 +247,12 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 
 
 /*
- * Get both the match Measure and theDerivative Measure 
+ * Get both the match Measure and theDerivative Measure
  */
-template <class TFixedImage, class TMovingImage> 
+template <class TFixedImage, class TMovingImage>
 void
 PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
-::GetValueAndDerivative(const TransformParametersType & parameters, 
+::GetValueAndDerivative(const TransformParametersType & parameters,
                         MeasureType & value, DerivativeType  & derivative) const
 {
 
@@ -268,7 +265,7 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
 
   FixedImageConstPointer fixedImage = this->m_FixedImage;
 
-  if( !fixedImage ) 
+  if( !fixedImage )
     {
     itkExceptionMacro( << "Fixed image has not been assigned" );
     }
@@ -301,7 +298,7 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
     {
 
     index = ti.GetIndex();
-    
+
     InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
@@ -324,15 +321,14 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
       const RealType movingValue  = this->m_Interpolator->Evaluate( transformedPoint );
 
       const TransformJacobianType & jacobian =
-        this->m_Transform->GetJacobian( inputPoint ); 
+        this->m_Transform->GetJacobian( inputPoint );
 
-      
       const RealType fixedValue     = ti.Value();
       this->m_NumberOfPixelsCounted++;
 
       measure -= fixedValue * (log(movingValue) - log(fixedValue)) - movingValue + fixedValue;
 
-      // Get the gradient by NearestNeighboorInterpolation: 
+      // Get the gradient by NearestNeighboorInterpolation:
       // which is equivalent to round up the point components.
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
@@ -341,10 +337,10 @@ PoissonNoiseImageToImageMetric<TFixedImage,TMovingImage>
       MovingImageContinuousIndexType tempIndex;
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
-      typename MovingImageType::IndexType mappedIndex; 
+      typename MovingImageType::IndexType mappedIndex;
       mappedIndex.CopyWithRound( tempIndex );
 
-      const GradientPixelType gradient = 
+      const GradientPixelType gradient =
         this->GetGradientImage()->GetPixel( mappedIndex );
 
       for(unsigned int par=0; par<ParametersDimension; par++)

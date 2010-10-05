@@ -12,8 +12,8 @@
 #include <itkPoint.h>
 #include <itkImageFileWriter.h>
 
-#include <itkGibsonLanniBSFImageSource.cxx>
-#include <itkGibsonLanniPSFImageSource.cxx>
+#include <itkGibsonLanniBSFImageSource.txx>
+#include <itkGibsonLanniPSFImageSource.txx>
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
 #include <itkImageFileWriter.txx>

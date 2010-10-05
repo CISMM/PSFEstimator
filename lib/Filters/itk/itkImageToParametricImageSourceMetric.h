@@ -9,8 +9,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -33,12 +33,12 @@
 
 namespace itk
 {
-  
+
 /** \class ImageToParametricImageSourceMetric
  * \brief Computes similarity between two images, one of which is fixed and
  * the other generated from a moving ParametricImageSource.
  *
- * This class computes a value that measures the similarity 
+ * This class computes a value that measures the similarity
  * between the Fixed image and the parametric Moving image. "Moving"
  * in this metric and subclasses refers to changes in the parameters used
  * to generate the image, not movement induced by a spatial transformation.
@@ -55,8 +55,8 @@ namespace itk
  *
  */
 
-template <class TFixedImage,  class TMovingImageSource> 
-class ITK_EXPORT ImageToParametricImageSourceMetric : public SingleValuedCostFunction 
+template <class TFixedImage,  class TMovingImageSource>
+class ITK_EXPORT ImageToParametricImageSourceMetric : public SingleValuedCostFunction
 {
 public:
   /** Standard class typedefs. */
@@ -71,10 +71,13 @@ public:
   itkTypeMacro(ImageToParametricImageSourceMetric, SingleValuedCostFunction);
 
   /**  Type of the moving Image. */
-  typedef TMovingImageSource                         MovingImageSourceType;
-  typedef typename TMovingImageSource::PixelType     MovingImageSourcePixelType;
-  typedef typename MovingImageSourceType::Pointer    MovingImageSourcePointer;
-  typedef typename MovingImageSourceType::OutputImageType 
+  typedef TMovingImageSource
+    MovingImageSourceType;
+  typedef typename TMovingImageSource::PixelType
+    MovingImageSourcePixelType;
+  typedef typename MovingImageSourceType::Pointer
+    MovingImageSourcePointer;
+  typedef typename MovingImageSourceType::OutputImageType
     MovingImageSourceOutputImageType;
   typedef typename MovingImageSourceOutputImageType::Pointer
     MovingImageSourceOutputImagePointerType;
@@ -90,13 +93,13 @@ public:
   typedef typename DelegateMetricType::Pointer       DelegateMetricTypePointer;
 
   /** Constants for the image dimensions */
-  itkStaticConstMacro(MovingImageSourceDimension, 
+  itkStaticConstMacro(MovingImageSourceDimension,
                       unsigned int,
                       TMovingImageSource::ImageDimension);
-  itkStaticConstMacro(FixedImageDimension, 
+  itkStaticConstMacro(FixedImageDimension,
                       unsigned int,
                       TFixedImage::ImageDimension);
-  
+
   typedef typename NumericTraits<MovingImageSourcePixelType>::RealType RealType;
 
   /**  Type of the measure. */
@@ -163,13 +166,13 @@ public:
       contain the values of the active parameters only (in order), not the
       full set of parameters. */
   virtual MeasureType GetValue(const ParametersType& parameters) const;
- 
+
   /** Set active parameters for the moving image Source. The parameters
       argument should contain the values of the active parameters only
       (in order), not the full set of parameters. */
   void SetParameters( const ParametersType & parameters ) const;
 
-  /** Return the number of active parameters required by the 
+  /** Return the number of active parameters required by the
       ParametricImageSource. */
   virtual unsigned int GetNumberOfParameters(void) const;
 
@@ -189,7 +192,7 @@ protected:
 
   FixedImageConstPointer    m_FixedImage;
   MovingImageSourcePointer  m_MovingImageSource;
-  
+
   DelegateMetricTypePointer m_DelegateMetric;
 
   /** Disable spatial registration by using an identity transform. */
@@ -205,7 +208,7 @@ protected:
 private:
   ImageToParametricImageSourceMetric(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-  
+
 };
 
 } // end namespace itk
