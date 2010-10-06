@@ -24,6 +24,8 @@
 #include "itkNumericTraits.h"
 #include "itkParametricImageSource.h"
 #include "itkRescaleIntensityImageFilter.h"
+#include "itkResampleImageFilter.h"
+#include "itkRotationalExtrusionTransform.h"
 #include "itkSphereConvolutionFilter.h"
 
 
@@ -91,6 +93,10 @@ public:
     PSFSourceType;
   typedef typename PSFSourceType::Pointer
     PSFSourcePointer;
+  typedef ResampleImageFilter< typename PSFSourceType::OutputImageType, TOutputImage, double >
+    ExtrusionFilterType;
+  typedef typename ExtrusionFilterType::Pointer
+    ExtrusionFilterPointer;
   typedef SphereConvolutionFilter<TOutputImage,TOutputImage>
     ConvolverType;
   typedef typename ConvolverType::Pointer
@@ -204,106 +210,106 @@ public:
   }
 
   /** Specify the background value. */
-  itkSetMacro(BackgroundIntensity,double);
+  itkSetMacro(BackgroundIntensity, double);
 
   /** Get the background value. */
-  itkGetConstMacro(BackgroundIntensity,double);
+  itkGetConstMacro(BackgroundIntensity, double);
 
   /** Specify the maximum intensity. */
-  itkSetMacro(MaximumIntensity,double);
+  itkSetMacro(MaximumIntensity, double);
 
   /** Get the maximum intensit. */
-  itkGetConstMacro(MaximumIntensity,double);
+  itkGetConstMacro(MaximumIntensity, double);
 
   /** Specify the emission wavelength (in nanometers). */
-  DelegateSetMacro(EmissionWavelength,float);
+  DelegateSetMacro(EmissionWavelength, float);
 
   /** Get the emission wavelength (in nanometers). */
-  DelegateGetMacro(EmissionWavelength,float);
+  DelegateGetMacro(EmissionWavelength, float);
 
   /** Specify the numerical aperture (unitless). */
-  DelegateSetMacro(NumericalAperture,float);
+  DelegateSetMacro(NumericalAperture, float);
 
   /** Get the numerical aperture (unitless). */
-  DelegateGetMacro(NumericalAperture,float);
+  DelegateGetMacro(NumericalAperture, float);
 
   /** Specify the magnification (unitless). */
-  DelegateSetMacro(Magnification,float);
+  DelegateSetMacro(Magnification, float);
 
   /** Get the magnification (unitless). */
-  DelegateGetMacro(Magnification,float);
+  DelegateGetMacro(Magnification, float);
 
   /** Specify the design cover slip refractive index (unitless). */
-  DelegateSetMacro(DesignCoverSlipRefractiveIndex,float);
+  DelegateSetMacro(DesignCoverSlipRefractiveIndex, float);
 
   /** Get the design cover slip refractive index (unitless). */
-  DelegateGetMacro(DesignCoverSlipRefractiveIndex,float);
+  DelegateGetMacro(DesignCoverSlipRefractiveIndex, float);
 
   /** Specify the actual cover slip refractive index (unitless). */
-  DelegateSetMacro(ActualCoverSlipRefractiveIndex,float);
+  DelegateSetMacro(ActualCoverSlipRefractiveIndex, float);
 
   /** Get the actual cover slip refractive index (unitless). */
-  DelegateGetMacro(ActualCoverSlipRefractiveIndex,float);
+  DelegateGetMacro(ActualCoverSlipRefractiveIndex, float);
 
   /** Specify the design cover slip thickness (in micrometers). */
-  DelegateSetMacro(DesignCoverSlipThickness,float);
+  DelegateSetMacro(DesignCoverSlipThickness, float);
 
   /** Get the design cover slip thickness (in micrometers). */
-  DelegateGetMacro(DesignCoverSlipThickness,float);
+  DelegateGetMacro(DesignCoverSlipThickness, float);
 
   /** Specify the actual cover slip thickness (in micrometers). */
-  DelegateSetMacro(ActualCoverSlipThickness,float);
+  DelegateSetMacro(ActualCoverSlipThickness, float);
 
   /** Get the actual cover slip thickness (in micrometers). */
-  DelegateGetMacro(ActualCoverSlipThickness,float);
+  DelegateGetMacro(ActualCoverSlipThickness, float);
 
   /** Specify the design immersion oil refractive index (unitless). */
-  DelegateSetMacro(DesignImmersionOilRefractiveIndex,float);
+  DelegateSetMacro(DesignImmersionOilRefractiveIndex, float);
 
   /** Get the design immersion oil refractive index (unitless). */
-  DelegateGetMacro(DesignImmersionOilRefractiveIndex,float);
+  DelegateGetMacro(DesignImmersionOilRefractiveIndex, float);
 
   /** Specify the actual immersion oil refractive index (unitless). */
-  DelegateSetMacro(ActualImmersionOilRefractiveIndex,float);
+  DelegateSetMacro(ActualImmersionOilRefractiveIndex, float);
 
   /** Get the actual immersion oil refractive index (unitless). */
-  DelegateGetMacro(ActualImmersionOilRefractiveIndex,float);
+  DelegateGetMacro(ActualImmersionOilRefractiveIndex, float);
 
   /** Specify the design immersion oil thickness (in micrometers). */
-  DelegateSetMacro(DesignImmersionOilThickness,float);
+  DelegateSetMacro(DesignImmersionOilThickness, float);
 
   /** Get the actual immersion oil refractive index (in micrometers). */
-  DelegateGetMacro(DesignImmersionOilThickness,float);
+  DelegateGetMacro(DesignImmersionOilThickness, float);
 
   /** Specify the design specimen layer refractive index (unitless). */
-  DelegateSetMacro(DesignSpecimenLayerRefractiveIndex,float);
+  DelegateSetMacro(DesignSpecimenLayerRefractiveIndex, float);
 
   /** Get the design specimen layer refractive index (unitless). */
-  DelegateGetMacro(DesignSpecimenLayerRefractiveIndex,float);
+  DelegateGetMacro(DesignSpecimenLayerRefractiveIndex, float);
 
   /** Specify the actual specimen layer refractive index (unitless). */
-  DelegateSetMacro(ActualSpecimenLayerRefractiveIndex,float);
+  DelegateSetMacro(ActualSpecimenLayerRefractiveIndex, float);
 
   /** Get the actual specimen layer refractive index (unitless). */
-  DelegateGetMacro(ActualSpecimenLayerRefractiveIndex,float);
+  DelegateGetMacro(ActualSpecimenLayerRefractiveIndex, float);
 
   /** Specify the actual point source depth in the specimen layer (in nanometers). */
-  DelegateSetMacro(ActualPointSourceDepthInSpecimenLayer,float);
+  DelegateSetMacro(ActualPointSourceDepthInSpecimenLayer, float);
 
   /** Get the actual point source depth in the specimen layer (in nanometers). */
-  DelegateGetMacro(ActualPointSourceDepthInSpecimenLayer,float);
+  DelegateGetMacro(ActualPointSourceDepthInSpecimenLayer, float);
 
   /** Specify the design distance from the back focal plane to the detector (in millimeters). */
-  DelegateSetMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
+  DelegateSetMacro(DesignDistanceFromBackFocalPlaneToDetector, float);
 
   /** Get the design distance from the back focal plane to the detector (in millimeters). */
-  DelegateGetMacro(DesignDistanceFromBackFocalPlaneToDetector,float);
+  DelegateGetMacro(DesignDistanceFromBackFocalPlaneToDetector, float);
 
   /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
-  DelegateSetMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
+  DelegateSetMacro(ActualDistanceFromBackFocalPlaneToDetector, float);
 
   /** Get the actual distance from the back focal plane to the detector (in millimeters). */
-  DelegateGetMacro(ActualDistanceFromBackFocalPlaneToDetector,float);
+  DelegateGetMacro(ActualDistanceFromBackFocalPlaneToDetector, float);
 
   /** Expects the parameters argument to contain values for ALL parameters. */
   virtual void SetParameters(const ParametersType& parameters);
@@ -348,6 +354,7 @@ private:
   double         m_MaximumIntensity;    // The maximum intensity value
 
   PSFSourcePointer          m_PSFSource;
+  ExtrusionFilterPointer    m_ExtrusionFilter;
   ConvolverPointer          m_Convolver;
   RescaleImageFilterPointer m_RescaleFilter;
 

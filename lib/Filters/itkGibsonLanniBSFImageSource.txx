@@ -26,6 +26,7 @@
 #include "itkProgressReporter.h"
 #include "itkGaussianImageSource.h"
 #include "itkRescaleIntensityImageFilter.h"
+#include "itkRotationalExtrusionTransform.h"
 #include "itkScanImageFilter.h"
 #include "itkSumProjectionImageFilter.h"
 
@@ -59,8 +60,15 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_MaximumIntensity = 1.0;
 
   m_PSFSource = PSFSourceType::New();
+
+  m_ExtrusionFilter = ExtrusionFilterType::New();
+  RotationalExtrusionTransform< double, 3 >::Pointer extrusionTransform =
+    RotationalExtrusionTransform< double, 3 >::New();
+  m_ExtrusionFilter->SetTransform(extrusionTransform);
+  m_ExtrusionFilter->SetInput(m_PSFSource->GetOutput());
+
   m_Convolver = ConvolverType::New();
-  m_Convolver->SetInput(m_PSFSource->GetOutput());
+  m_Convolver->SetInput(m_ExtrusionFilter->GetOutput());
 
   m_RescaleFilter = RescaleImageFilterType::New();
   m_RescaleFilter->SetInput(m_Convolver->GetOutput());
@@ -337,10 +345,30 @@ GibsonLanniBSFImageSource<TOutputImage>
     psfSize[i] = iDimMax - iDimMin + 1;
   }
 
+  typename OutputImageType::SpacingType spacing;
+  typename OutputImageType::PointType   origin;
+  typename OutputImageType::SizeType    size;
+  for ( unsigned int i = 0; i < 3; i++ )
+    {
+    spacing[i] = psfSpacing[i];
+    origin[i]  = psfOrigin[i];
+    size[i]    = psfSize[i];
+    }
+
+
+  m_ExtrusionFilter->SetOutputSpacing(spacing);
+  m_ExtrusionFilter->SetOutputOrigin(origin);
+  m_ExtrusionFilter->SetSize(size);
+
+  psfOrigin[1] = 0.0;
+  psfSize[1]   = 1;
   m_PSFSource->SetSize(psfSize);
   m_PSFSource->SetSpacing(psfSpacing);
   m_PSFSource->SetOrigin(psfOrigin);
   m_PSFSource->UpdateLargestPossibleRegion();
+
+  std::cout << "Updating extrusion filter" << std::endl;
+  m_ExtrusionFilter->UpdateLargestPossibleRegion();
 
   m_Convolver->UpdateLargestPossibleRegion();
 
