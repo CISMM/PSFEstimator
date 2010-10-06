@@ -22,7 +22,6 @@
 
 #include "itkSphereConvolutionFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
-#include "itkRectilinearImage.h"
 
 namespace itk {
 
