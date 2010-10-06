@@ -33,24 +33,19 @@ namespace itk
  * ScalarT       The type to be used for scalar numeric values.  Either
  *               float or double.
  *
- * NDimensions   The number of dimensions of the vector space.
- *
  * \ingroup Transforms
  *
  */
 
-template<
-  class TScalarType = double,      // Data type for scalars
-                                   //    (e.g. float or double)
-  unsigned int NDimensions = 3 >
+template< class TScalarType = double >
 // Number of dimensions in the input space
 class RotationalExtrusionTransform:
-  public Transform< TScalarType, NDimensions, NDimensions >
+    public Transform< TScalarType, 3, 3 >
 {
 public:
   /** Standard typedefs   */
   typedef RotationalExtrusionTransform                        Self;
-  typedef Transform< TScalarType, NDimensions, NDimensions >  Superclass;
+  typedef Transform< TScalarType, 3, 3 >  Superclass;
 
   typedef SmartPointer< Self >       Pointer;
   typedef SmartPointer< const Self > ConstPointer;
@@ -62,9 +57,9 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of the domain space. */
-  itkStaticConstMacro(InputSpaceDimension, unsigned int, NDimensions);
-  itkStaticConstMacro(OutputSpaceDimension, unsigned int, NDimensions);
-  itkStaticConstMacro(SpaceDimension, unsigned int, NDimensions);
+  itkStaticConstMacro(InputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(SpaceDimension, unsigned int, 3);
   itkStaticConstMacro( ParametersDimension, unsigned int, 0);
 
   /** Parameters Type   */
@@ -85,11 +80,6 @@ public:
   typedef typename Superclass::InverseTransformBaseType InverseTransformBaseType;
   typedef typename InverseTransformBaseType::Pointer    InverseTransformBasePointer;
 
-#if 0
-  /** Return an inverse of this transform. */
-  virtual InverseTransformBasePointer GetInverseTransform() const;
-#endif
-
   virtual OutputPointType TransformPoint(const InputPointType & inPt ) const
   {
     // Get distance from axis (in this case, the z axis at x=0, y=0
@@ -108,7 +98,7 @@ protected:
    *
    * This method constructs a new RotationalExtrusionTransform object.
    */
-  RotationalExtrusionTransform() : Superclass(NDimensions, 0) {};
+  RotationalExtrusionTransform() : Superclass(3, 0) {};
 
   /** Destroy an RotationalExtrusionTransform object   */
   virtual ~RotationalExtrusionTransform() {};
@@ -139,12 +129,6 @@ private:
 
 #if ITK_TEMPLATE_EXPLICIT
 #include "Templates/itkRotationalExtrusionTransform+-.h"
-#endif
-
-#if 0
-#if ITK_TEMPLATE_TXX
-#include "itkRotationalExtrusionTransform.txx"
-#endif
 #endif
 
 #endif /* __itkRotationalExtrusionTransform_h */

@@ -62,8 +62,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_PSFSource = PSFSourceType::New();
 
   m_ExtrusionFilter = ExtrusionFilterType::New();
-  RotationalExtrusionTransform< double, 3 >::Pointer extrusionTransform =
-    RotationalExtrusionTransform< double, 3 >::New();
+  RotationalExtrusionTransform< double >::Pointer extrusionTransform =
+    RotationalExtrusionTransform< double >::New();
   m_ExtrusionFilter->SetTransform(extrusionTransform);
   m_ExtrusionFilter->SetInput(m_PSFSource->GetOutput());
 
