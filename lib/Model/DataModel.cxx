@@ -142,7 +142,7 @@ DataModel
 void
 DataModel
 ::CreateImageFile(int xSize, int ySize, int zSize,
-                  float xSpacing, float ySpacing, float zSpacing) {
+                  double xSpacing, double ySpacing, double zSpacing) {
 
   DummyImageSourcePointer dummy = DummyImageSourceType::New();
 
@@ -183,9 +183,9 @@ DataModel
   SetPSFImageDimensions(size);
   SetBSFImageDimensions(size);
 
-  float origin[3];
+  PointType origin;
   for (int i = 0; i < 3; i++)
-    origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
+    origin[i] = -spacing[i]*static_cast<double>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
   m_GibsonLanniBSFSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
@@ -235,9 +235,9 @@ DataModel
   SetPSFImageDimensions(size);
   SetBSFImageDimensions(size);
 
-  float origin[3];
+  PointType origin;
   for (int i = 0; i < 3; i++)
-    origin[i] = -spacing[i]*static_cast<float>(size[i])*0.5;
+    origin[i] = -spacing[i]*static_cast<double>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
   m_GibsonLanniBSFSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
@@ -331,53 +331,53 @@ DataModel
   m_GibsonLanniBSFSource->SetShearY(shearY);
 
   SetGLEmissionWavelength
-    (c.GetValueAsFloat(sec, "EmissionWavelength", GetGLEmissionWavelength()));
+    (c.GetValueAsDouble(sec, "EmissionWavelength", GetGLEmissionWavelength()));
 
   SetGLNumericalAperture
-    (c.GetValueAsFloat(sec, "NumericalAperture", GetGLNumericalAperture()));
+    (c.GetValueAsDouble(sec, "NumericalAperture", GetGLNumericalAperture()));
   SetGLMagnification
-    (c.GetValueAsFloat(sec, "Magnification", GetGLMagnification()));
+    (c.GetValueAsDouble(sec, "Magnification", GetGLMagnification()));
   SetGLDesignCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignCoverSlipRefractiveIndex",
+    (c.GetValueAsDouble(sec, "DesignCoverSlipRefractiveIndex",
                        GetGLDesignCoverSlipRefractiveIndex()));
   SetGLActualCoverSlipRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualCoverSlipRefractiveIndex",
+    (c.GetValueAsDouble(sec, "ActualCoverSlipRefractiveIndex",
                        GetGLActualCoverSlipRefractiveIndex()));
   SetGLDesignCoverSlipThickness
-    (c.GetValueAsFloat(sec, "DesignCoverSlipThickness",
+    (c.GetValueAsDouble(sec, "DesignCoverSlipThickness",
                        GetGLDesignCoverSlipThickness()));
   SetGLActualCoverSlipThickness
-    (c.GetValueAsFloat(sec, "ActualCoverSlipThickness",
+    (c.GetValueAsDouble(sec, "ActualCoverSlipThickness",
                        GetGLActualCoverSlipThickness()));
   SetGLDesignImmersionOilRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignImmersionOilRefractiveIndex",
+    (c.GetValueAsDouble(sec, "DesignImmersionOilRefractiveIndex",
                        GetGLDesignImmersionOilRefractiveIndex()));
   SetGLActualImmersionOilRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualImmersionOilRefractiveIndex",
+    (c.GetValueAsDouble(sec, "ActualImmersionOilRefractiveIndex",
                        GetGLActualImmersionOilRefractiveIndex()));
   SetGLDesignImmersionOilThickness
-    (c.GetValueAsFloat(sec, "DesignImmersionOilThickness",
+    (c.GetValueAsDouble(sec, "DesignImmersionOilThickness",
                        GetGLDesignImmersionOilThickness()));
   SetGLDesignSpecimenLayerRefractiveIndex
-    (c.GetValueAsFloat(sec, "DesignSpecimenLayerRefractiveIndex",
+    (c.GetValueAsDouble(sec, "DesignSpecimenLayerRefractiveIndex",
                        GetGLDesignSpecimenLayerRefractiveIndex()));
   SetGLActualSpecimenLayerRefractiveIndex
-    (c.GetValueAsFloat(sec, "ActualSpecimenLayerRefractiveIndex",
+    (c.GetValueAsDouble(sec, "ActualSpecimenLayerRefractiveIndex",
                        GetGLActualSpecimenLayerRefractiveIndex()));
   SetGLActualPointSourceDepthInSpecimenLayer
-    (c.GetValueAsFloat(sec, "ActualPointSourceDepthInSpecimenLayer",
+    (c.GetValueAsDouble(sec, "ActualPointSourceDepthInSpecimenLayer",
                        GetGLActualPointSourceDepthInSpecimenLayer()));
   SetGLDesignDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector",
+    (c.GetValueAsDouble(sec, "DesignDistanceFromBackFocalPlaneToDetector",
                        GetGLDesignDistanceFromBackFocalPlaneToDetector()));
   SetGLActualDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
+    (c.GetValueAsDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
                        GetGLActualDistanceFromBackFocalPlaneToDetector()));
   SetGLBackgroundIntensity
-    (c.GetValueAsFloat(sec, "BackgroundIntensity",
+    (c.GetValueAsDouble(sec, "BackgroundIntensity",
                        GetGLBackgroundIntensity()));
   SetGLMaximumIntensity
-    (c.GetValueAsFloat(sec, "MaximumIntensity",
+    (c.GetValueAsDouble(sec, "MaximumIntensity",
                        GetGLMaximumIntensity()));
 
   sec = std::string("ZSliceCoordinates");
@@ -455,37 +455,37 @@ DataModel
 
   c.SetValueFromDouble(sec, "EmissionWavelength", m_GibsonLanniBSFSource->GetEmissionWavelength());
 
-  c.SetValueFromFloat(sec, "NumericalAperture",
+  c.SetValueFromDouble(sec, "NumericalAperture",
 		      GetGLNumericalAperture());
-  c.SetValueFromFloat(sec, "Magnification",
+  c.SetValueFromDouble(sec, "Magnification",
 		      GetGLMagnification());
-  c.SetValueFromFloat(sec, "DesignCoverSlipRefractiveIndex",
+  c.SetValueFromDouble(sec, "DesignCoverSlipRefractiveIndex",
 		      GetGLDesignCoverSlipRefractiveIndex());
-  c.SetValueFromFloat(sec, "ActualCoverSlipRefractiveIndex",
+  c.SetValueFromDouble(sec, "ActualCoverSlipRefractiveIndex",
 		      GetGLActualCoverSlipRefractiveIndex());
-  c.SetValueFromFloat(sec, "DesignCoverSlipThickness",
+  c.SetValueFromDouble(sec, "DesignCoverSlipThickness",
 		      GetGLDesignCoverSlipThickness());
-  c.SetValueFromFloat(sec, "ActualCoverSlipThickness",
+  c.SetValueFromDouble(sec, "ActualCoverSlipThickness",
 		      GetGLActualCoverSlipThickness());
-  c.SetValueFromFloat(sec, "DesignImmersionOilRefractiveIndex",
+  c.SetValueFromDouble(sec, "DesignImmersionOilRefractiveIndex",
 		      GetGLDesignImmersionOilRefractiveIndex());
-  c.SetValueFromFloat(sec, "ActualImmersionOilRefractiveIndex",
+  c.SetValueFromDouble(sec, "ActualImmersionOilRefractiveIndex",
 		      GetGLActualImmersionOilRefractiveIndex());
-  c.SetValueFromFloat(sec, "DesignImmersionOilThickness",
+  c.SetValueFromDouble(sec, "DesignImmersionOilThickness",
 		      GetGLDesignImmersionOilThickness());
-  c.SetValueFromFloat(sec, "DesignSpecimenLayerRefractiveIndex",
+  c.SetValueFromDouble(sec, "DesignSpecimenLayerRefractiveIndex",
 		      GetGLDesignSpecimenLayerRefractiveIndex());
-  c.SetValueFromFloat(sec, "ActualSpecimenLayerRefractiveIndex",
+  c.SetValueFromDouble(sec, "ActualSpecimenLayerRefractiveIndex",
 		      GetGLActualSpecimenLayerRefractiveIndex());
-  c.SetValueFromFloat(sec, "ActualPointSourceDepthInSpecimenLayer",
+  c.SetValueFromDouble(sec, "ActualPointSourceDepthInSpecimenLayer",
 		      GetGLActualPointSourceDepthInSpecimenLayer());
-  c.SetValueFromFloat(sec, "DesignDistanceFromBackFocalPlaneToDetector",
+  c.SetValueFromDouble(sec, "DesignDistanceFromBackFocalPlaneToDetector",
 		      GetGLDesignDistanceFromBackFocalPlaneToDetector());
-  c.SetValueFromFloat(sec, "ActualDistanceFromBackFocalPlaneToDetector",
+  c.SetValueFromDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
 		      GetGLActualDistanceFromBackFocalPlaneToDetector());
-  c.SetValueFromFloat(sec, "BackgroundIntensity",
+  c.SetValueFromDouble(sec, "BackgroundIntensity",
                       GetGLBackgroundIntensity());
-  c.SetValueFromFloat(sec, "MaximumIntensity",
+  c.SetValueFromDouble(sec, "MaximumIntensity",
                       GetGLMaximumIntensity());
 
   sec = std::string("ZSliceCoordinates");
@@ -657,11 +657,7 @@ DataModel
 void
 DataModel
 ::SetMeasuredImageVoxelSpacing(double spacing[3]) {
-  float floatSpacing[3];
-  for (int i = 0; i < 3; i++)
-    floatSpacing[i] = static_cast<float>(spacing[i]);
-
-  m_MeasuredImageData->SetSpacing(floatSpacing);
+  m_MeasuredImageData->SetSpacing(spacing);
   m_MeasuredImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
 
@@ -672,14 +668,10 @@ DataModel
   if (!m_MeasuredImageData)
     return;
 
-  TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
+  SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
 
-  double doubleSpacing[3];
-  for (int i = 0; i < 3; i++)
-    doubleSpacing[i] = currentSpacing[i];
-
-  SetMeasuredImageVoxelSpacing(doubleSpacing);
+  SetMeasuredImageVoxelSpacing(currentSpacing.GetDataPointer());
 
   m_MeasuredImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
@@ -694,7 +686,7 @@ DataModel
     return;
   }
 
-  itk::Vector<double> thisSpacing = GetMeasuredImageData()->GetSpacing();
+  SpacingType thisSpacing = GetMeasuredImageData()->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
 }
@@ -775,11 +767,11 @@ DataModel
 void
 DataModel
 ::SetPSFImageDimensions(int dimensions[3]) {
-  unsigned long ulDimensions[3];
+  SizeType size;
   for (int i = 0; i < 3; i++)
-    ulDimensions[i] = static_cast<unsigned long>(dimensions[i]);
+    size[i] = static_cast<SizeValueType>(dimensions[i]);
 
-  m_GibsonLanniPSFSource->SetSize(ulDimensions);
+  m_GibsonLanniPSFSource->SetSize(size);
 }
 
 
@@ -815,11 +807,11 @@ DataModel
 void
 DataModel
 ::SetBSFImageDimensions(int dimensions[3]) {
-  unsigned long ulDimensions[3];
+  SizeType size;
   for (int i = 0; i < 3; i++)
-    ulDimensions[i] = static_cast<unsigned long>(dimensions[i]);
+    size[i] = static_cast<SizeValueType>(dimensions[i]);
 
-  m_GibsonLanniBSFSource->SetSize(ulDimensions);
+  m_GibsonLanniBSFSource->SetSize(size);
 }
 
 
@@ -856,11 +848,11 @@ DataModel
 void
 DataModel
 ::SetPSFImageVoxelSpacing(double spacing[3]) {
-  float floatSpacing[3];
+  SpacingType thisSpacing;
   for (int i = 0; i < 3; i++)
-    floatSpacing[i] = static_cast<float>(spacing[i]);
+    thisSpacing[i] = static_cast<SpacingValueType>(spacing[i]);
 
-  m_GibsonLanniPSFSource->SetSpacing(floatSpacing);
+  m_GibsonLanniPSFSource->SetSpacing(thisSpacing);
   m_PSFImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
 
@@ -874,11 +866,7 @@ DataModel
   TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
 
-  double doubleSpacing[3];
-  for (int i = 0; i < 3; i++)
-    doubleSpacing[i] = currentSpacing[i];
-
-  SetPSFImageVoxelSpacing(doubleSpacing);
+  SetPSFImageVoxelSpacing(currentSpacing.GetDataPointer());
 }
 
 
@@ -891,7 +879,7 @@ DataModel
     return;
   }
 
-  itk::Vector<double> thisSpacing = GetMeasuredImageData()->GetSpacing();
+  SpacingType thisSpacing = GetMeasuredImageData()->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
 }
@@ -900,11 +888,11 @@ DataModel
 void
 DataModel
 ::SetBSFImageVoxelSpacing(double spacing[3]) {
-  float floatSpacing[3];
+  SpacingType thisSpacing;
   for (int i = 0; i < 3; i++)
-    floatSpacing[i] = static_cast<float>(spacing[i]);
+    thisSpacing[i] = static_cast<SpacingValueType>(spacing[i]);
 
-  m_GibsonLanniBSFSource->SetSpacing(floatSpacing);
+  m_GibsonLanniBSFSource->SetSpacing(thisSpacing);
   m_BSFImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
 
@@ -915,14 +903,10 @@ DataModel
   if (!GetMeasuredImageData())
     return;
 
-  TImage::SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
+  SpacingType currentSpacing = m_MeasuredImageData->GetSpacing();
   currentSpacing[dimension] = spacing;
 
-  double doubleSpacing[3];
-  for (int i = 0; i < 3; i++)
-    doubleSpacing[i] = currentSpacing[i];
-
-  SetBSFImageVoxelSpacing(doubleSpacing);
+  SetBSFImageVoxelSpacing(currentSpacing.GetDataPointer());
 }
 
 
@@ -935,7 +919,7 @@ DataModel
     return;
   }
 
-  itk::Vector<double> thisSpacing = GetMeasuredImageData()->GetSpacing();
+  SpacingType thisSpacing = GetMeasuredImageData()->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
 }
@@ -944,29 +928,26 @@ DataModel
 void
 DataModel
 ::SetCCDBorderWidth(double borderWidth[2]) {
-  float width[2];
-  width[0] = static_cast<float>(borderWidth[0]);
-  width[1] = static_cast<float>(borderWidth[1]);
-  m_GibsonLanniPSFSource->SetCCDBorderWidth(width);
+  m_GibsonLanniPSFSource->SetCCDBorderWidth(borderWidth);
 }
 
 
 void
 DataModel
 ::GetCCDBorderWidth(double borderWidth[2]) {
-  float* width =  m_GibsonLanniPSFSource->GetCCDBorderWidth();
-  borderWidth[0] = static_cast<double>(width[0]);
-  borderWidth[1] = static_cast<double>(width[1]);
+  double* width = m_GibsonLanniPSFSource->GetCCDBorderWidth();
+  borderWidth[0] = width[0];
+  borderWidth[1] = width[1];
 }
 
 
 void
 DataModel
 ::SetPSFImageOrigin(double origin[3]) {
-  float fOrigin[3];
+  PointType thisOrigin;
   for (int i = 0; i < 3; i++)
-    fOrigin[i] = static_cast<float>(origin[i]);
-  m_GibsonLanniPSFSource->SetOrigin(fOrigin);
+    thisOrigin[i] = static_cast<PointValueType>(origin[i]);
+  m_GibsonLanniPSFSource->SetOrigin(thisOrigin);
   m_GibsonLanniPSFSource->Modified();
 }
 
@@ -974,19 +955,16 @@ DataModel
 void
 DataModel
 ::GetPSFImageOrigin(double origin[3]) {
-  float* fOrigin = m_GibsonLanniPSFSource->GetOrigin();
+  PointType thisOrigin = m_GibsonLanniPSFSource->GetOrigin();
   for (int i = 0; i < 3; i++)
-    origin[i] = static_cast<double>(fOrigin[i]);
+    origin[i] = static_cast<double>(thisOrigin[i]);
 }
 
 
 void
 DataModel
 ::SetBSFImageOrigin(double origin[3]) {
-  float fOrigin[3];
-  for (int i = 0; i < 3; i++)
-    fOrigin[i] = static_cast<float>(origin[i]);
-  m_GibsonLanniBSFSource->SetOrigin(fOrigin);
+  m_GibsonLanniBSFSource->SetOrigin(origin);
   m_GibsonLanniBSFSource->Modified();
 }
 
@@ -994,9 +972,9 @@ DataModel
 void
 DataModel
 ::GetBSFImageOrigin(double origin[3]) {
-  float* fOrigin = m_GibsonLanniBSFSource->GetOrigin();
+  PointType thisOrigin = m_GibsonLanniBSFSource->GetOrigin();
   for (int i = 0; i < 3; i++)
-    origin[i] = static_cast<double>(fOrigin[i]);
+    origin[i] = static_cast<double>(thisOrigin[i]);
 }
 
 
@@ -1009,9 +987,9 @@ DataModel
   int size[3];
   GetPSFImageDimensions(size);
 
-  float origin[3];
+  PointType origin;
   for (int i = 0; i < 3; i++)
-    origin[i] = -spacing[i]*static_cast<float>(size[i]-1)*0.5;
+    origin[i] = -spacing[i]*static_cast<double>(size[i]-1)*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
 }
 
@@ -1019,38 +997,38 @@ DataModel
 void
 DataModel
 ::SetPSFPointCenter(double center[3]) {
-  float fCenter[3];
+  PointType thisCenter;
   for (int i = 0; i < 3; i++)
-    fCenter[i] = static_cast<float>(center[i]);
-  m_GibsonLanniPSFSource->SetPointCenter(fCenter);
+    thisCenter[i] = static_cast<PointValueType>(center[i]);
+  m_GibsonLanniPSFSource->SetPointCenter(thisCenter);
 }
 
 
 void
 DataModel
 ::GetPSFPointCenter(double center[3]) {
-  float* fCenter = m_GibsonLanniPSFSource->GetPointCenter();
+  PointType thisCenter = m_GibsonLanniPSFSource->GetPointCenter();
   for (int i = 0; i < 3; i++)
-    center[i] = static_cast<double>(fCenter[i]);
+    center[i] = static_cast<double>(thisCenter[i]);
 }
 
 
 void
 DataModel
 ::SetBSFPointCenter(double center[3]) {
-  float fCenter[3];
+  PointType thisCenter;
   for (int i = 0; i < 3; i++)
-    fCenter[i] = static_cast<float>(center[i]);
-  m_GibsonLanniBSFSource->SetBeadCenter(fCenter);
+    thisCenter[i] = static_cast<PointValueType>(center[i]);
+  m_GibsonLanniBSFSource->SetBeadCenter(thisCenter);
 }
 
 
 void
 DataModel
 ::GetBSFPointCenter(double center[3]) {
-  float* fCenter = m_GibsonLanniBSFSource->GetBeadCenter();
+  PointType thisCenter = m_GibsonLanniBSFSource->GetBeadCenter();
   for (int i = 0; i < 3; i++)
-    center[i] = static_cast<double>(fCenter[i]);
+    center[i] = static_cast<double>(thisCenter[i]);
 }
 
 

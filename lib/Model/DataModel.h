@@ -29,16 +29,19 @@
 class DataModel {
 
 public:
-  typedef float FloatPixelType;
-  static const unsigned int Dimension3 = 3;
-  typedef itk::Image<FloatPixelType, Dimension3>
-    Float3DImageType;
-  typedef itk::ImageFileReader<Float3DImageType>
-    Float3DImageReaderType;
-  typedef itk::VTKImageExport<Float3DImageType>
-    Float3DExporterType;
-  typedef Float3DImageType::PointType
-    Float3DPointType;
+  typedef float                                   FloatPixelType;
+  static const unsigned int                       Dimension3 = 3;
+  typedef itk::Image<FloatPixelType, Dimension3>  Float3DImageType;
+  typedef itk::ImageFileReader<Float3DImageType>  Float3DImageReaderType;
+  typedef itk::VTKImageExport<Float3DImageType>   Float3DExporterType;
+  typedef Float3DImageType::PointType             Float3DPointType;
+
+  typedef Float3DImageType::SpacingType      SpacingType;
+  typedef Float3DImageType::SpacingValueType SpacingValueType;
+  typedef Float3DImageType::SizeType         SizeType;
+  typedef Float3DImageType::SizeValueType    SizeValueType;
+  typedef Float3DImageType::PointType        PointType;
+  typedef Float3DImageType::PointValueType   PointValueType;
 
   typedef itk::GridImageSource<Float3DImageType>
     DummyImageSourceType;
@@ -99,7 +102,7 @@ public:
   void SetInitialSimplexDeltas();
 
   void CreateImageFile(int xSize, int ySize, int zSize,
-                       float xSpacing, float ySpacing, float zSpacing);
+                       double xSpacing, double ySpacing, double zSpacing);
   void LoadImageFile(std::string fileName);
   void SavePSFImageFile(std::string fileName);
   void SaveBSFImageFile(std::string fileName);
@@ -186,17 +189,17 @@ public:
   void GetBSFPointCenter(double center[3]);
 
   // Sets the X and Y shear
-  void SetShearX(float shear) {
+  void SetShearX(double shear) {
     m_GibsonLanniBSFSource->SetShearX(shear);
   }
-  float GetShearX() {
+  double GetShearX() {
     return m_GibsonLanniBSFSource->GetShearX();
   }
 
-  void SetShearY(float shear) {
+  void SetShearY(double shear) {
     m_GibsonLanniBSFSource->SetShearY(shear);
   }
-  float GetShearY() {
+  double GetShearY() {
     return m_GibsonLanniBSFSource->GetShearY();
   }
 
@@ -206,114 +209,114 @@ public:
   void SetBeadRadius(double radius);
   double GetBeadRadius();
 
-  void  SetGLEmissionWavelength(float wavelength) {
+  void  SetGLEmissionWavelength(double wavelength) {
     m_GibsonLanniPSFSource->SetEmissionWavelength(wavelength);
     m_GibsonLanniBSFSource->SetEmissionWavelength(wavelength);
   }
-  float GetGLEmissionWavelength() { 
+  double GetGLEmissionWavelength() {
     return m_GibsonLanniBSFSource->GetEmissionWavelength(); }
 
-  void  SetGLNumericalAperture(float na) {
+  void  SetGLNumericalAperture(double na) {
     m_GibsonLanniPSFSource->SetNumericalAperture(na);
     m_GibsonLanniBSFSource->SetNumericalAperture(na);
   }
-  float GetGLNumericalAperture() {
+  double GetGLNumericalAperture() {
     return m_GibsonLanniBSFSource->GetNumericalAperture(); }
 
-  void  SetGLMagnification(float magnification) {
+  void  SetGLMagnification(double magnification) {
     m_GibsonLanniPSFSource->SetMagnification(magnification);
     m_GibsonLanniBSFSource->SetMagnification(magnification);
   }
-  float GetGLMagnification() {
+  double GetGLMagnification() {
     return m_GibsonLanniBSFSource->GetMagnification(); }
 
-  void  SetGLDesignCoverSlipRefractiveIndex(float ri) {
+  void  SetGLDesignCoverSlipRefractiveIndex(double ri) {
     m_GibsonLanniPSFSource->SetDesignCoverSlipRefractiveIndex(ri);
     m_GibsonLanniBSFSource->SetDesignCoverSlipRefractiveIndex(ri);
   }
-  float GetGLDesignCoverSlipRefractiveIndex() {
+  double GetGLDesignCoverSlipRefractiveIndex() {
     return m_GibsonLanniBSFSource->GetDesignCoverSlipRefractiveIndex(); }
-  void  SetGLActualCoverSlipRefractiveIndex(float ri) {
+  void  SetGLActualCoverSlipRefractiveIndex(double ri) {
     m_GibsonLanniPSFSource->SetActualCoverSlipRefractiveIndex(ri);
     m_GibsonLanniBSFSource->SetActualCoverSlipRefractiveIndex(ri);
   }
-  float GetGLActualCoverSlipRefractiveIndex() {
+  double GetGLActualCoverSlipRefractiveIndex() {
     return m_GibsonLanniBSFSource->GetActualCoverSlipRefractiveIndex(); }
 
-  void  SetGLDesignCoverSlipThickness(float thickness) {
+  void  SetGLDesignCoverSlipThickness(double thickness) {
     m_GibsonLanniPSFSource->SetDesignCoverSlipThickness(thickness);
     m_GibsonLanniBSFSource->SetDesignCoverSlipThickness(thickness);
   }
-  float GetGLDesignCoverSlipThickness() {
+  double GetGLDesignCoverSlipThickness() {
     return m_GibsonLanniBSFSource->GetDesignCoverSlipThickness(); }
-  void  SetGLActualCoverSlipThickness(float thickness) {
+  void  SetGLActualCoverSlipThickness(double thickness) {
     m_GibsonLanniPSFSource->SetActualCoverSlipThickness(thickness);
     m_GibsonLanniBSFSource->SetActualCoverSlipThickness(thickness);
   }
-  float GetGLActualCoverSlipThickness() {
+  double GetGLActualCoverSlipThickness() {
     return m_GibsonLanniBSFSource->GetActualCoverSlipThickness(); }
 
-  void  SetGLDesignImmersionOilRefractiveIndex(float ri) {
+  void  SetGLDesignImmersionOilRefractiveIndex(double ri) {
     m_GibsonLanniPSFSource->SetDesignImmersionOilRefractiveIndex(ri);
     m_GibsonLanniBSFSource->SetDesignImmersionOilRefractiveIndex(ri);
   }
-  float GetGLDesignImmersionOilRefractiveIndex() {
+  double GetGLDesignImmersionOilRefractiveIndex() {
     return m_GibsonLanniBSFSource->GetDesignImmersionOilRefractiveIndex(); }
-  void  SetGLActualImmersionOilRefractiveIndex(float ri) {
+  void  SetGLActualImmersionOilRefractiveIndex(double ri) {
     m_GibsonLanniPSFSource->SetActualImmersionOilRefractiveIndex(ri);
     m_GibsonLanniBSFSource->SetActualImmersionOilRefractiveIndex(ri);
   }
-  float GetGLActualImmersionOilRefractiveIndex() {
+  double GetGLActualImmersionOilRefractiveIndex() {
     return m_GibsonLanniBSFSource->GetActualImmersionOilRefractiveIndex(); }
 
-  void  SetGLDesignImmersionOilThickness(float thickness) {
+  void  SetGLDesignImmersionOilThickness(double thickness) {
     m_GibsonLanniPSFSource->SetDesignImmersionOilThickness(thickness);
     m_GibsonLanniBSFSource->SetDesignImmersionOilThickness(thickness);
   }
-  float GetGLDesignImmersionOilThickness() {
+  double GetGLDesignImmersionOilThickness() {
     return m_GibsonLanniBSFSource->GetDesignImmersionOilThickness(); }
 
-  void  SetGLDesignSpecimenLayerRefractiveIndex(float ri) {
+  void  SetGLDesignSpecimenLayerRefractiveIndex(double ri) {
     m_GibsonLanniPSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
     m_GibsonLanniBSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
   }
-  float GetGLDesignSpecimenLayerRefractiveIndex() {
+  double GetGLDesignSpecimenLayerRefractiveIndex() {
     return m_GibsonLanniBSFSource->GetDesignSpecimenLayerRefractiveIndex(); }
-  void  SetGLActualSpecimenLayerRefractiveIndex(float ri) {
+  void  SetGLActualSpecimenLayerRefractiveIndex(double ri) {
     m_GibsonLanniPSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
     m_GibsonLanniBSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
   }
-  float GetGLActualSpecimenLayerRefractiveIndex() {
+  double GetGLActualSpecimenLayerRefractiveIndex() {
     return m_GibsonLanniBSFSource->GetActualSpecimenLayerRefractiveIndex(); }
 
-  void  SetGLActualPointSourceDepthInSpecimenLayer(float depth) {
+  void  SetGLActualPointSourceDepthInSpecimenLayer(double depth) {
     m_GibsonLanniPSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
     m_GibsonLanniBSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
   }
-  float GetGLActualPointSourceDepthInSpecimenLayer() {
+  double GetGLActualPointSourceDepthInSpecimenLayer() {
     return m_GibsonLanniBSFSource->GetActualPointSourceDepthInSpecimenLayer(); }
 
-  void  SetGLDesignDistanceFromBackFocalPlaneToDetector(float distance) {
+  void  SetGLDesignDistanceFromBackFocalPlaneToDetector(double distance) {
     m_GibsonLanniPSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
     m_GibsonLanniBSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
   }
-  float GetGLDesignDistanceFromBackFocalPlaneToDetector() {
+  double GetGLDesignDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniBSFSource->GetDesignDistanceFromBackFocalPlaneToDetector(); }
-  void  SetGLActualDistanceFromBackFocalPlaneToDetector(float distance) {
+  void  SetGLActualDistanceFromBackFocalPlaneToDetector(double distance) {
     m_GibsonLanniPSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
     m_GibsonLanniBSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
   }
-  float GetGLActualDistanceFromBackFocalPlaneToDetector() {
+  double GetGLActualDistanceFromBackFocalPlaneToDetector() {
     return m_GibsonLanniBSFSource->GetActualDistanceFromBackFocalPlaneToDetector(); }
 
-  void  SetGLBackgroundIntensity(float intensity) {
+  void  SetGLBackgroundIntensity(double intensity) {
     m_GibsonLanniBSFSource->SetBackgroundIntensity(intensity); }
-  float GetGLBackgroundIntensity() {
+  double GetGLBackgroundIntensity() {
     return m_GibsonLanniBSFSource->GetBackgroundIntensity(); }
 
-  void  SetGLMaximumIntensity(float intensity) {
+  void  SetGLMaximumIntensity(double intensity) {
     m_GibsonLanniBSFSource->SetMaximumIntensity(intensity); }
-  float GetGLMaximumIntensity() {
+  double GetGLMaximumIntensity() {
     return m_GibsonLanniBSFSource->GetMaximumIntensity(); }
 
   void SetGLParameterEnabled(unsigned int index, bool enabled);
@@ -360,7 +363,7 @@ protected:
 
   // The delegate cost function used by m_CostFunction
   ImageToImageCostFunctionType::Pointer  m_ImageToImageCostFunction;
-  
+
   // The optimizer
   OptimizerType::Pointer m_Optimizer;
 
