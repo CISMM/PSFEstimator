@@ -31,8 +31,9 @@ namespace itk
 /** \class SphereConvolutionFilter
  *
  * \brief Generate an image of a sphere convolved with the input image.
- * Assumes the input image represents  a convolution kernel. The sphere is
- * assumed to define an intensity volume of unit intensity.
+ * This filter assumes the input image represents a convolution
+ * kernel. The sphere is assumed to define an intensity volume of unit
+ * intensity.
  *
  * This class uses the ScanImageFilter to precompute a lookup table for the
  * convolution operation. Each z-plane of the lookup table represents the
@@ -40,7 +41,7 @@ namespace itk
  * negative infinity. By evaluating where this line intersects the geometry,
  * the contribution from that portion of the line to the current image plane
  * can be quickly computed with two lookups and a subtraction. For greater
- * precision, the input kernel image should be more finely sampled than
+ * accuracy, the input kernel image should be more finely sampled than
  * the output image.
  *
  * \author Cory Quammen. Department of Computer Science, UNC Chapel Hill.
@@ -67,13 +68,14 @@ public:
   typedef typename InputImageType::PixelType   InputImagePixelType;
   typedef typename InputImageType::PointType   InputImagePointType;
 
-  typedef TOutputImage                         OutputImageType;
-  typedef typename OutputImageType::Pointer    OutputImagePointer;
-  typedef typename OutputImageType::IndexType  OutputImageIndexType;
-  typedef typename OutputImageType::SizeType   OutputImageSizeType;
-  typedef typename OutputImageType::RegionType OutputImageRegionType;
-  typedef typename OutputImageType::PixelType  OutputImagePixelType;
-  typedef typename OutputImageType::PointType  OutputImagePointType;
+  typedef TOutputImage                          OutputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
+  typedef typename OutputImageType::IndexType   OutputImageIndexType;
+  typedef typename OutputImageType::SizeType    OutputImageSizeType;
+  typedef typename OutputImageType::RegionType  OutputImageRegionType;
+  typedef typename OutputImageType::PixelType   OutputImagePixelType;
+  typedef typename OutputImageType::SpacingType OutputImageSpacingType;
+  typedef typename OutputImageType::PointType   OutputImagePointType;
 
   typedef Function::SumAccumulator<InputImagePixelType,OutputImagePixelType>
     AccumulatorType;
@@ -90,61 +92,81 @@ public:
 		      TOutputImage::ImageDimension);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SphereConvolutionFilter,ImageToImageFilter);
+  itkTypeMacro(SphereConvolutionFilter, ImageToImageFilter);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Specify the size of the output image. */
-  void SetSize(unsigned long size[TOutputImage::ImageDimension])
+  virtual void SetSize(const OutputImageSizeType & size)
   {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+    if (size != m_Size)
       {
-      m_Size[i] = size[i];
+      m_Size = size;
+      this->Modified();
       }
-
-    this->Modified();
     m_ZCoordinate.resize(size[TOutputImage::ImageDimension-1]);
   }
 
   /** Get the size of the output image. */
-  itkGetVectorMacro(Size, unsigned long, TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(Size, OutputImageSizeType);
 
   /** Specify the spacing of the output image. */
-  itkSetVectorMacro(Spacing, float, TOutputImage::ImageDimension);
+  virtual void SetSpacing(const OutputImageSpacingType & spacing)
+  {
+    if (spacing != m_Spacing)
+      {
+      m_Spacing = spacing;
+      this->Modified();
+      }
+  }
 
   /** Get the spacing of the output image. */
-  itkGetVectorMacro(Spacing, float, TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(Spacing, OutputImageSpacingType);
 
   /** Specify the origin of the output image. */
-  itkSetVectorMacro(Origin, float, TOutputImage::ImageDimension);
+  virtual void SetOrigin(const OutputImagePointType & origin)
+  {
+    if (origin != m_Origin)
+      {
+      m_Origin = origin;
+      this->Modified();
+      }
+  }
 
   /** Get the origin of the output image. */
-  itkGetVectorMacro(Origin, float, TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(Origin, OutputImagePointType);
 
   /** Specify the sphere center. */
-  itkSetVectorMacro(SphereCenter, float, TOutputImage::ImageDimension);
+  virtual void SetSphereCenter(const OutputImagePointType & center)
+  {
+    if (center != m_SphereCenter)
+      {
+      m_SphereCenter = center;
+      this->Modified();
+      }
+  }
 
   /** Get the sphere center. */
-  itkGetVectorMacro(SphereCenter, float, TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(SphereCenter, OutputImagePointType);
 
   /** Specify the sphere radius. */
-  itkSetMacro(SphereRadius, float);
+  itkSetMacro(SphereRadius, double);
 
   /** Get the sphere radius. */
-  itkGetMacro(SphereRadius, float);
+  itkGetMacro(SphereRadius, double);
 
   /** Specify the shear in the X direction. */
-  itkSetMacro(ShearX, float);
+  itkSetMacro(ShearX, double);
 
   /** Get the shear in the X direction. */
-  itkGetMacro(ShearX, float);
+  itkGetMacro(ShearX, double);
 
   /** Specify the shear in the Y direction. */
-  itkSetMacro(ShearY, float);
+  itkSetMacro(ShearY, double);
 
   /** Get the shear in the Y direction. */
-  itkGetMacro(ShearY, float);
+  itkGetMacro(ShearY, double);
 
   /** Get/set the z-coordinate of the image z-plane at the given index. */
   void SetZCoordinate(unsigned int index, double coordinate);
@@ -159,17 +181,16 @@ protected:
   ~SphereConvolutionFilter();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  unsigned long *m_Size;         // the number of voxels in each dimension
-  float         *m_Spacing;      // the spacing of the voxels
-  float         *m_Origin;       // the origin of the image
-  float         *m_SphereCenter; // the center of the sphere
-  float         m_SphereRadius;  // the radius of the sphere
+  OutputImageSizeType    m_Size;         // the number of voxels in each dimension
+  OutputImageSpacingType m_Spacing;      // the spacing of the voxels
+  OutputImagePointType   m_Origin;       // the origin of the image
+  OutputImagePointType   m_SphereCenter; // the center of the sphere
+  double                 m_SphereRadius; // the radius of the sphere
 
-  float               m_ShearX;      // amount of shear in the x direction with respect to z
-  float               m_ShearY;      // amount of shear in the y direction with respect to z
+  double              m_ShearX;      // shear in the x direction w.r.t. z
+  double              m_ShearY;      // shear in the y direction w.r.t. z
   std::vector<double> m_ZCoordinate; // z-slice coordinates
   bool                m_UseCustomZCoordinates;
-
 
   ScanImageFilterPointer  m_ScanImageFilter;
   InterpolatorPointer     m_KernelInterpolator;
@@ -182,7 +203,7 @@ protected:
    * if there is no intersection. The method returns the number of
    * intersections.
    */
-  unsigned int IntersectWithVerticalLine(float x, float y, float& z1, float& z2);
+  unsigned int IntersectWithVerticalLine(double x, double y, double& z1, double& z2);
 
   virtual void GenerateInputRequestedRegion();
 
@@ -194,10 +215,10 @@ protected:
     (const OutputImageRegionType& outputRegionForThread, int threadId);
 
   /** Computes the light intensity at a specified point. */
-  float ComputeSampleValue(OutputImagePointType& point);
+  double ComputeSampleValue(OutputImagePointType& point);
 
   /** Computes the integrated light intensity over multipe samples per voxel.*/
-  float ComputeIntegratedVoxelValue(OutputImagePointType& point);
+  double ComputeIntegratedVoxelValue(OutputImagePointType& point);
 
 private:
   SphereConvolutionFilter(const SphereConvolutionFilter&); // purposely not implemented

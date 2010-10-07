@@ -31,18 +31,10 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 {
   this->SetNumberOfRequiredInputs(1);
 
-  m_Size    = new unsigned long [TOutputImage::GetImageDimension()];
-  m_Spacing = new float [TOutputImage::GetImageDimension()];
-  m_Origin  = new float [TOutputImage::GetImageDimension()];
-  m_SphereCenter = new float[TOutputImage::GetImageDimension()];
-
-  for (unsigned int i = 0; i < TOutputImage::GetImageDimension(); i++)
-    {
-    m_Size[i] = 1;
-    m_Spacing[i] = 1.0f;
-    m_Origin[i] = 0.0f;
-    m_SphereCenter[i] = 0.0f;
-    }
+  m_Size.Fill(1);
+  m_Spacing.Fill(1.0);
+  m_Origin.Fill(0.0);
+  m_SphereCenter.Fill(0.0);
   m_SphereRadius = 1.0f;
   m_ShearX = 0.0f;
   m_ShearY = 0.0f;
@@ -61,10 +53,6 @@ template <class TInputImage, class TOutputImage>
 SphereConvolutionFilter<TInputImage,TOutputImage>
 ::~SphereConvolutionFilter()
 {
-  delete [] m_Size;
-  delete [] m_Spacing;
-  delete [] m_Origin;
-  delete [] m_SphereCenter;
 }
 
 
@@ -100,13 +88,13 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 unsigned int
 SphereConvolutionFilter<TInputImage,TOutputImage>
-::IntersectWithVerticalLine(float x, float y, float& z1, float& z2)
+::IntersectWithVerticalLine(double x, double y, double& z1, double& z2)
 {
-  float cx = m_SphereCenter[0];
-  float cy = m_SphereCenter[1];
-  float cz = m_SphereCenter[2];
-  float r  = m_SphereRadius;
-  float sqrtTerm = -(cx*cx)-(cy*cy)+(r*r)+(2*cx*x)-(x*x)+(2*cy*y)-(y*y);
+  double cx = m_SphereCenter[0];
+  double cy = m_SphereCenter[1];
+  double cz = m_SphereCenter[2];
+  double r  = m_SphereRadius;
+  double sqrtTerm = -(cx*cx)-(cy*cy)+(r*r)+(2*cx*x)-(x*x)+(2*cy*y)-(y*y);
 
   if (sqrtTerm < 0)
     {
@@ -124,7 +112,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     z2 = cz + sqrt(sqrtTerm);
     if (z1 > z2)
       {
-      float tmp = z1;
+      double tmp = z1;
       z1 = z2;
       z2 = tmp;
       }
@@ -157,8 +145,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 {
   OutputImageType *output;
   OutputImageIndexType index = {{0}};
-  OutputImageSizeType size = {{0}};
-  size.SetSize(m_Size);
+  OutputImageSizeType size(m_Size);
 
   output = this->GetOutput(0);
 
@@ -193,8 +180,6 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData
 (const OutputImageRegionType& outputRegionForThread, int threadId)
 {
-  itkDebugMacro(<<"Generating a random image of scalars");
-
   // Support progress methods/callbacks
   ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
   OutputImagePointer image = this->GetOutput(0);
@@ -224,11 +209,11 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
 
 template <class TInputImage, class TOutputImage>
-float
+double
 SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ComputeSampleValue(OutputImagePointType& point)
 {
-  float value = 0.0f;
+  double value = 0.0f;
 
   if (m_SphereRadius <= 0.0)
     {
@@ -236,30 +221,30 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     }
 
   // Compute bounds of geometry sampling region
-  float xMin = m_SphereCenter[0] - m_SphereRadius;
-  float xMax = m_SphereCenter[0] + m_SphereRadius;
-  float yMin = m_SphereCenter[1] - m_SphereRadius;
-  float yMax = m_SphereCenter[1] + m_SphereRadius;
+  double xMin = m_SphereCenter[0] - m_SphereRadius;
+  double xMax = m_SphereCenter[0] + m_SphereRadius;
+  double yMin = m_SphereCenter[1] - m_SphereRadius;
+  double yMax = m_SphereCenter[1] + m_SphereRadius;
 
   // Compute maximum z value in the pre-integrated table.
   InputImagePointer scannedImage = m_ScanImageFilter->GetOutput();
-  float tableZMax = (scannedImage->GetSpacing()[2] *
-              static_cast<float>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
+  double tableZMax = (scannedImage->GetSpacing()[2] *
+              static_cast<double>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
 
-  float samplesPerDim = 10.0;
-  float diameter = 2.0f*m_SphereRadius;
-  float sampleIncrX = diameter / samplesPerDim;
-  float sampleIncrY = diameter / samplesPerDim;
-  for ( float ys = yMin; ys <= yMax; ys += sampleIncrY )
+  double samplesPerDim = 10.0;
+  double diameter = 2.0f*m_SphereRadius;
+  double sampleIncrX = diameter / samplesPerDim;
+  double sampleIncrY = diameter / samplesPerDim;
+  for ( double  ys = yMin; ys <= yMax; ys += sampleIncrY )
     {
-    for ( float xs = xMin; xs <= xMax; xs += sampleIncrX )
+    for ( double xs = xMin; xs <= xMax; xs += sampleIncrX )
       {
 
       // Find the intersection z-coordinate values, if they exist.
-      float x = point[0];
-      float y = point[1];
-      float z = point[2];
-      float z1 = 0.0f, z2 = 0.0f;
+      double x = point[0];
+      double y = point[1];
+      double z = point[2];
+      double z1 = 0.0f, z2 = 0.0f;
       unsigned int intersections;
       intersections = IntersectWithVerticalLine(xs, ys, z1, z2);
 
@@ -291,8 +276,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
         // z - z1 is always larger than z - z2, and integration goes along
         // positive z, so we return v1 - v2.
         value += v1 - v2;
-
-      }
+        }
       else if (intersections == 1)
         {
         OutputImagePointType p;
@@ -311,7 +295,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
 
 template <class TInputImage, class TOutputImage>
-float
+double
 SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ComputeIntegratedVoxelValue(OutputImagePointType& point)
 {
@@ -327,28 +311,28 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   Superclass::PrintSelf(os, indent);
   unsigned int i;
   os << indent << "Origin: [";
-  for ( i = 0; i < TOutputImage::ImageDimension - 1; i++ )
+  for ( i = 0; i < m_Origin.Size() - 1; i++ )
     {
     os << m_Origin[i] << ", ";
     }
   os << m_Origin[i] << "]" << std::endl;
 
   os << indent << "Spacing: [";
-  for ( i=0; i < TOutputImage::ImageDimension - 1; i++ )
+  for ( i=0; i < m_Spacing.Size() - 1; i++ )
     {
     os << m_Spacing[i] << ", ";
     }
   os << m_Spacing[i] << "]" << std::endl;
 
   os << indent << "Size: [";
-  for ( i=0; i < TOutputImage::ImageDimension - 1; i++ )
+  for ( i=0; i < m_Size.GetSizeDimension() - 1; i++ )
     {
     os << m_Size[i] << ", ";
     }
   os << m_Size[i] << "]" << std::endl;
 
   os << indent << "SphereCenter: [";
-  for ( i=0; i < TOutputImage::ImageDimension - 1; i++ )
+  for ( i=0; i < m_SphereCenter.Size() - 1; i++ )
     {
     os << m_SphereCenter[i] << ", ";
     }
