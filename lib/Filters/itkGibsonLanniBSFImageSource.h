@@ -49,11 +49,11 @@ namespace itk
 {
 
 /** \class GibsonLanniBSFImageSource
- * \brief Generate a synthetic point-spread function according to the
- * Gibson-Lanni model and convolve it with a spherical bead shape.
+ * \brief Generates a synthetic point-spread function according to the
+ * Gibson-Lanni model and convolves it with a spherical bead shape.
  *
  * The Gibson-Lanni point-spread function model takes into account optical
- * path differences caused by imaing conditions differing from the design
+ * path differences caused by imaging conditions that differ from the design
  * conditions of an objective in a widefield fluorescence microscope. This
  * image source generates images according to this model. IMPORTANT: Please
  * pay attention to the units each method expects. Some take nanometers, some
@@ -81,12 +81,19 @@ public:
   typedef SmartPointer<const Self>            ConstPointer;
 
   /** Typedef for output types. */
-  typedef TOutputImage                         OutputImageType;
-  typedef typename OutputImageType::PixelType  PixelType;
-  typedef typename OutputImageType::RegionType OutputImageRegionType;
+  typedef TOutputImage                             OutputImageType;
+  typedef typename OutputImageType::PixelType      PixelType;
+  typedef typename OutputImageType::RegionType     RegionType;
+  typedef typename OutputImageType::PointType      PointType;
+  typedef typename OutputImageType::PointValueType PointValueType;
+  typedef typename PointType::VectorType           VectorType;
+  typedef typename OutputImageType::SpacingType    SpacingType;
+  typedef typename OutputImageType::IndexType      IndexType;
+  typedef typename OutputImageType::SizeType       SizeType;
+  typedef typename OutputImageType::SizeValueType  SizeValueType;
 
-  itkStaticConstMacro(ImageDimension,
-		      unsigned int,
+
+  itkStaticConstMacro(ImageDimension, unsigned int,
 		      TOutputImage::ImageDimension);
 
   typedef GibsonLanniPSFImageSource<TOutputImage>
@@ -116,95 +123,91 @@ public:
   typedef typename Superclass::ParametersType      ParametersType;
 
   /** Specify the size of the output image. */
-  void SetSize(unsigned long size[TOutputImage::ImageDimension])
+  void SetSize(const SizeType & size)
   {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+    if (size != m_Size)
       {
-      m_Size[i] = size[i];
+      m_Size = size;
+      this->Modified();
       }
-
     m_Convolver->SetSize(size);
-    this->Modified();
   }
 
   /** Get the size of the output image. */
-  itkGetVectorMacro(Size,unsigned long,TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(Size, SizeType);
 
   /** Specify the spacing of the output image (in nanometers). */
-  void SetSpacing(float spacing[TOutputImage::ImageDimension])
+  void SetSpacing(const SpacingType & spacing)
   {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+    if (spacing != m_Spacing)
       {
-      m_Spacing[i] = spacing[i];
+      m_Spacing = spacing;
+      this->Modified();
       }
     m_Convolver->SetSpacing(spacing);
-    this->Modified();
   }
 
   /** Get the spacing of the output image (in nanometers). */
-  itkGetVectorMacro(Spacing,float,TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(Spacing, SpacingType);
 
   /** Specify the origin of the output image (in nanometers). */
-  void SetOrigin(float origin[TOutputImage::ImageDimension])
+  virtual void SetOrigin(const PointType & origin)
   {
-    for (int i = 0; i < TOutputImage::ImageDimension; i++)
+    if (origin != m_Origin)
       {
-      m_Origin[i] = origin[i];
+      m_Origin = origin;
+      this->Modified();
       }
-
     m_Convolver->SetOrigin(origin);
-    this->Modified();
   }
 
   /** Get the origin of the output image (in nanometers). */
-  itkGetVectorMacro(Origin,float,TOutputImage::ImageDimension);
+  itkGetConstReferenceMacro(Origin, PointType);
 
   /** Specify the point source center (in nanometers). */
-  void SetBeadCenter(float center[TOutputImage::ImageDimension])
+  virtual void SetBeadCenter(const PointType & center)
   {
     m_Convolver->SetSphereCenter(center);
-    this->Modified();
   }
 
   /** Get the point source center (in nanometers). */
-  float * GetBeadCenter() const
+  virtual const PointType & GetBeadCenter() const
   {
     return m_Convolver->GetSphereCenter();
   }
 
   /** Specify the bead radius (in nanometers). */
-  void SetBeadRadius(float radius)
+  void SetBeadRadius(double radius)
   {
     m_Convolver->SetSphereRadius(radius);
-    this->Modified();
   }
 
   /** Get the bead radius. */
-  float GetBeadRadius() const
+  double GetBeadRadius() const
   {
     return m_Convolver->GetSphereRadius();
   }
 
   /** Specify the shear in the X direction. */
-  void SetShearX(float shear)
+  void SetShearX(double shear)
   {
     m_Convolver->SetShearX(shear);
   }
 
   /** Get the shear in the X direction. */
-  float GetShearX() const
+  double GetShearX() const
   {
     return m_Convolver->GetShearX();
   }
 
   /** Specify the shear in the Y direction. */
-  void SetShearY(float shear)
+  void SetShearY(double shear)
   {
     m_Convolver->SetShearY(shear);
   }
 
   /** Get the shear in the Y direction. */
-  float GetShearY() const
+  double GetShearY() const
   {
     return m_Convolver->GetShearY();
   }
@@ -222,94 +225,94 @@ public:
   itkGetConstMacro(MaximumIntensity, double);
 
   /** Specify the emission wavelength (in nanometers). */
-  DelegateSetMacro(EmissionWavelength, float);
+  DelegateSetMacro(EmissionWavelength, double);
 
   /** Get the emission wavelength (in nanometers). */
-  DelegateGetMacro(EmissionWavelength, float);
+  DelegateGetMacro(EmissionWavelength, double);
 
   /** Specify the numerical aperture (unitless). */
-  DelegateSetMacro(NumericalAperture, float);
+  DelegateSetMacro(NumericalAperture, double);
 
   /** Get the numerical aperture (unitless). */
-  DelegateGetMacro(NumericalAperture, float);
+  DelegateGetMacro(NumericalAperture, double);
 
   /** Specify the magnification (unitless). */
-  DelegateSetMacro(Magnification, float);
+  DelegateSetMacro(Magnification, double);
 
   /** Get the magnification (unitless). */
-  DelegateGetMacro(Magnification, float);
+  DelegateGetMacro(Magnification, double);
 
   /** Specify the design cover slip refractive index (unitless). */
-  DelegateSetMacro(DesignCoverSlipRefractiveIndex, float);
+  DelegateSetMacro(DesignCoverSlipRefractiveIndex, double);
 
   /** Get the design cover slip refractive index (unitless). */
-  DelegateGetMacro(DesignCoverSlipRefractiveIndex, float);
+  DelegateGetMacro(DesignCoverSlipRefractiveIndex, double);
 
   /** Specify the actual cover slip refractive index (unitless). */
-  DelegateSetMacro(ActualCoverSlipRefractiveIndex, float);
+  DelegateSetMacro(ActualCoverSlipRefractiveIndex, double);
 
   /** Get the actual cover slip refractive index (unitless). */
-  DelegateGetMacro(ActualCoverSlipRefractiveIndex, float);
+  DelegateGetMacro(ActualCoverSlipRefractiveIndex, double);
 
   /** Specify the design cover slip thickness (in micrometers). */
-  DelegateSetMacro(DesignCoverSlipThickness, float);
+  DelegateSetMacro(DesignCoverSlipThickness, double);
 
   /** Get the design cover slip thickness (in micrometers). */
-  DelegateGetMacro(DesignCoverSlipThickness, float);
+  DelegateGetMacro(DesignCoverSlipThickness, double);
 
   /** Specify the actual cover slip thickness (in micrometers). */
-  DelegateSetMacro(ActualCoverSlipThickness, float);
+  DelegateSetMacro(ActualCoverSlipThickness, double);
 
   /** Get the actual cover slip thickness (in micrometers). */
-  DelegateGetMacro(ActualCoverSlipThickness, float);
+  DelegateGetMacro(ActualCoverSlipThickness, double);
 
   /** Specify the design immersion oil refractive index (unitless). */
-  DelegateSetMacro(DesignImmersionOilRefractiveIndex, float);
+  DelegateSetMacro(DesignImmersionOilRefractiveIndex, double);
 
   /** Get the design immersion oil refractive index (unitless). */
-  DelegateGetMacro(DesignImmersionOilRefractiveIndex, float);
+  DelegateGetMacro(DesignImmersionOilRefractiveIndex, double);
 
   /** Specify the actual immersion oil refractive index (unitless). */
-  DelegateSetMacro(ActualImmersionOilRefractiveIndex, float);
+  DelegateSetMacro(ActualImmersionOilRefractiveIndex, double);
 
   /** Get the actual immersion oil refractive index (unitless). */
-  DelegateGetMacro(ActualImmersionOilRefractiveIndex, float);
+  DelegateGetMacro(ActualImmersionOilRefractiveIndex, double);
 
   /** Specify the design immersion oil thickness (in micrometers). */
-  DelegateSetMacro(DesignImmersionOilThickness, float);
+  DelegateSetMacro(DesignImmersionOilThickness, double);
 
   /** Get the actual immersion oil refractive index (in micrometers). */
-  DelegateGetMacro(DesignImmersionOilThickness, float);
+  DelegateGetMacro(DesignImmersionOilThickness, double);
 
   /** Specify the design specimen layer refractive index (unitless). */
-  DelegateSetMacro(DesignSpecimenLayerRefractiveIndex, float);
+  DelegateSetMacro(DesignSpecimenLayerRefractiveIndex, double);
 
   /** Get the design specimen layer refractive index (unitless). */
-  DelegateGetMacro(DesignSpecimenLayerRefractiveIndex, float);
+  DelegateGetMacro(DesignSpecimenLayerRefractiveIndex, double);
 
   /** Specify the actual specimen layer refractive index (unitless). */
-  DelegateSetMacro(ActualSpecimenLayerRefractiveIndex, float);
+  DelegateSetMacro(ActualSpecimenLayerRefractiveIndex, double);
 
   /** Get the actual specimen layer refractive index (unitless). */
-  DelegateGetMacro(ActualSpecimenLayerRefractiveIndex, float);
+  DelegateGetMacro(ActualSpecimenLayerRefractiveIndex, double);
 
   /** Specify the actual point source depth in the specimen layer (in nanometers). */
-  DelegateSetMacro(ActualPointSourceDepthInSpecimenLayer, float);
+  DelegateSetMacro(ActualPointSourceDepthInSpecimenLayer, double);
 
   /** Get the actual point source depth in the specimen layer (in nanometers). */
-  DelegateGetMacro(ActualPointSourceDepthInSpecimenLayer, float);
+  DelegateGetMacro(ActualPointSourceDepthInSpecimenLayer, double);
 
   /** Specify the design distance from the back focal plane to the detector (in millimeters). */
-  DelegateSetMacro(DesignDistanceFromBackFocalPlaneToDetector, float);
+  DelegateSetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
 
   /** Get the design distance from the back focal plane to the detector (in millimeters). */
-  DelegateGetMacro(DesignDistanceFromBackFocalPlaneToDetector, float);
+  DelegateGetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
 
   /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
-  DelegateSetMacro(ActualDistanceFromBackFocalPlaneToDetector, float);
+  DelegateSetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
 
   /** Get the actual distance from the back focal plane to the detector (in millimeters). */
-  DelegateGetMacro(ActualDistanceFromBackFocalPlaneToDetector, float);
+  DelegateGetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
 
   /** Expects the parameters argument to contain values for ALL parameters. */
   virtual void SetParameters(const ParametersType& parameters);
@@ -345,13 +348,11 @@ private:
   GibsonLanniBSFImageSource(const GibsonLanniBSFImageSource&); //purposely not implemented
   void operator=(const GibsonLanniBSFImageSource&); //purposely not implemented
 
-  unsigned long *m_Size;  // Size of the output image
-  float         *m_Spacing;
-  float         *m_Origin;
-  float         *m_BeadCenter;          // The center of the bead
-  float          m_BeadRadius;          // The radius of the bead
-  double         m_BackgroundIntensity; // Additive background constant
-  double         m_MaximumIntensity;    // The maximum intensity value
+  SizeType    m_Size;                // Size of the output image
+  SpacingType m_Spacing;             // Spacing of the output image
+  PointType   m_Origin;              // Origin of the output image
+  double      m_BackgroundIntensity; // Additive background constant
+  double      m_MaximumIntensity;    // The maximum intensity value
 
   PSFSourcePointer          m_PSFSource;
   ExtrusionFilterPointer    m_ExtrusionFilter;

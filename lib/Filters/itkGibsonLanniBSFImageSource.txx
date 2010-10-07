@@ -24,7 +24,7 @@
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
-#include "itkGaussianImageSource.h"
+#include "itkMath.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkRotationalExtrusionTransform.h"
 #include "itkScanImageFilter.h"
@@ -40,22 +40,9 @@ template <class TOutputImage>
 GibsonLanniBSFImageSource<TOutputImage>
 ::GibsonLanniBSFImageSource()
 {
-  m_Size       = new unsigned long [TOutputImage::GetImageDimension()];
-  m_Spacing    = new float [TOutputImage::GetImageDimension()];
-  m_Origin     = new float [TOutputImage::GetImageDimension()];
-  m_BeadCenter = new float[TOutputImage::GetImageDimension()];
-
-  //Initial image is 63 wide in each direction.
-  for ( unsigned int i = 0; i<TOutputImage::GetImageDimension(); i++ )
-    {
-    m_Size[i] = 63;
-    m_Spacing[i] = 65.0f;
-    m_Origin[i] = 0.0f;
-    m_BeadCenter[i] = 0.0f;
-    }
-
-  m_BeadRadius = 200.0;
-
+  m_Size.Fill(32);
+  m_Spacing.Fill(65.0);
+  m_Origin.Fill(0.0);
   m_BackgroundIntensity = 0.0;
   m_MaximumIntensity = 1.0;
 
@@ -79,10 +66,6 @@ template <class TOutputImage>
 GibsonLanniBSFImageSource<TOutputImage>
 ::~GibsonLanniBSFImageSource()
 {
-  delete [] m_Size;
-  delete [] m_Spacing;
-  delete [] m_Origin;
-  delete [] m_BeadCenter;
 }
 
 
@@ -91,53 +74,47 @@ void
 GibsonLanniBSFImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters)
 {
-  Array<float> floatParams(GetNumberOfParameters());
-  for ( unsigned int i = 0; i < GetNumberOfParameters(); i++ )
-    {
-    floatParams[i] = static_cast<float>(parameters[i]);
-    }
-
   int index = 0;
-  float spacing[3];
-  spacing[0] = floatParams[index++];
-  spacing[1] = floatParams[index++];
-  spacing[2] = floatParams[index++];
+  SpacingType spacing;
+  spacing[0] = parameters[index++];
+  spacing[1] = parameters[index++];
+  spacing[2] = parameters[index++];
   SetSpacing(spacing);
 
   // CCD border goes here
   index += 2;
 
-  SetBeadRadius(floatParams[index++]);
+  SetBeadRadius(parameters[index++]);
 
-  float center[3];
-  center[0] = floatParams[index++];
-  center[1] = floatParams[index++];
-  center[2] = floatParams[index++];
+  PointType center;
+  center[0] = parameters[index++];
+  center[1] = parameters[index++];
+  center[2] = parameters[index++];
   SetBeadCenter(center);
 
-  SetShearX(floatParams[index++]);
-  SetShearY(floatParams[index++]);
+  SetShearX(parameters[index++]);
+  SetShearY(parameters[index++]);
 
-  SetEmissionWavelength(floatParams[index++]);
-  SetNumericalAperture(floatParams[index++]);
-  SetMagnification(floatParams[index++]);
+  SetEmissionWavelength(parameters[index++]);
+  SetNumericalAperture(parameters[index++]);
+  SetMagnification(parameters[index++]);
 
-  SetDesignCoverSlipRefractiveIndex(floatParams[index++]);
-  SetActualCoverSlipRefractiveIndex(floatParams[index++]);
-  SetDesignCoverSlipThickness(floatParams[index++]);
-  SetActualCoverSlipThickness(floatParams[index++]);
-  SetDesignImmersionOilRefractiveIndex(floatParams[index++]);
-  SetActualImmersionOilRefractiveIndex(floatParams[index++]);
-  SetDesignImmersionOilThickness(floatParams[index++]);
+  SetDesignCoverSlipRefractiveIndex(parameters[index++]);
+  SetActualCoverSlipRefractiveIndex(parameters[index++]);
+  SetDesignCoverSlipThickness(parameters[index++]);
+  SetActualCoverSlipThickness(parameters[index++]);
+  SetDesignImmersionOilRefractiveIndex(parameters[index++]);
+  SetActualImmersionOilRefractiveIndex(parameters[index++]);
+  SetDesignImmersionOilThickness(parameters[index++]);
 
-  SetDesignSpecimenLayerRefractiveIndex(floatParams[index++]);
-  SetActualSpecimenLayerRefractiveIndex(floatParams[index++]);
-  SetActualPointSourceDepthInSpecimenLayer(floatParams[index++]);
-  SetDesignDistanceFromBackFocalPlaneToDetector(floatParams[index++]);
-  SetActualDistanceFromBackFocalPlaneToDetector(floatParams[index++]);
+  SetDesignSpecimenLayerRefractiveIndex(parameters[index++]);
+  SetActualSpecimenLayerRefractiveIndex(parameters[index++]);
+  SetActualPointSourceDepthInSpecimenLayer(parameters[index++]);
+  SetDesignDistanceFromBackFocalPlaneToDetector(parameters[index++]);
+  SetActualDistanceFromBackFocalPlaneToDetector(parameters[index++]);
 
-  SetBackgroundIntensity(floatParams[index++]);
-  SetMaximumIntensity(floatParams[index++]);
+  SetBackgroundIntensity(parameters[index++]);
+  SetMaximumIntensity(parameters[index++]);
 }
 
 
@@ -145,54 +122,50 @@ template <class TOutputImage>
 typename GibsonLanniBSFImageSource<TOutputImage>::ParametersType
 GibsonLanniBSFImageSource<TOutputImage>
 ::GetParameters() const {
-  Array<float> floatParams(GetNumberOfParameters());
+  ParametersType parameters(GetNumberOfParameters());
 
   int index = 0;
-  floatParams[index++] = GetSpacing()[0];
-  floatParams[index++] = GetSpacing()[1];
-  floatParams[index++] = GetSpacing()[2];
+
+  const SpacingType spacing = GetSpacing();
+  parameters[index++] = spacing[0];
+  parameters[index++] = spacing[1];
+  parameters[index++] = spacing[2];
 
   // CCD border goes here
-  floatParams[index++] = 0.0;
-  floatParams[index++] = 0.0;
+  parameters[index++] = 0.0;
+  parameters[index++] = 0.0;
 
-  floatParams[index++] = GetBeadRadius();
+  parameters[index++] = GetBeadRadius();
 
-  float* beadCenter = GetBeadCenter();
-  floatParams[index++] = beadCenter[0];
-  floatParams[index++] = beadCenter[1];
-  floatParams[index++] = beadCenter[2];
+  const PointType beadCenter = GetBeadCenter();
+  parameters[index++] = beadCenter[0];
+  parameters[index++] = beadCenter[1];
+  parameters[index++] = beadCenter[2];
 
   // Shear goes here
-  floatParams[index++] = GetShearX();
-  floatParams[index++] = GetShearY();
+  parameters[index++] = GetShearX();
+  parameters[index++] = GetShearY();
 
-  floatParams[index++] = GetEmissionWavelength();
-  floatParams[index++] = GetNumericalAperture();
-  floatParams[index++] = GetMagnification();
+  parameters[index++] = GetEmissionWavelength();
+  parameters[index++] = GetNumericalAperture();
+  parameters[index++] = GetMagnification();
 
-  floatParams[index++] = GetDesignCoverSlipRefractiveIndex();
-  floatParams[index++] = GetActualCoverSlipRefractiveIndex();
-  floatParams[index++] = GetDesignCoverSlipThickness();
-  floatParams[index++] = GetActualCoverSlipThickness();
-  floatParams[index++] = GetDesignImmersionOilRefractiveIndex();
-  floatParams[index++] = GetActualImmersionOilRefractiveIndex();
-  floatParams[index++] = GetDesignImmersionOilThickness();
+  parameters[index++] = GetDesignCoverSlipRefractiveIndex();
+  parameters[index++] = GetActualCoverSlipRefractiveIndex();
+  parameters[index++] = GetDesignCoverSlipThickness();
+  parameters[index++] = GetActualCoverSlipThickness();
+  parameters[index++] = GetDesignImmersionOilRefractiveIndex();
+  parameters[index++] = GetActualImmersionOilRefractiveIndex();
+  parameters[index++] = GetDesignImmersionOilThickness();
 
-  floatParams[index++] = GetDesignSpecimenLayerRefractiveIndex();
-  floatParams[index++] = GetActualSpecimenLayerRefractiveIndex();
-  floatParams[index++] = GetActualPointSourceDepthInSpecimenLayer();
-  floatParams[index++] = GetDesignDistanceFromBackFocalPlaneToDetector();
-  floatParams[index++] = GetActualDistanceFromBackFocalPlaneToDetector();
+  parameters[index++] = GetDesignSpecimenLayerRefractiveIndex();
+  parameters[index++] = GetActualSpecimenLayerRefractiveIndex();
+  parameters[index++] = GetActualPointSourceDepthInSpecimenLayer();
+  parameters[index++] = GetDesignDistanceFromBackFocalPlaneToDetector();
+  parameters[index++] = GetActualDistanceFromBackFocalPlaneToDetector();
 
-  floatParams[index++] = GetBackgroundIntensity();
-  floatParams[index++] = GetMaximumIntensity();
-
-  ParametersType parameters(GetNumberOfParameters());
-  for (unsigned int i = 0; i < GetNumberOfParameters(); i++)
-    {
-    parameters[i] = static_cast<double>(floatParams[i]);
-    }
+  parameters[index++] = GetBackgroundIntensity();
+  parameters[index++] = GetMaximumIntensity();
 
   return parameters;
 }
@@ -252,32 +225,25 @@ GibsonLanniBSFImageSource<TOutputImage>
   Superclass::PrintSelf(os,indent);
   unsigned int i;
   os << indent << "Origin: [";
-  for ( i=0; i < TOutputImage::ImageDimension; i++ )
+  for ( i=0; i < m_Origin.Size() - 1; i++ )
     {
     os << m_Origin[i] << ", ";
     }
   os << m_Origin[i] << "]" << std::endl;
 
   os << indent << "Spacing: [";
-  for ( i=0; i < TOutputImage::ImageDimension; i++ )
+  for ( i=0; i < m_Spacing.Size() - 1; i++ )
     {
     os << m_Spacing[i] << ", ";
     }
   os << m_Spacing[i] << "] (nanometers)" << std::endl;
 
   os << indent << "Size: [";
-  for ( i=0; i < TOutputImage::ImageDimension; i++ )
+  for ( i=0; i < m_Size.GetSizeDimension() - 1; i++ )
     {
     os << m_Size[i] << ", ";
     }
   os << m_Size[i] << "]" << std::endl;
-
-  os << indent << "BeadCenter: [";
-  for ( i=0; i < TOutputImage::ImageDimension; i++ )
-    {
-    os << m_BeadCenter[i] << ", ";
-    }
-  os << m_BeadCenter[i] << "]" << std::endl;
 
   os << m_PSFSource << std::endl;
 }
@@ -288,14 +254,13 @@ void
 GibsonLanniBSFImageSource<TOutputImage>
 ::GenerateOutputInformation()
 {
-  TOutputImage *output;
-  typename TOutputImage::IndexType index = {{0}};
-  typename TOutputImage::SizeType size = {{0}};
-  size.SetSize( m_Size );
+  OutputImageType *output;
+  IndexType index = {{0}};
+  SizeType size( m_Size );
 
   output = this->GetOutput(0);
 
-  typename TOutputImage::RegionType largestPossibleRegion;
+  RegionType largestPossibleRegion;
   largestPossibleRegion.SetSize( size );
   largestPossibleRegion.SetIndex( index );
   output->SetLargestPossibleRegion( largestPossibleRegion );
@@ -312,62 +277,90 @@ GibsonLanniBSFImageSource<TOutputImage>
 ::GenerateData()
 {
   // Set the PSF sampling spacing and size parameters, and update.
-  float psfSpacing[3], psfOrigin[3];
+  PointType   psfTableOrigin;
+  SpacingType psfTableSpacing;
+  SizeType    psfTableSize;
 
   // Determine Nyquist sampling (taken from Heintzmann, R. and Sheppard, C.
   // (2007). The sampling limit in fluorescence microscopy. Micron,
   // 38(2):145–149. Actually, sample at twice this rate.
-  float NA     = GetNumericalAperture();
-  float lambda = GetEmissionWavelength();
-  float n      = GetDesignImmersionOilRefractiveIndex();
+  double NA     = GetNumericalAperture();
+  double lambda = GetEmissionWavelength();
+  double n      = GetDesignImmersionOilRefractiveIndex();
   double alpha = asin(NA/n);
-  psfSpacing[0] = psfSpacing[1] = 0.5*lambda / (4.0 * NA);
-  psfSpacing[2] = 0.5*(2.0 * psfSpacing[0] * sin(alpha)) / (1.0 - cos(alpha));
+  psfTableSpacing[0] = psfTableSpacing[1] = 0.5*lambda / (4.0 * NA);
+  psfTableSpacing[2] = 0.5*(2.0 * psfTableSpacing[0] * sin(alpha)) /
+    (1.0 - cos(alpha));
 
   // Determine necessary spatial extent of PSF table.
-  unsigned long psfSize[3];
-  for (int i = 0; i < 3; i++) {
+  PointType minExtent;
+  PointType maxExtent;
+  for ( int i = 0; i < 3; i++ )
+    {
     // First calculate extent of BSF in this dimension.
-    float minExtent = GetOrigin()[i];
-    float maxExtent = static_cast<float>(GetSize()[i]-1)*GetSpacing()[i] +
-      GetOrigin()[i];
+    minExtent[i] = GetOrigin()[i];
+    maxExtent[i] = static_cast<PointValueType>(GetSize()[i]-1)*GetSpacing()[i] +
+      minExtent[i];
 
     // Now modify calculated PSF dimension to account for bead shift and radius
-    minExtent += -GetBeadCenter()[i] - m_BeadRadius;
-    maxExtent += -GetBeadCenter()[i] + m_BeadRadius;
+    minExtent[i] += -GetBeadCenter()[i] - GetBeadRadius();
+    maxExtent[i] += -GetBeadCenter()[i] + GetBeadRadius();
 
     // Determine logical extent of the PSF table for the min and max extents.
-    long iDimMin = static_cast<long>(floor(minExtent / psfSpacing[i]));
-    psfOrigin[i] = static_cast<float>(iDimMin)*psfSpacing[i];
-    long iDimMax = static_cast<long>(ceil(maxExtent / psfSpacing[i]));
+    long iDimMin = Math::Floor<long>(minExtent[i] / psfTableSpacing[i]);
+    psfTableOrigin[i] = static_cast<double>(iDimMin) * psfTableSpacing[i];
+    long iDimMax = Math::Ceil<long>(maxExtent[i] / psfTableSpacing[i]);
 
     // Determine the logical extent of the PSF table in this dimension.
-    psfSize[i] = iDimMax - iDimMin + 1;
-  }
-
-  typename OutputImageType::SpacingType spacing;
-  typename OutputImageType::PointType   origin;
-  typename OutputImageType::SizeType    size;
-  for ( unsigned int i = 0; i < 3; i++ )
-    {
-    spacing[i] = psfSpacing[i];
-    origin[i]  = psfOrigin[i];
-    size[i]    = psfSize[i];
+    psfTableSize[i] = iDimMax - iDimMin + 1;
     }
 
+  m_ExtrusionFilter->SetOutputSpacing(psfTableSpacing);
+  m_ExtrusionFilter->SetOutputOrigin(psfTableOrigin);
+  m_ExtrusionFilter->SetSize(psfTableSize);
 
-  m_ExtrusionFilter->SetOutputSpacing(spacing);
-  m_ExtrusionFilter->SetOutputOrigin(origin);
-  m_ExtrusionFilter->SetSize(size);
+  // We need only half the radial profile image here.
+  PointType   profileOrigin(psfTableOrigin);
+  SpacingType profileSpacing(psfTableSpacing);
+  SizeType    profileSize(psfTableSize);
 
-  psfOrigin[1] = 0.0;
-  psfSize[1]   = 1;
-  m_PSFSource->SetSize(psfSize);
-  m_PSFSource->SetSpacing(psfSpacing);
-  m_PSFSource->SetOrigin(psfOrigin);
+  // Calculate distance from image corners to bead center, projected
+  // to the xy-plane.
+  minExtent[2] = 0.0;
+  maxExtent[2] = 0.0;
+  PointType beadCenter(GetBeadCenter());
+  beadCenter[2] = 0.0;
+
+  PointType pt[4];
+  pt[0][0] = minExtent[0];  pt[0][1] = minExtent[1];  pt[0][2] = 0.0;
+  pt[1][0] = minExtent[0];  pt[1][1] = maxExtent[1];  pt[1][2] = 0.0;
+  pt[2][0] = maxExtent[0];  pt[2][1] = minExtent[1];  pt[2][2] = 0.0;
+  pt[3][0] = maxExtent[0];  pt[3][1] = maxExtent[1];  pt[3][2] = 0.0;
+
+  double maxRadialDistance = NumericTraits<double>::min();
+  for ( unsigned int i = 0; i < 4; i++)
+    {
+    VectorType v = pt[i] - beadCenter;
+    double distance = v.GetNorm();
+    if (distance > maxRadialDistance)
+      {
+      maxRadialDistance = distance;
+      }
+    }
+
+  // Need to change some values here
+  profileSpacing[0] = 0.5 * psfTableSpacing[0];
+  profileSpacing[1] = 0.5 * psfTableSpacing[1];
+  profileOrigin[0] = 0.0;
+  profileOrigin[1] = 0.0;
+  long maxRadialSize = Math::Ceil<long>(maxRadialDistance / profileSpacing[0]);
+  profileSize[0] = maxRadialSize;
+
+  m_PSFSource->SetSize(profileSize);
+  m_PSFSource->SetSpacing(profileSpacing);
+  m_PSFSource->SetOrigin(profileOrigin);
   m_PSFSource->UpdateLargestPossibleRegion();
 
-  std::cout << "Updating extrusion filter" << std::endl;
   m_ExtrusionFilter->UpdateLargestPossibleRegion();
 
   m_Convolver->UpdateLargestPossibleRegion();
