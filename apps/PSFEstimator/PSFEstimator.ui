@@ -172,7 +172,7 @@
              <number>3</number>
             </property>
             <item>
-             <widget class="QRadioButton" name="measuredPSFRadioButton">
+             <widget class="QRadioButton" name="measuredBSFRadioButton">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -180,7 +180,7 @@
                <string>Show the loaded, measured PSF.</string>
               </property>
               <property name="text">
-               <string>Measured Point-Spread Function</string>
+               <string>Measured Bead-Spread Function</string>
               </property>
               <property name="checked">
                <bool>true</bool>
