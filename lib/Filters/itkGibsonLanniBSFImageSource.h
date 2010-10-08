@@ -167,7 +167,11 @@ public:
   /** Specify the point source center (in nanometers). */
   virtual void SetBeadCenter(const PointType & center)
   {
-    m_Convolver->SetSphereCenter(center);
+    if (center != m_Convolver->GetSphereCenter())
+      {
+      m_Convolver->SetSphereCenter(center);
+      this->Modified();
+      }
   }
 
   /** Get the point source center (in nanometers). */
@@ -179,7 +183,11 @@ public:
   /** Specify the bead radius (in nanometers). */
   void SetBeadRadius(double radius)
   {
-    m_Convolver->SetSphereRadius(radius);
+    if (radius != m_Convolver->GetSphereRadius())
+      {
+      m_Convolver->SetSphereRadius(radius);
+      this->Modified();
+      }
   }
 
   /** Get the bead radius. */
@@ -191,7 +199,11 @@ public:
   /** Specify the shear in the X direction. */
   void SetShearX(double shear)
   {
-    m_Convolver->SetShearX(shear);
+    if (shear != m_Convolver->GetShearX())
+      {
+      m_Convolver->SetShearX(shear);
+      this->Modified();
+      }
   }
 
   /** Get the shear in the X direction. */
@@ -203,7 +215,11 @@ public:
   /** Specify the shear in the Y direction. */
   void SetShearY(double shear)
   {
-    m_Convolver->SetShearY(shear);
+    if (shear != m_Convolver->GetShearY())
+      {
+      m_Convolver->SetShearY(shear);
+      this->Modified();
+      }
   }
 
   /** Get the shear in the Y direction. */
