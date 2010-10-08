@@ -174,8 +174,11 @@ ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
   // Now we can set the moving image in the image to image metric.
   m_DelegateMetric->SetMovingImage(movingImage);
 
+  // We have to initialize the delegate metric here to avoid an exception
+  m_DelegateMetric->Initialize();
   MeasureType value = m_DelegateMetric->GetValue(parameters);
   std::cout << "Value: " << value << std::endl;
+
   return value;
 }
 
