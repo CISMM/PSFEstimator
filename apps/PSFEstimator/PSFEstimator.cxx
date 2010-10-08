@@ -221,7 +221,7 @@ PSFEstimator
   // Enable the use of custom Z slices positions in any case
   gui->useCustomZSlicePositions->setEnabled(true);
 
-  gui->measuredPSFRadioButton->setEnabled(hasMeasuredImage);
+  gui->measuredBSFRadioButton->setEnabled(hasMeasuredImage);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
 
@@ -234,7 +234,7 @@ PSFEstimator
   gui->submitOptimizationJobToQueueButton->setEnabled(hasMeasuredImage);
 
   if (hasMeasuredImage)
-    gui->measuredPSFRadioButton->click();
+    gui->measuredBSFRadioButton->click();
   else
     gui->calculatedPSFRadioButton->click();
 }
@@ -329,7 +329,7 @@ PSFEstimator
   SetupRenderer();
 
   on_applyButton_clicked();
-  gui->measuredPSFRadioButton->click();
+  gui->measuredBSFRadioButton->click();
 
   // Set status bar with info about the file.
   QString sessionFileInfo("Loaded session file '");
@@ -421,7 +421,7 @@ PSFEstimator
 
 void
 PSFEstimator
-::on_measuredPSFRadioButton_clicked(bool state) {
+::on_measuredBSFRadioButton_clicked(bool state) {
   SetDisplayedImageToMeasuredPSF();
 }
 
@@ -720,7 +720,7 @@ PSFEstimator
 
   RefreshUI();
 
-  if (gui->measuredPSFRadioButton->isEnabled()) {
+  if (gui->measuredBSFRadioButton->isEnabled()) {
     double value = m_DataModel->GetImageComparisonMetricValue();
     gui->objectiveFunctionValueEdit->setText(QString().sprintf("%.3f", value));
   } else {
