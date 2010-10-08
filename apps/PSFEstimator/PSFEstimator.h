@@ -25,7 +25,7 @@ public:
   // Constructor/destructor
   PSFEstimator(QWidget* parent=0);
   virtual ~PSFEstimator();
-  
+
 public slots:
 
   // Use Qt's auto-connect magic to tie GUI widgets to slots.
@@ -38,28 +38,28 @@ public slots:
   virtual void on_actionLoadSession_triggered();
   virtual void on_actionSaveSession_triggered();
   virtual void on_actionExit_triggered();
-  
+
   virtual void on_actionCopy_triggered();
   virtual void on_actionPaste_triggered();
 
   virtual void on_actionAboutApplication_triggered();
 
-  virtual void on_measuredPSFRadioButton_clicked(bool state);
+  virtual void on_measuredBSFRadioButton_clicked(bool state);
   virtual void on_calculatedPSFRadioButton_clicked(bool state);
   virtual void on_calculatedBSFRadioButton_clicked(bool state);
-  
+
   virtual void on_showXPlaneCheckBox_toggled(bool show);
   virtual void on_xPlaneSlider_valueChanged(int value);
   virtual void on_xPlaneEdit_textEdited(QString text);
-  
+
   virtual void on_showYPlaneCheckBox_toggled(bool show);
   virtual void on_yPlaneSlider_valueChanged(int value);
   virtual void on_yPlaneEdit_textEdited(QString text);
-  
+
   virtual void on_showZPlaneCheckBox_toggled(bool show);
   virtual void on_zPlaneSlider_valueChanged(int value);
   virtual void on_zPlaneEdit_textEdited(QString text);
-  
+
   virtual void on_mapsToBlackSlider_valueChanged(int value);
   virtual void on_mapsToWhiteSlider_valueChanged(int value);
 
@@ -82,7 +82,7 @@ public slots:
 
   virtual void handle_imageInformationTableModel_dataChanged
     (const QModelIndex& topLeft, const QModelIndex& bottomRight);
-  
+
   virtual void handle_PSFPropertyTableModel_dataChanged
     (const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
@@ -96,25 +96,25 @@ protected:
   /** Dirty bit on the session. */
   bool m_Dirty;
 
-  typedef enum { 
+  typedef enum {
     MEASURED_PSF_IMAGE,
     CALCULATED_PSF_IMAGE,
     CALCULATED_BSF_IMAGE
   } DisplayImageType;
 
   DataModel* m_DataModel;
-  
+
   Visualization* m_Visualization;
-  
+
   QStandardItemModel* m_ImageInformationTableModel;
 
   QPointSpreadFunctionPropertyTableModel* m_PSFPropertyTableModel;
-  
+
   DisplayImageType m_DisplayedImage;
 
   void SetupInterface(bool hasMeasuredImage);
   void SetupRenderer();
-  
+
   void SetDisplayedImageToMeasuredPSF();
   void SetDisplayedImageToCalculatedPSF();
   void SetDisplayedImageToCalculatedBSF();
@@ -145,9 +145,9 @@ private:
 
   QDialog       m_NewFileDialog;
   Ui::Dialog    m_NewFileDialogUI;
-  
+
   QErrorMessage m_ErrorDialog;
-  
+
 };
 
 #endif // _PSF_ESTIMATOR_H_
