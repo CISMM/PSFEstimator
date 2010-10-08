@@ -281,6 +281,7 @@ GibsonLanniBSFImageSource<TOutputImage>
   SpacingType psfTableSpacing;
   SizeType    psfTableSize;
 
+#if 0
   // Determine Nyquist sampling (taken from Heintzmann, R. and Sheppard, C.
   // (2007). The sampling limit in fluorescence microscopy. Micron,
   // 38(2):145–149. Actually, sample at twice this rate.
@@ -291,6 +292,10 @@ GibsonLanniBSFImageSource<TOutputImage>
   psfTableSpacing[0] = psfTableSpacing[1] = 0.5*lambda / (4.0 * NA);
   psfTableSpacing[2] = 0.5*(2.0 * psfTableSpacing[0] * sin(alpha)) /
     (1.0 - cos(alpha));
+#endif
+  psfTableSpacing[0] = 40.0; // A somewhat arbitrary spacing.
+  psfTableSpacing[1] = 40.0;
+  psfTableSpacing[2] = 100.0;
 
   // Determine necessary spatial extent of PSF table.
   PointType minExtent;
