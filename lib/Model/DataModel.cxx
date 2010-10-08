@@ -1063,6 +1063,288 @@ DataModel
 
 void
 DataModel
+::SetShearX(double shear) {
+  m_GibsonLanniBSFSource->SetShearX(shear);
+}
+
+
+double
+DataModel
+::GetShearX() {
+  return m_GibsonLanniBSFSource->GetShearX();
+}
+
+
+void
+DataModel
+::SetShearY(double shear) {
+  m_GibsonLanniBSFSource->SetShearY(shear);
+}
+
+
+double
+DataModel
+::GetShearY() {
+  return m_GibsonLanniBSFSource->GetShearY();
+}
+
+
+void
+DataModel
+::SetGLEmissionWavelength(double wavelength) {
+  m_GibsonLanniPSFSource->SetEmissionWavelength(wavelength);
+  m_GibsonLanniBSFSource->SetEmissionWavelength(wavelength);
+}
+
+
+double
+DataModel
+::GetGLEmissionWavelength() {
+  return m_GibsonLanniBSFSource->GetEmissionWavelength();
+}
+
+
+void
+DataModel
+::SetGLNumericalAperture(double na) {
+  m_GibsonLanniPSFSource->SetNumericalAperture(na);
+  m_GibsonLanniBSFSource->SetNumericalAperture(na);
+}
+
+
+double
+DataModel
+::GetGLNumericalAperture() {
+  return m_GibsonLanniBSFSource->GetNumericalAperture();
+}
+
+
+void
+DataModel
+::SetGLMagnification(double magnification) {
+  m_GibsonLanniPSFSource->SetMagnification(magnification);
+  m_GibsonLanniBSFSource->SetMagnification(magnification);
+}
+
+
+double
+DataModel
+::GetGLMagnification() {
+  return m_GibsonLanniBSFSource->GetMagnification();
+}
+
+
+void
+DataModel
+::SetGLDesignCoverSlipRefractiveIndex(double ri) {
+  m_GibsonLanniPSFSource->SetDesignCoverSlipRefractiveIndex(ri);
+  m_GibsonLanniBSFSource->SetDesignCoverSlipRefractiveIndex(ri);
+}
+
+
+double
+DataModel
+::GetGLDesignCoverSlipRefractiveIndex() {
+  return m_GibsonLanniBSFSource->GetDesignCoverSlipRefractiveIndex();
+}
+
+
+void
+DataModel
+::SetGLActualCoverSlipRefractiveIndex(double ri) {
+  m_GibsonLanniPSFSource->SetActualCoverSlipRefractiveIndex(ri);
+  m_GibsonLanniBSFSource->SetActualCoverSlipRefractiveIndex(ri);
+}
+
+
+double
+DataModel
+::GetGLActualCoverSlipRefractiveIndex() {
+  return m_GibsonLanniBSFSource->GetActualCoverSlipRefractiveIndex();
+}
+
+
+void
+DataModel
+::SetGLDesignCoverSlipThickness(double thickness) {
+  m_GibsonLanniPSFSource->SetDesignCoverSlipThickness(thickness);
+  m_GibsonLanniBSFSource->SetDesignCoverSlipThickness(thickness);
+}
+
+
+double
+DataModel
+::GetGLDesignCoverSlipThickness() {
+  return m_GibsonLanniBSFSource->GetDesignCoverSlipThickness();
+}
+
+
+void
+DataModel
+::SetGLActualCoverSlipThickness(double thickness) {
+  m_GibsonLanniPSFSource->SetActualCoverSlipThickness(thickness);
+  m_GibsonLanniBSFSource->SetActualCoverSlipThickness(thickness);
+}
+
+
+double
+DataModel
+::GetGLActualCoverSlipThickness() {
+  return m_GibsonLanniBSFSource->GetActualCoverSlipThickness();
+}
+
+
+void
+DataModel
+::SetGLDesignImmersionOilRefractiveIndex(double ri) {
+  m_GibsonLanniPSFSource->SetDesignImmersionOilRefractiveIndex(ri);
+  m_GibsonLanniBSFSource->SetDesignImmersionOilRefractiveIndex(ri);
+}
+
+
+double
+DataModel
+::GetGLDesignImmersionOilRefractiveIndex() {
+  return m_GibsonLanniBSFSource->GetDesignImmersionOilRefractiveIndex();
+}
+
+
+void
+DataModel
+::SetGLActualImmersionOilRefractiveIndex(double ri) {
+  m_GibsonLanniPSFSource->SetActualImmersionOilRefractiveIndex(ri);
+  m_GibsonLanniBSFSource->SetActualImmersionOilRefractiveIndex(ri);
+}
+
+
+double
+DataModel
+::GetGLActualImmersionOilRefractiveIndex() {
+  return m_GibsonLanniBSFSource->GetActualImmersionOilRefractiveIndex();
+}
+
+
+void
+DataModel
+::SetGLDesignImmersionOilThickness(double thickness) {
+  m_GibsonLanniPSFSource->SetDesignImmersionOilThickness(thickness);
+  m_GibsonLanniBSFSource->SetDesignImmersionOilThickness(thickness);
+}
+
+
+double
+DataModel
+::GetGLDesignImmersionOilThickness() {
+  return m_GibsonLanniBSFSource->GetDesignImmersionOilThickness();
+}
+
+
+void
+DataModel
+::SetGLDesignSpecimenLayerRefractiveIndex(double ri) {
+  m_GibsonLanniPSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
+  m_GibsonLanniBSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
+}
+
+
+double
+DataModel
+::GetGLDesignSpecimenLayerRefractiveIndex() {
+  return m_GibsonLanniBSFSource->GetDesignSpecimenLayerRefractiveIndex();
+}
+
+
+void
+DataModel
+::SetGLActualSpecimenLayerRefractiveIndex(double ri) {
+  m_GibsonLanniPSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
+  m_GibsonLanniBSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
+}
+
+
+double
+DataModel
+::GetGLActualSpecimenLayerRefractiveIndex() {
+  return m_GibsonLanniBSFSource->GetActualSpecimenLayerRefractiveIndex();
+}
+
+
+void
+DataModel
+::SetGLActualPointSourceDepthInSpecimenLayer(double depth) {
+  m_GibsonLanniPSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
+  m_GibsonLanniBSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
+}
+
+
+double
+DataModel
+::GetGLActualPointSourceDepthInSpecimenLayer() {
+  return m_GibsonLanniBSFSource->GetActualPointSourceDepthInSpecimenLayer();
+}
+
+
+void
+DataModel
+::SetGLDesignDistanceFromBackFocalPlaneToDetector(double distance) {
+  m_GibsonLanniPSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
+  m_GibsonLanniBSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
+}
+
+
+double
+DataModel
+::GetGLDesignDistanceFromBackFocalPlaneToDetector() {
+  return m_GibsonLanniBSFSource->GetDesignDistanceFromBackFocalPlaneToDetector();
+}
+
+
+void
+DataModel
+::SetGLActualDistanceFromBackFocalPlaneToDetector(double distance) {
+  m_GibsonLanniPSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
+  m_GibsonLanniBSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
+}
+
+
+double
+DataModel
+::GetGLActualDistanceFromBackFocalPlaneToDetector() {
+  return m_GibsonLanniBSFSource->GetActualDistanceFromBackFocalPlaneToDetector();
+}
+
+
+void
+DataModel
+::SetGLBackgroundIntensity(double intensity) {
+  m_GibsonLanniBSFSource->SetBackgroundIntensity(intensity);
+}
+
+
+double
+DataModel
+::GetGLBackgroundIntensity() {
+  return m_GibsonLanniBSFSource->GetBackgroundIntensity();
+}
+
+
+void
+DataModel
+::SetGLMaximumIntensity(double intensity) {
+  m_GibsonLanniBSFSource->SetMaximumIntensity(intensity);
+}
+
+
+double
+DataModel
+::GetGLMaximumIntensity() {
+  return m_GibsonLanniBSFSource->GetMaximumIntensity();
+}
+
+
+
+void
+DataModel
 ::SetGLParameterEnabled(unsigned int index, bool enabled) {
   try {
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
@@ -1085,6 +1367,34 @@ DataModel
   } catch (...) {}
 
   return enabled;
+}
+
+
+void
+DataModel
+::SetZCoordinate(unsigned int index, double coordinate) {
+  m_GibsonLanniBSFSource->SetZCoordinate(index, coordinate);
+}
+
+double
+DataModel
+::GetZCoordinate(unsigned int index) {
+  return m_GibsonLanniBSFSource->GetZCoordinate(index);
+}
+
+
+
+void
+DataModel
+::SetUseCustomZCoordinates(bool use) {
+  m_GibsonLanniBSFSource->SetUseCustomZCoordinates(use);
+}
+
+
+bool
+DataModel
+::GetUseCustomZCoordinates() {
+  return m_GibsonLanniBSFSource->GetUseCustomZCoordinates();
 }
 
 
