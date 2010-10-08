@@ -42,9 +42,14 @@
 PSFEstimator
 ::PSFEstimator(QWidget* p)
  : QMainWindow(p) {
-  
+
   gui = new Ui_MainWindow();
   gui->setupUi(this);
+
+  // Disable these widgets for now
+  gui->microscopeTypeWidget->setVisible(false);
+  gui->noiseTypeWidget->setVisible(false);
+  gui->useRadialInterpolationCheckBox->setVisible(false);
 
   // Hide queue submission button if domain is not bass.cs.unc.edu
   QString hostName = QHostInfo::localHostName();
@@ -57,47 +62,47 @@ PSFEstimator
   QItemEditorFactory* factory = new QItemEditorFactory();
   factory->registerEditor(QVariant::Double, new QStandardItemEditorCreator<QLineEdit>());
   QItemEditorFactory::setDefaultFactory(factory);
-  
+
   // Mark as initially clean
   m_Dirty = false;
   m_DisplayedImage = MEASURED_PSF_IMAGE;
-  
+
   // QT/VTK interaction
   m_Renderer = vtkRenderer::New();
   m_Renderer->SetBackground(0.2, 0.2, 0.2);
   gui->qvtkWidget->GetRenderWindow()->AddRenderer(m_Renderer);
-  
+
   // Instantiate data model.
   m_DataModel = new DataModel();
-  
+
   // Instantiate m_Visualization pipelines.
   m_Visualization = new Visualization();
   m_Visualization->SetRenderer(m_Renderer);
-  
+
   // Set application information
   QCoreApplication::setOrganizationName("CISMM");
   QCoreApplication::setOrganizationDomain("cismm.org");
   QCoreApplication::setApplicationName("PSFEstimator");
-    
+
   // Set up dialog boxes.
   m_NewFileDialogUI.setupUi(&m_NewFileDialog);
 
   m_ErrorDialog.setModal(true);
-  
+
   // Create and populate image information table model.
   int LEFT_COLUMN = 0;
   int RIGHT_COLUMN = 1;
   m_ImageInformationTableModel = new QStandardItemModel(5, 2, this);
   m_ImageInformationTableModel->setHeaderData(LEFT_COLUMN,  Qt::Horizontal, tr("Property"));
   m_ImageInformationTableModel->setHeaderData(RIGHT_COLUMN, Qt::Horizontal, tr("Value"));
-  
+
   QStandardItem* labelItems[5];
   labelItems[ 0] = new QStandardItem(tr("Intensity minimum"));
   labelItems[ 1] = new QStandardItem(tr("Intensity maximum"));
   labelItems[ 2] = new QStandardItem(tr("X dimension (pixels)"));
   labelItems[ 3] = new QStandardItem(tr("Y dimension (pixels)"));
   labelItems[ 4] = new QStandardItem(tr("Z dimension (slices)"));
- 
+
   for (unsigned int i = 0; i < sizeof(labelItems) / sizeof(QStandardItem*); i++) {
     labelItems[i]->setEditable(false);
     m_ImageInformationTableModel->setItem(i, LEFT_COLUMN, labelItems[i]);
@@ -108,9 +113,9 @@ PSFEstimator
     m_ImageInformationTableModel->setItem(i, RIGHT_COLUMN, item);
   }
   gui->imageDataView->setModel(m_ImageInformationTableModel);
-  
-  connect(m_ImageInformationTableModel, 
-          SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), 
+
+  connect(m_ImageInformationTableModel,
+          SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
           this, SLOT(handle_imageInformationTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
 
   int LEFT_COLUMN_WIDTH = 160;
@@ -122,7 +127,7 @@ PSFEstimator
   connect(m_PSFPropertyTableModel,
           SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
           this, SLOT(handle_PSFPropertyTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
-  
+
   gui->psfSettingsTableView->setModel(m_PSFPropertyTableModel);
   gui->psfSettingsTableView->setColumnWidth(0, 300);
 
@@ -131,7 +136,7 @@ PSFEstimator
 
   // Reset camera
   m_Renderer->ResetCamera();
-  
+
   // Render
   gui->qvtkWidget->GetRenderWindow()->Render();
 
@@ -167,10 +172,10 @@ PSFEstimator
 
     m_PSFPropertyTableModel->InitializeSettingsCache();
     m_PSFPropertyTableModel->Refresh();
-   
+
     SetupInterface(false);
     SetupRenderer();
-  
+
     on_applyButton_clicked();
     gui->calculatedPSFRadioButton->click();
 
@@ -186,7 +191,7 @@ PSFEstimator
 ::on_actionOpenImage_triggered() {
 
   // Locate file.
-  QString fileName = 
+  QString fileName =
     QFileDialog::getOpenFileName
     (this, "Open Image Data", GetFileChooserDirectory(), "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
   if (fileName == "") {
@@ -196,7 +201,7 @@ PSFEstimator
 
   // Should probably report if opening the image failed.
   m_DataModel->LoadImageFile(fileName.toStdString());
-  
+
   m_PSFPropertyTableModel->InitializeSettingsCache();
   m_PSFPropertyTableModel->Refresh();
 
@@ -254,7 +259,7 @@ PSFEstimator
 
   // Reset camera
   m_Renderer->ResetCamera();
-  
+
   // Render
   gui->qvtkWidget->GetRenderWindow()->Render();
 }
@@ -265,7 +270,7 @@ PSFEstimator
 ::on_actionSavePSFImage_triggered() {
 
   // Locate file.
-  QString fileName = 
+  QString fileName =
     QFileDialog::getSaveFileName
     (this, "Save PSF Image Data", GetFileChooserDirectory(),
      "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
@@ -277,7 +282,6 @@ PSFEstimator
   SaveFileChooserDirectory(fileName);
 
   m_DataModel->SavePSFImageFile(fileName.toStdString());
-  
 }
 
 
@@ -286,7 +290,7 @@ PSFEstimator
 ::on_actionSaveBSFImage_triggered() {
 
   // Locate file.
-  QString fileName = 
+  QString fileName =
     QFileDialog::getSaveFileName
     (this, "Save BSF Image Data", GetFileChooserDirectory(),
      "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
@@ -298,7 +302,7 @@ PSFEstimator
   SaveFileChooserDirectory(fileName);
 
   m_DataModel->SaveBSFImageFile(fileName.toStdString());
-  
+
 }
 
 
@@ -306,9 +310,9 @@ void
 PSFEstimator
 ::on_actionLoadSession_triggered() {
   // Locate file.
-  QString fileName = 
+  QString fileName =
     QFileDialog::getOpenFileName
-    (this, "Load Settings", GetFileChooserDirectory(), 
+    (this, "Load Settings", GetFileChooserDirectory(),
      "PSF Estimator Settings Files (*.psfe);;All Files (*)");
   if (fileName == "") {
     return;
@@ -338,7 +342,7 @@ void
 PSFEstimator
 ::on_actionSaveSession_triggered() {
   // Locate file.
-  QString fileName = 
+  QString fileName =
     QFileDialog::getSaveFileName
     (this, "Save Settings", GetFileChooserDirectory(),
      "PSF Estimator Settings Files (*.psfe);;All Files (*)");
@@ -401,7 +405,7 @@ PSFEstimator
 void
 PSFEstimator
 ::on_actionAboutApplication_triggered() {
-  QString version = QString().sprintf("%d.%d.%d", 
+  QString version = QString().sprintf("%d.%d.%d",
 				      PSFEstimator_MAJOR_NUMBER,
 				      PSFEstimator_MINOR_NUMBER,
 				      PSFEstimator_REVISION_NUMBER);
@@ -503,7 +507,7 @@ PSFEstimator
   }
 }
 
-  
+
 void
 PSFEstimator
 ::on_showYPlaneCheckBox_toggled(bool show) {
@@ -572,7 +576,7 @@ void
 PSFEstimator
 ::on_mapsToBlackSlider_valueChanged(int value) {
   SetMapsToBlackValueFromSliderPosition(value);
-  gui->qvtkWidget->GetRenderWindow()->Render();  
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
@@ -655,7 +659,7 @@ PSFEstimator
 void
 PSFEstimator
 ::on_resetCustomSlicePositionsButton_clicked() {
-  
+
   // Reset the individual slice z positions with even increments centered
   // about z = 0
   int dims[3];
@@ -710,7 +714,7 @@ PSFEstimator
   } else if (gui->calculatedBSFRadioButton->isChecked()) {
     m_DataModel->UpdateGibsonLanniBSFImage();
   }
-  
+
   SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
   SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
@@ -750,12 +754,12 @@ PSFEstimator
   QString homeDirectory = dir.homePath();
   QString workingDirectory = homeDirectory;
   workingDirectory.append("/BatchPSFOptimizer-Files");
-  
+
   if (!dir.exists(workingDirectory))
     dir.mkdir(workingDirectory);
 
   QString dateTimeString = QDateTime::currentDateTime().toString(tr("MM-dd-yyyy-hh-mm-ss")); 
-  QString sessionFile = workingDirectory + dir.separator() + 
+  QString sessionFile = workingDirectory + dir.separator() +
     tr("BatchPSFOptimizer-") + dateTimeString + tr(".psfe");
 
   // Write the settings file to the working directory
@@ -784,13 +788,13 @@ PSFEstimator
 
   qsub.start("qsub", arguments);
   qsub.waitForStarted();
-  
+
   QString stdin = script.join(tr(""));
   std::cout << stdin.toStdString() << std::endl;
   qsub.write(stdin);
   qsub.closeWriteChannel();
   qsub.waitForFinished();
- 
+
   QString result(qsub.readAllStandardOutput());
 
   if (qsub.exitCode() == 0) {
@@ -854,38 +858,38 @@ PSFEstimator
   if (fileInfo.fileName() != "")
     windowTitle.append(tr(" - '").append(fileInfo.fileName()).append("'"));
   setWindowTitle(windowTitle);
-  
+
   const char* decimalFormat = "%.3f";
   const char* intFormat = "%d";
 
   gui->showDataOutlineCheckBox->setChecked(m_Visualization->GetShowOutline());
-  
+
   ///////////////// Image planes stuff /////////////////
   int dim[3];
   m_DataModel->GetMeasuredImageDimensions(dim);
-  
+
   gui->showXPlaneCheckBox->setChecked(m_Visualization->GetShowXPlane());
   gui->xPlaneSlider->setMinimum(1);
   gui->xPlaneSlider->setMaximum(dim[0]);
   gui->xPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetXPlane()+1));
-  
+
   gui->showYPlaneCheckBox->setChecked(m_Visualization->GetShowYPlane());
   gui->yPlaneSlider->setMinimum(1);
   gui->yPlaneSlider->setMaximum(dim[1]);
   gui->yPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetYPlane()+1));
-  
+
   gui->showZPlaneCheckBox->setChecked(m_Visualization->GetShowZPlane());
   gui->zPlaneSlider->setMinimum(1);
   gui->zPlaneSlider->setMaximum(dim[2]);
   gui->zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
-  
+
   ///////////////// Image information update /////////////////
   int item = 0;
   QString dataMin = QString().sprintf(decimalFormat, GetDisplayedImageDataMinimum());
   m_ImageInformationTableModel->item(item++, 1)->setText(dataMin);
   QString dataMax = QString().sprintf(decimalFormat, GetDisplayedImageDataMaximum());
   m_ImageInformationTableModel->item(item++, 1)->setText(dataMax);
-  
+
   int dims[3];
   m_DataModel->GetMeasuredImageDimensions(dims);
   QString xDim = QString().sprintf(intFormat, dims[0]);
@@ -1046,7 +1050,7 @@ PSFEstimator
   settings.beginGroup("FileChooser");
   QString path = settings.value("path", tr(".")).toString();
   settings.endGroup();
-  
+
   return path;
 }
 
