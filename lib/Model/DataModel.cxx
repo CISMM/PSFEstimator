@@ -1418,7 +1418,7 @@ DataModel
     return m_CostFunction->GetValue(activeParameters);
   } catch (...) {}
 
-  return DBL_MAX;
+  return 0.0;
 }
 
 
