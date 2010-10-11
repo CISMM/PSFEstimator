@@ -111,8 +111,6 @@ DataModel
   m_InitialSimplexDelta[index++] = 1.0; // X-spacing
   m_InitialSimplexDelta[index++] = 1.0; // Y-spacing
   m_InitialSimplexDelta[index++] = 1.0; // Z-spacing
-  m_InitialSimplexDelta[index++] = 1.0; // CCD border X
-  m_InitialSimplexDelta[index++] = 1.0; // CCD border Y
   m_InitialSimplexDelta[index++] = 10.0; // Bead radius
   m_InitialSimplexDelta[index++] = 100.0; // Bead center X
   m_InitialSimplexDelta[index++] = 100.0; // Bead center Y
@@ -315,9 +313,6 @@ DataModel
   SetPSFImageOrigin(origin);
   SetBSFImageOrigin(origin);
 
-  c.GetValueAsDoubleArray(sec, "CCDBorderWidth", vec3, 2);
-  SetCCDBorderWidth(vec3);
-
   c.GetValueAsDoubleArray(sec, "BeadCenter", vec3, 3);
   SetPSFPointCenter(vec3);
   SetBSFPointCenter(vec3);
@@ -397,9 +392,6 @@ DataModel
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingY"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingZ"));
 
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "CCDBorderWidthX"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "CCDBorderWidthY"));
-
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BeadRadius"));
 
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterX"));
@@ -441,9 +433,6 @@ DataModel
   double vec3[3];
   GetBSFImageVoxelSpacing(vec3);
   c.SetValueFromDoubleArray(sec, "VoxelSpacing", vec3, 3);
-
-  GetCCDBorderWidth(vec3);
-  c.SetValueFromDoubleArray(sec, "CCDBorderWidth", vec3, 2);
 
   GetBSFPointCenter(vec3);
   c.SetValueFromDoubleArray(sec, "BeadCenter", vec3, 3);
@@ -503,9 +492,6 @@ DataModel
   c.SetValueFromBool(sec, "VoxelSpacingX", GetGLParameterEnabled(index++));
   c.SetValueFromBool(sec, "VoxelSpacingY", GetGLParameterEnabled(index++));
   c.SetValueFromBool(sec, "VoxelSpacingZ", GetGLParameterEnabled(index++));
-
-  c.SetValueFromBool(sec, "CCDBorderWidthX", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "CCDBorderWidthY", GetGLParameterEnabled(index++));
 
   c.SetValueFromBool(sec, "BeadRadius", GetGLParameterEnabled(index++));
 
@@ -922,22 +908,6 @@ DataModel
   SpacingType thisSpacing = GetMeasuredImageData()->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
-}
-
-
-void
-DataModel
-::SetCCDBorderWidth(double borderWidth[2]) {
-  m_GibsonLanniPSFSource->SetCCDBorderWidth(borderWidth);
-}
-
-
-void
-DataModel
-::GetCCDBorderWidth(double borderWidth[2]) {
-  double* width = m_GibsonLanniPSFSource->GetCCDBorderWidth();
-  borderWidth[0] = width[0];
-  borderWidth[1] = width[1];
 }
 
 

@@ -17,73 +17,67 @@ QPointSpreadFunctionPropertyTableModel
 
   m_PropertyNameList.append(QVariant("Z slice spacing"));
   m_UnitsList.append(QVariant("nanometers"));
-  
-  m_PropertyNameList.append(QVariant("CCD border X"));
-  m_UnitsList.append(QVariant("nanometers"));
-  
-  m_PropertyNameList.append(QVariant("CCD border Y"));
-  m_UnitsList.append(QVariant("nanometers"));
-  
+
   m_PropertyNameList.append(QVariant("Bead radius"));
   m_UnitsList.append(QVariant("nanometers"));
-  
+
   m_PropertyNameList.append(QVariant("Bead center X"));
   m_UnitsList.append(QVariant("nanometers"));
-  
+
   m_PropertyNameList.append(QVariant("Bead center Y"));
   m_UnitsList.append(QVariant("nanometers"));
-  
+
   m_PropertyNameList.append(QVariant("Bead center Z"));
   m_UnitsList.append(QVariant("nanometers"));
-  
+
   m_PropertyNameList.append(QVariant("Shear X"));
   m_UnitsList.append(QVariant("nanometers in X vs nanometers in Z"));
-  
+
   m_PropertyNameList.append(QVariant("Shear Y"));
   m_UnitsList.append(QVariant("nanometers in Y vs nanometers in Z"));
-  
+
   m_PropertyNameList.append(QVariant("Emission Wavelength"));
   m_UnitsList.append(QVariant("nanometers"));
-  
+
   m_PropertyNameList.append(QVariant("Numerical Aperture"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Magnification"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Design Cover Slip Refractive Index"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Actual Cover Slip Refractive Index"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Design Cover Slip Thickness"));
   m_UnitsList.append(QVariant("micrometers"));
 
   m_PropertyNameList.append(QVariant("Actual Cover Slip Thickness"));
   m_UnitsList.append(QVariant("micrometers"));
-  
+
   m_PropertyNameList.append(QVariant("Design Immersion Oil Refractive Index"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Actual Immersion Oil Refractive Index"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Design Immersion Oil Thickness"));
   m_UnitsList.append(QVariant("micrometers"));
-  
+
   m_PropertyNameList.append(QVariant("Design Specimen Layer Refractive Index"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Actual Specimen Layer Refractive Index"));
   m_UnitsList.append(QVariant("unitless"));
-  
+
   m_PropertyNameList.append(QVariant("Actual Point Source Depth in Specimen Layer"));
   m_UnitsList.append(QVariant("micrometers"));
-  
+
   m_PropertyNameList.append(QVariant("Design Distance from Back Focal Plane to Detector"));
   m_UnitsList.append(QVariant("millimeters"));
-  
+
   m_PropertyNameList.append(QVariant("Actual Distance from Back Focal Plane to Detector"));
   m_UnitsList.append(QVariant("millimeters"));
 
@@ -92,7 +86,6 @@ QPointSpreadFunctionPropertyTableModel
 
   m_PropertyNameList.append(QVariant("Maximum Intensity"));
   m_UnitsList.append(QVariant("-"));
-  
 }
 
 
@@ -105,7 +98,7 @@ void
 QPointSpreadFunctionPropertyTableModel
 ::SetDataModel(DataModel* model) {
   m_DataModel = model;
-  
+
   m_PropertyValues.clear();
   m_OptimizeValues.clear();
   for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
@@ -288,10 +281,6 @@ QPointSpreadFunctionPropertyTableModel
   for (int i = 0; i < 3; i++)
     m_PropertyValues.append(triplet[i]);
 
-  m_DataModel->GetCCDBorderWidth(triplet);
-  for (int i = 0; i < 2; i++)
-    m_PropertyValues.append(triplet[i]);
-
   m_PropertyValues.append(m_DataModel->GetBeadRadius());
 
   m_DataModel->GetBSFPointCenter(triplet);
@@ -336,10 +325,6 @@ QPointSpreadFunctionPropertyTableModel
   m_DataModel->SetMeasuredImageVoxelSpacing(triplet);
   m_DataModel->SetPSFImageVoxelSpacing(triplet);
   m_DataModel->SetBSFImageVoxelSpacing(triplet);
-
-  for (int i = 0; i < 2; i++)
-    triplet[i] = m_PropertyValues[item++];
-  m_DataModel->SetCCDBorderWidth(triplet);
 
   m_DataModel->SetBeadRadius(m_PropertyValues[item++]);
 

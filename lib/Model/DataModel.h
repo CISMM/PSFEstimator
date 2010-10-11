@@ -170,9 +170,6 @@ public:
   void   SetBSFImageVoxelSpacing(int dimension, double spacing);
   void   GetBSFImageVoxelSpacing(double spacing[3]);
 
-  void   SetCCDBorderWidth(double borderWidth[2]);
-  void   GetCCDBorderWidth(double borderWidth[2]);
-
   void   SetPSFImageOrigin(double origin[3]);
   void   GetPSFImageOrigin(double origin[3]);
 

@@ -143,14 +143,6 @@ public:
   /** Get the Y shear. */
   itkGetConstMacro(ShearY, double);
 
-  /** Specify the CCD border width (between the outer edge of the
-      sensing portion of the CCD and the outer edge of the
-      CCD element itself). */
-  itkSetVectorMacro(CCDBorderWidth, double, 2);
-
-  /** Get the CCD border width. */
-  itkGetVectorMacro(CCDBorderWidth, double, 2);
-
   /** Specify the emission wavelength (in nanometers). */
   itkSetMacro(EmissionWavelength, double);
 
@@ -286,8 +278,6 @@ private:
   PointType   m_PointCenter; // the center of the point source
   double      m_ShearX;      // Shear in the x-direction with respect to z
   double      m_ShearY;      // Shear in the y-direction with respect to z
-
-  mutable double m_CCDBorderWidth[2]; // size of border around CCD (x,y)
 
   /** Point-spread function model parameters. */
   double m_EmissionWavelength;

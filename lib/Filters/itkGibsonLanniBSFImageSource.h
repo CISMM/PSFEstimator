@@ -44,6 +44,10 @@ virtual type Get##name() const \
   return m_PSFSource->Get##name(); \
 }
 
+#define DelegateSetGetMacro(name, type) \
+  DelegateSetMacro(name, type) \
+  DelegateGetMacro(name, type)
+
 
 namespace itk
 {
@@ -170,6 +174,9 @@ public:
     if (center != m_Convolver->GetSphereCenter())
       {
       m_Convolver->SetSphereCenter(center);
+
+      std::cout << center << std::endl;
+
       this->Modified();
       }
   }
@@ -228,107 +235,58 @@ public:
     return m_Convolver->GetShearY();
   }
 
-  /** Specify the background value. */
+  /** Set/get the background value. */
   itkSetMacro(BackgroundIntensity, double);
-
-  /** Get the background value. */
   itkGetConstMacro(BackgroundIntensity, double);
 
-  /** Specify the maximum intensity. */
+  /** Set/get the maximum intensity. */
   itkSetMacro(MaximumIntensity, double);
-
-  /** Get the maximum intensit. */
   itkGetConstMacro(MaximumIntensity, double);
 
-  /** Specify the emission wavelength (in nanometers). */
-  DelegateSetMacro(EmissionWavelength, double);
+  /** Set/get the emission wavelength (in nanometers). */
+  DelegateSetGetMacro(EmissionWavelength, double);
 
-  /** Get the emission wavelength (in nanometers). */
-  DelegateGetMacro(EmissionWavelength, double);
+  /** Set/get the numerical aperture (unitless). */
+  DelegateSetGetMacro(NumericalAperture, double);
 
-  /** Specify the numerical aperture (unitless). */
-  DelegateSetMacro(NumericalAperture, double);
+  /** Set/get the magnification (unitless). */
+  DelegateSetGetMacro(Magnification, double);
 
-  /** Get the numerical aperture (unitless). */
-  DelegateGetMacro(NumericalAperture, double);
+  /** Set/get the design cover slip refractive index (unitless). */
+  DelegateSetGetMacro(DesignCoverSlipRefractiveIndex, double);
 
-  /** Specify the magnification (unitless). */
-  DelegateSetMacro(Magnification, double);
+  /** Set/get the actual cover slip refractive index (unitless). */
+  DelegateSetGetMacro(ActualCoverSlipRefractiveIndex, double);
 
-  /** Get the magnification (unitless). */
-  DelegateGetMacro(Magnification, double);
+  /** Set/get the design cover slip thickness (in micrometers). */
+  DelegateSetGetMacro(DesignCoverSlipThickness, double);
 
-  /** Specify the design cover slip refractive index (unitless). */
-  DelegateSetMacro(DesignCoverSlipRefractiveIndex, double);
+  /** Set/get the actual cover slip thickness (in micrometers). */
+  DelegateSetGetMacro(ActualCoverSlipThickness, double);
 
-  /** Get the design cover slip refractive index (unitless). */
-  DelegateGetMacro(DesignCoverSlipRefractiveIndex, double);
+  /** Set/get the design immersion oil refractive index (unitless). */
+  DelegateSetGetMacro(DesignImmersionOilRefractiveIndex, double);
 
-  /** Specify the actual cover slip refractive index (unitless). */
-  DelegateSetMacro(ActualCoverSlipRefractiveIndex, double);
+  /** Set/get the actual immersion oil refractive index (unitless). */
+  DelegateSetGetMacro(ActualImmersionOilRefractiveIndex, double);
 
-  /** Get the actual cover slip refractive index (unitless). */
-  DelegateGetMacro(ActualCoverSlipRefractiveIndex, double);
+  /** Set/get the design immersion oil thickness (in micrometers). */
+  DelegateSetGetMacro(DesignImmersionOilThickness, double);
 
-  /** Specify the design cover slip thickness (in micrometers). */
-  DelegateSetMacro(DesignCoverSlipThickness, double);
+  /** Set/get the design specimen layer refractive index (unitless). */
+  DelegateSetGetMacro(DesignSpecimenLayerRefractiveIndex, double);
 
-  /** Get the design cover slip thickness (in micrometers). */
-  DelegateGetMacro(DesignCoverSlipThickness, double);
+  /** Set/get the actual specimen layer refractive index (unitless). */
+  DelegateSetGetMacro(ActualSpecimenLayerRefractiveIndex, double);
 
-  /** Specify the actual cover slip thickness (in micrometers). */
-  DelegateSetMacro(ActualCoverSlipThickness, double);
+  /** Set/get the actual point source depth in the specimen layer (in nanometers). */
+  DelegateSetGetMacro(ActualPointSourceDepthInSpecimenLayer, double);
 
-  /** Get the actual cover slip thickness (in micrometers). */
-  DelegateGetMacro(ActualCoverSlipThickness, double);
+  /** Set/get the design distance from the back focal plane to the detector (in millimeters). */
+  DelegateSetGetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
 
-  /** Specify the design immersion oil refractive index (unitless). */
-  DelegateSetMacro(DesignImmersionOilRefractiveIndex, double);
-
-  /** Get the design immersion oil refractive index (unitless). */
-  DelegateGetMacro(DesignImmersionOilRefractiveIndex, double);
-
-  /** Specify the actual immersion oil refractive index (unitless). */
-  DelegateSetMacro(ActualImmersionOilRefractiveIndex, double);
-
-  /** Get the actual immersion oil refractive index (unitless). */
-  DelegateGetMacro(ActualImmersionOilRefractiveIndex, double);
-
-  /** Specify the design immersion oil thickness (in micrometers). */
-  DelegateSetMacro(DesignImmersionOilThickness, double);
-
-  /** Get the actual immersion oil refractive index (in micrometers). */
-  DelegateGetMacro(DesignImmersionOilThickness, double);
-
-  /** Specify the design specimen layer refractive index (unitless). */
-  DelegateSetMacro(DesignSpecimenLayerRefractiveIndex, double);
-
-  /** Get the design specimen layer refractive index (unitless). */
-  DelegateGetMacro(DesignSpecimenLayerRefractiveIndex, double);
-
-  /** Specify the actual specimen layer refractive index (unitless). */
-  DelegateSetMacro(ActualSpecimenLayerRefractiveIndex, double);
-
-  /** Get the actual specimen layer refractive index (unitless). */
-  DelegateGetMacro(ActualSpecimenLayerRefractiveIndex, double);
-
-  /** Specify the actual point source depth in the specimen layer (in nanometers). */
-  DelegateSetMacro(ActualPointSourceDepthInSpecimenLayer, double);
-
-  /** Get the actual point source depth in the specimen layer (in nanometers). */
-  DelegateGetMacro(ActualPointSourceDepthInSpecimenLayer, double);
-
-  /** Specify the design distance from the back focal plane to the detector (in millimeters). */
-  DelegateSetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Get the design distance from the back focal plane to the detector (in millimeters). */
-  DelegateGetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
-  DelegateSetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Get the actual distance from the back focal plane to the detector (in millimeters). */
-  DelegateGetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
+  /** Set/get the actual distance from the back focal plane to the detector (in millimeters). */
+  DelegateSetGetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
 
   /** Expects the parameters argument to contain values for ALL parameters. */
   virtual void SetParameters(const ParametersType& parameters);

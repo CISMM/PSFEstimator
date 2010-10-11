@@ -81,9 +81,6 @@ GibsonLanniBSFImageSource<TOutputImage>
   spacing[2] = parameters[index++];
   SetSpacing(spacing);
 
-  // CCD border goes here
-  index += 2;
-
   SetBeadRadius(parameters[index++]);
 
   PointType center;
@@ -131,10 +128,6 @@ GibsonLanniBSFImageSource<TOutputImage>
   parameters[index++] = spacing[1];
   parameters[index++] = spacing[2];
 
-  // CCD border goes here
-  parameters[index++] = 0.0;
-  parameters[index++] = 0.0;
-
   parameters[index++] = GetBeadRadius();
 
   const PointType beadCenter = GetBeadCenter();
@@ -176,7 +169,7 @@ unsigned int
 GibsonLanniBSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
-  return 28;
+  return 26;
 }
 
 

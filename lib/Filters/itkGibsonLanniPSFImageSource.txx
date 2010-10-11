@@ -42,7 +42,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   m_Origin.Fill(0.0);
   m_PointCenter.Fill(0.0);
 
-  m_CCDBorderWidth[0] = m_CCDBorderWidth[1] = 0.0;
   m_ShearX = 0.0;
   m_ShearY = 0.0;
 
@@ -97,10 +96,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   SetShearX(parameters[index++]);
   SetShearY(parameters[index++]);
 
-  double ccdBorderWidth[2];
-  ccdBorderWidth[0] = parameters[index++];
-  ccdBorderWidth[1] = parameters[index++];
-
   SetEmissionWavelength(parameters[index++]);
   SetNumericalAperture(parameters[index++]);
   SetMagnification(parameters[index++]);
@@ -142,9 +137,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   parameters[index++] = GetShearX();
   parameters[index++] = GetShearY();
 
-  parameters[index++] = GetCCDBorderWidth()[0];
-  parameters[index++] = GetCCDBorderWidth()[1];
-
   parameters[index++] = GetEmissionWavelength();
   parameters[index++] = GetNumericalAperture();
   parameters[index++] = GetMagnification();
@@ -173,7 +165,7 @@ unsigned int
 GibsonLanniPSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
-  return 25;
+  return 23;
 }
 
 
@@ -215,9 +207,6 @@ GibsonLanniPSFImageSource<TOutputImage>
 
   os << "ShearX: " << m_ShearX << std::endl;
   os << "ShearY: " << m_ShearY << std::endl;
-
-  os << indent << "CCDBorderWidth: [" << m_CCDBorderWidth[0]
-     << ", " << m_CCDBorderWidth[1] << std::endl;
 
   os << indent << "EmissionWavelength (nanometers): "
      << m_EmissionWavelength << std::endl;
