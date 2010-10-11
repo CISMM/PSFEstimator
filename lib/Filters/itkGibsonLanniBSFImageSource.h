@@ -26,6 +26,7 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkResampleImageFilter.h"
 #include "itkRotationalExtrusionTransform.h"
+#include "itkShiftScaleImageFilter.h"
 #include "itkSphereConvolutionFilter.h"
 
 
@@ -112,8 +113,13 @@ public:
     ConvolverType;
   typedef typename ConvolverType::Pointer
     ConvolverPointer;
+#if 0
   typedef RescaleIntensityImageFilter<TOutputImage, TOutputImage>
     RescaleImageFilterType;
+#else
+  typedef ShiftScaleImageFilter<TOutputImage, TOutputImage>
+    RescaleImageFilterType;
+#endif
   typedef typename RescaleImageFilterType::Pointer
     RescaleImageFilterPointer;
 

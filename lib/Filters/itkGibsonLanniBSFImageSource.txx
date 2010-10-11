@@ -28,6 +28,7 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkRotationalExtrusionTransform.h"
 #include "itkScanImageFilter.h"
+#include "itkShiftScaleImageFilter.h"
 #include "itkSumProjectionImageFilter.h"
 
 namespace itk
@@ -364,8 +365,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_Convolver->UpdateLargestPossibleRegion();
 
   m_RescaleFilter->GraftOutput(this->GetOutput());
-  m_RescaleFilter->SetOutputMinimum(m_BackgroundIntensity);
-  m_RescaleFilter->SetOutputMaximum(m_MaximumIntensity);
+  m_RescaleFilter->SetShift(m_BackgroundIntensity);
+  m_RescaleFilter->SetScale(m_MaximumIntensity);
   m_RescaleFilter->UpdateLargestPossibleRegion();
   this->GraftOutput(m_RescaleFilter->GetOutput());
 }
