@@ -22,6 +22,7 @@
 #include <itkMinimumMaximumImageCalculator.txx>
 //#include <itkPoissonNoiseImageToImageMetric.cxx>
 #include <itkShiftScaleImageFilter.txx>
+#include <itkSubtractImageFilter.h>
 
 #include <ITKImageToVTKImage.cxx>
 
@@ -34,16 +35,19 @@ DataModel
 ::DataModel() {
   m_MeasuredImageData = NULL;
 
-  m_GibsonLanniPSFSource = GibsonLanniPSFImageSourceType::New();
-  m_GibsonLanniBSFSource = GibsonLanniBSFImageSourceType::New();
+  m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniBSFSource             = GibsonLanniBSFImageSourceType::New();
+  m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
-  m_MeasuredImageMinMaxFilter = MinMaxType::New();
-  m_PSFImageMinMaxFilter      = MinMaxType::New();
-  m_BSFImageMinMaxFilter      = MinMaxType::New();
+  m_MeasuredImageMinMaxFilter        = MinMaxType::New();
+  m_PSFImageMinMaxFilter             = MinMaxType::New();
+  m_BSFImageMinMaxFilter             = MinMaxType::New();
+  m_BSFDifferenceImageMinMaxFilter   = MinMaxType::New();
 
-  m_MeasuredImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
-  m_PSFImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
-  m_BSFImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
+  m_MeasuredImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
+  m_PSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
+  m_BSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
+  m_BSFDifferenceImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
 
   m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
   m_CostFunction = ParametricCostFunctionType::New();
@@ -71,6 +75,7 @@ DataModel
   delete m_MeasuredImageITKToVTKFilter;
   delete m_PSFImageITKToVTKFilter;
   delete m_BSFImageITKToVTKFilter;
+  delete m_BSFDifferenceImageITKToVTKFilter;
 }
 
 
@@ -240,10 +245,6 @@ DataModel
   m_GibsonLanniBSFSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
 
-  // Set the shifting and scaling for the BSF source to that of the measured image
-  //m_GibsonLanniBSFSource->SetBackgroundIntensity(m_MeasuredImageMinMaxFilter->GetMinimum());
-  //m_GibsonLanniBSFSource->SetMaximumIntensity(m_MeasuredImageMinMaxFilter->GetMaximum());
-
   m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_GibsonLanniPSFSource->GetOutput());
   m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
@@ -251,6 +252,13 @@ DataModel
   m_BSFImageMinMaxFilter = MinMaxType::New();
   m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
   m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());
+
+  m_BSFDifferenceImageFilter->SetInput1(m_MeasuredImageData);
+  m_BSFDifferenceImageFilter->SetInput2(m_GibsonLanniBSFSource->GetOutput());
+
+  m_BSFDifferenceImageMinMaxFilter = MinMaxType::New();
+  m_BSFDifferenceImageMinMaxFilter->SetImage(m_BSFDifferenceImageFilter->GetOutput());
+  m_BSFDifferenceImageITKToVTKFilter->SetInput(m_BSFDifferenceImageFilter->GetOutput());
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
@@ -582,6 +590,13 @@ DataModel
 }
 
 
+vtkAlgorithmOutput*
+DataModel
+::GetBSFDifferenceImageOutputPort() {
+  return m_BSFDifferenceImageITKToVTKFilter->GetOutputPort();
+}
+
+
 double
 DataModel
 ::GetMeasuredImageDataMinimum() {
@@ -747,6 +762,36 @@ DataModel
 
   m_BSFImageMinMaxFilter->Compute();
   return m_BSFImageMinMaxFilter->GetMaximum();
+}
+
+
+double
+DataModel
+::GetBSFDifferenceImageDataMinimum() {
+  if (!GetMeasuredImageData()) {
+    return 0.0;
+  }
+
+  m_BSFDifferenceImageFilter->Modified();
+  m_BSFDifferenceImageFilter->UpdateLargestPossibleRegion();
+
+  m_BSFDifferenceImageMinMaxFilter->Compute();
+  return m_BSFDifferenceImageMinMaxFilter->GetMinimum();
+}
+
+
+double
+DataModel
+::GetBSFDifferenceImageDataMaximum() {
+  if (!GetMeasuredImageData()) {
+    return 0.0;
+  }
+
+  m_BSFDifferenceImageFilter->Modified();
+  m_BSFDifferenceImageFilter->UpdateLargestPossibleRegion();
+
+  m_BSFDifferenceImageMinMaxFilter->Compute();
+  return m_BSFDifferenceImageMinMaxFilter->GetMaximum();
 }
 
 
@@ -1014,6 +1059,14 @@ DataModel
 ::UpdateGibsonLanniBSFImage() {
   m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
   m_BSFImageMinMaxFilter->Compute();
+}
+
+
+void
+DataModel
+::UpdateBSFDifferenceImage() {
+  m_BSFDifferenceImageFilter->UpdateLargestPossibleRegion();
+  m_BSFDifferenceImageMinMaxFilter->Compute();
 }
 
 

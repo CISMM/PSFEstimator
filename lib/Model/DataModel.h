@@ -13,6 +13,7 @@
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkShiftScaleImageFilter.h>
+#include <itkSubtractImageFilter.h>
 
 #include <itkAmoebaOptimizer.h>
 #include <itkMeanSquaresImageToImageMetric.h>
@@ -55,6 +56,11 @@ public:
     GibsonLanniBSFImageSourceType;
   typedef GibsonLanniBSFImageSourceType::Pointer
     GibsonLanniBSFImageSourcePointer;
+
+  typedef itk::SubtractImageFilter<Float3DImageType, Float3DImageType, Float3DImageType>
+    DifferenceFilterType;
+  typedef DifferenceFilterType::Pointer
+    DifferenceFilterPointer;
 
   typedef Float3DImageType TImage;
   typedef TImage InputImageType;
@@ -119,9 +125,6 @@ public:
   void            SetMeasuredImageData(TImage::Pointer image);
   TImage::Pointer GetMeasuredImageData();
 
-  TImage::Pointer GetPSFImageData();
-  TImage::Pointer GetBSFImageData();
-
   // Returns the VTK output port for the original scalar image data.
   vtkAlgorithmOutput* GetMeasuredImageOutputPort();
 
@@ -132,6 +135,10 @@ public:
   // Returns the VTK output port for the generated bead-spread function
   // image data.
   vtkAlgorithmOutput* GetBSFImageOutputPort();
+
+  // Returns the VTK output port for the difference between the
+  // measured and calculated bead-spread function
+  vtkAlgorithmOutput* GetBSFDifferenceImageOutputPort();
 
   double GetMeasuredImageDataMinimum();
   double GetMeasuredImageDataMaximum();
@@ -153,6 +160,9 @@ public:
 
   double GetBSFImageDataMinimum();
   double GetBSFImageDataMaximum();
+
+  double GetBSFDifferenceImageDataMinimum();
+  double GetBSFDifferenceImageDataMaximum();
 
   void   SetPSFImageDimensions(int dimensions[3]);
   void   SetPSFImageDimension(int index, int dimension);
@@ -194,6 +204,7 @@ public:
 
   void   UpdateGibsonLanniPSFImage();
   void   UpdateGibsonLanniBSFImage();
+  void   UpdateBSFDifferenceImage();
 
   void   SetBeadRadius(double radius);
   double GetBeadRadius();
@@ -269,14 +280,17 @@ protected:
 
   GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
   GibsonLanniBSFImageSourcePointer m_GibsonLanniBSFSource;
+  DifferenceFilterPointer          m_BSFDifferenceImageFilter;
 
   MinMaxType::Pointer m_MeasuredImageMinMaxFilter;
   MinMaxType::Pointer m_PSFImageMinMaxFilter;
   MinMaxType::Pointer m_BSFImageMinMaxFilter;
+  MinMaxType::Pointer m_BSFDifferenceImageMinMaxFilter;
 
   ITKImageToVTKImage<TImage>* m_MeasuredImageITKToVTKFilter;
   ITKImageToVTKImage<TImage>* m_PSFImageITKToVTKFilter;
   ITKImageToVTKImage<TImage>* m_BSFImageITKToVTKFilter;
+  ITKImageToVTKImage<TImage>* m_BSFDifferenceImageITKToVTKFilter;
 
   // The cost function used by the optimizer.
   ParametricCostFunctionType::Pointer m_CostFunction;
