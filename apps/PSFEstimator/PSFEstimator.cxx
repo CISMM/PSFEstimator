@@ -90,7 +90,7 @@ PSFEstimator
   m_ErrorDialog.setModal(true);
 
   // Create and populate image information table model.
-  int LEFT_COLUMN = 0;
+  int LEFT_COLUMN  = 0;
   int RIGHT_COLUMN = 1;
   m_ImageInformationTableModel = new QStandardItemModel(5, 2, this);
   m_ImageInformationTableModel->setHeaderData(LEFT_COLUMN,  Qt::Horizontal, tr("Property"));
@@ -224,6 +224,7 @@ PSFEstimator
   gui->measuredBSFRadioButton->setEnabled(hasMeasuredImage);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
+  gui->measuredMinusCalculatedBSFRadioButton->setEnabled(true);
 
   gui->microscopeTypeWidget->setEnabled(true);
   gui->useRadialInterpolationCheckBox->setEnabled(true);
@@ -442,6 +443,13 @@ PSFEstimator
 
 void
 PSFEstimator
+::on_measuredMinusCalculatedBSFRadioButton_clicked(bool state) {
+  SetDisplayedImageToBSFDifference();
+}
+
+
+void
+PSFEstimator
 ::SetDisplayedImageToMeasuredPSF() {
   m_DisplayedImage = MEASURED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
@@ -469,6 +477,18 @@ PSFEstimator
 ::SetDisplayedImageToCalculatedBSF() {
   m_DisplayedImage = CALCULATED_BSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
+  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
+
+  RefreshUI();
+}
+
+
+void
+PSFEstimator
+::SetDisplayedImageToBSFDifference() {
+  m_DisplayedImage = BSF_DIFFERENCE_IMAGE;
+  m_Visualization->SetImageInputConnection(m_DataModel->GetBSFDifferenceImageOutputPort());
   SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
   SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
@@ -713,6 +733,8 @@ PSFEstimator
     m_DataModel->UpdateGibsonLanniPSFImage();
   } else if (gui->calculatedBSFRadioButton->isChecked()) {
     m_DataModel->UpdateGibsonLanniBSFImage();
+  } else if (gui->measuredMinusCalculatedBSFRadioButton->isChecked()) {
+    m_DataModel->UpdateBSFDifferenceImage();
   }
 
   SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
@@ -884,20 +906,38 @@ PSFEstimator
   gui->zPlaneEdit->setText(QString().sprintf(intFormat, m_Visualization->GetZPlane()+1));
 
   ///////////////// Image information update /////////////////
-  int item = 0;
+  int row = 0;
   QString dataMin = QString().sprintf(decimalFormat, GetDisplayedImageDataMinimum());
-  m_ImageInformationTableModel->item(item++, 1)->setText(dataMin);
+  QStandardItem* item;
+  item = m_ImageInformationTableModel->item(row, 1);
+  item->setText(dataMin);
+  m_ImageInformationTableModel->setItem(row++, 1, item);
+
   QString dataMax = QString().sprintf(decimalFormat, GetDisplayedImageDataMaximum());
-  m_ImageInformationTableModel->item(item++, 1)->setText(dataMax);
+  item = m_ImageInformationTableModel->item(row, 1);
+  item->setText(dataMax);
+  m_ImageInformationTableModel->setItem(row++, 1, item);
 
   int dims[3];
   m_DataModel->GetMeasuredImageDimensions(dims);
+
   QString xDim = QString().sprintf(intFormat, dims[0]);
-  m_ImageInformationTableModel->item(item++, 1)->setText(xDim);
+  item = m_ImageInformationTableModel->item(row, 1);
+  item->setText(xDim);
+  m_ImageInformationTableModel->setItem(row++, 1, item);
+
   QString yDim = QString().sprintf(intFormat, dims[1]);
-  m_ImageInformationTableModel->item(item++, 1)->setText(yDim);
+  item = m_ImageInformationTableModel->item(row, 1);
+  item->setText(yDim);
+  m_ImageInformationTableModel->setItem(row++, 1, item);
+
   QString zDim = QString().sprintf(intFormat, dims[2]);
-  m_ImageInformationTableModel->item(item++, 1)->setText(zDim);
+  item = m_ImageInformationTableModel->item(row, 1);
+  item->setText(zDim);
+  m_ImageInformationTableModel->setItem(row++, 1, item);
+
+  gui->imageDataView->setModel(NULL);
+  gui->imageDataView->setModel(m_ImageInformationTableModel);
 
   ///////////////// Other widgets //////////////////////////////
   gui->useCustomZSlicePositions->
@@ -917,28 +957,34 @@ PSFEstimator
 double
 PSFEstimator
 ::GetDisplayedImageDataMinimum() {
+  double value = 0.0;
   if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
-    return m_DataModel->GetMeasuredImageDataMinimum();
+    value = m_DataModel->GetMeasuredImageDataMinimum();
   } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
-    return m_DataModel->GetPSFImageDataMinimum();
+    value = m_DataModel->GetPSFImageDataMinimum();
   } else if (m_DisplayedImage == CALCULATED_BSF_IMAGE) {
-    return m_DataModel->GetBSFImageDataMinimum();
+    value = m_DataModel->GetBSFImageDataMinimum();
+  } else if (m_DisplayedImage == BSF_DIFFERENCE_IMAGE) {
+    value = m_DataModel->GetBSFDifferenceImageDataMinimum();
   }
-  return 0.0;
+  return value;
 }
 
 
 double
 PSFEstimator
 ::GetDisplayedImageDataMaximum() {
+  double value = 0.0;
   if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
-    return m_DataModel->GetMeasuredImageDataMaximum();
+    value = m_DataModel->GetMeasuredImageDataMaximum();
   } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
-    return m_DataModel->GetPSFImageDataMaximum();
+    value = m_DataModel->GetPSFImageDataMaximum();
   } else if (m_DisplayedImage == CALCULATED_BSF_IMAGE) {
-    return m_DataModel->GetBSFImageDataMaximum();
+    value = m_DataModel->GetBSFImageDataMaximum();
+  } else if (m_DisplayedImage == BSF_DIFFERENCE_IMAGE) {
+    value = m_DataModel->GetBSFDifferenceImageDataMaximum();
   }
-  return 0.0;
+  return value;
 }
 
 

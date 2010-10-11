@@ -158,7 +158,7 @@
           <x>0</x>
           <y>0</y>
           <width>297</width>
-          <height>523</height>
+          <height>543</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -207,6 +207,16 @@
               </property>
               <property name="text">
                <string>Calculated Bead-Spread Function</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="measuredMinusCalculatedBSFRadioButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Measured Minus Calculated BSF</string>
               </property>
              </widget>
             </item>
