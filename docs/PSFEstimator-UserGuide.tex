@@ -191,6 +191,8 @@ The \emph{Image Information} control panel displays information about the image 
   \label{fig:PSFSettingsControlPanel}
 \end{figure}
 
+The PSF settings table is used to set parameters for the analytical PSF and BSF models. These parameters are described in Section \ref{sec:PointSpreadFunctionSettings} of this manual.
+
 \subsection{Menu Bar}
 
 The menu bar in PSF Estimator contains three menus that provide various commands. Each menu is described in more detail below.
@@ -252,17 +254,98 @@ The \emph{File Menu} features options for creating PSFs of arbitrary size, openi
 
 \end{description}
 
-%\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
-%   \centering
-%   \includegraphics[width=3in]{\ImagePath/SimulatorControlPanel} 
-%   \caption{The \emph{Simulator Control Panel} with the \emph{FluoroSim Tab} selected.}
-%   \label{fig:SimulatorControlPanel}
-%\end{figure}
+\section{Point-Spread Function Settings}
+\label{sec:PointSpreadFunctionSettings}
 
-%\subsection{Simulator Control Panel}
+\subsection{Gibson-Lanni PSF Model for Widefield Microscopes}
 
+\begin{description}
 
-%\pagebreak
+  \item[X pixel size] \hfill \\
+   The physical size of the pixel in the $x$ direction.
+  
+  \item[Y pixel size] \hfill \\
+   The physical size of the pixel in the $y$ direction.
+  
+  \item[Z slice spacing] \hfill \\
+   The spacing between slices in the images.
+  
+  \item[Bead radius] \hfill \\
+   The radius of the spherical bead used to generate the measured BSF images.
+  
+  \item[Bead center X] \hfill \\
+   The position of the bead center in the $x$ direction. The origin is defined to be the center of the measured BSF image.
+  
+  \item[Bead center Y] \hfill \\
+   The position of the bead center in the $y$ direction. The origin is defined to be the center of the measured BSF image.
+  
+  \item[Bead center Z] \hfill \\
+   The position of the bead center in the $z$ direction. The origin is defined to be the center of the measured BSF image.
+    
+  \item[Shear in X] \hfill \\
+Models lateral stage movement in the $x$-direction as a linear function directly proportional to the $z$-depth of the focal plane. The $x$-offset in the shear direction is defined as
+\begin{equation}
+x_{\mathrm{offset}} = m_{x} z
+\end{equation}
+where $m_{x}$ is the \emph{Shear in X} setting value and $z$ is the focal plane depth. The $x_{\mathrm{offset}}$ is added to the $x$-coordinate of each voxel position during image generation.
+
+  \item[Shear in Y] \hfill \\
+   Same as \emph{Shear in X} but in the $y$-direction.
+
+  \item[Emission Wavelength] \hfill \\
+   The dominant wavelength in the emission spectrum from the fluorophores in the fluorescently labeled bead.
+  
+  \item[Numerical Aperture] \hfill \\
+   The numerical aperture of the microscope objective lens.
+  
+  \item[Magnification] \hfill \\
+   The magnification of the microscope objective lens.
+
+  \item[Design Cover Slip Refractive Index] \hfill \\
+   The cover slip refractive index for which the objective lens was designed.
+  
+  \item[Actual Cover Slip Refractive Index] \hfill \\
+   The actual cover slip refractive index used in the setup for imaging the bead.
+  
+  \item[Design Cover Slip Thickness] \hfill \\
+   The cover slip thickness for which the objective lens was designed.
+  
+  \item[Actual Cover Slip Thickness] \hfill \\
+   The actual cover slip thickness used in the setup for imaging the bead.
+  
+  \item[Design Immersion Oil Refractive Index] \hfill \\
+   The immersion oil refractive index for which the objective lens was designed.
+  
+  \item[Actual Immersion Oil Refractive Index] \hfill \\
+   The actual immersion oil refractive index used in the setup for imaging the bead.
+  
+  \item[Design Immersion Oil Thickness] \hfill \\
+   The immersion oil thickness for which the objective lens was designed.
+  
+  \item[Design Specimen Layer Refractive Index] \hfill \\
+   The specimen layer refractive index for which the objective function was designed. The specimen layer lays below the cover slip.
+  
+  \item[Actual Specimen Layer Refractive Index] \hfill \\
+   The actual specimen layer refractive index in the setup for imaging the bead.
+  
+  \item[Actual Point Source Depth in Specimen Layer] \hfill \\
+   The depth of the specimen below the coverslip.
+  
+  \item[Design Distance from Back Focal Plane to Detector] \hfill \\
+   The design distance from the back focal plane of the objective lens to the CCD camera.
+  
+  \item[Actual Distance from Back Focal Plane to Detector] \hfill \\
+   The actual distance from the back focal plane of the objective lens to the CCD camera.
+  
+  \item[Background Intensity] \hfill \\
+   A uniform background intensity added to each voxel intensity value.
+  
+  \item[Maximum Intensity] \hfill \\
+   The maximum intensity value in calculated PSF or BSF.
+      
+\end{description}
+
+\subsection{Gaussian PSF Model for Confocal Microscopes}
 
 \section{Version History}
 
