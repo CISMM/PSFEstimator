@@ -44,8 +44,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_Size.Fill(32);
   m_Spacing.Fill(65.0);
   m_Origin.Fill(0.0);
-  m_BackgroundIntensity = 0.0;
-  m_MaximumIntensity = 1.0;
+  m_IntensityShift = 0.0;
+  m_IntensityScale = 1.0;
 
   m_PSFSource = PSFSourceType::New();
 
@@ -111,8 +111,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   SetDesignDistanceFromBackFocalPlaneToDetector(parameters[index++]);
   SetActualDistanceFromBackFocalPlaneToDetector(parameters[index++]);
 
-  SetBackgroundIntensity(parameters[index++]);
-  SetMaximumIntensity(parameters[index++]);
+  SetIntensityShift(parameters[index++]);
+  SetIntensityScale(parameters[index++]);
 }
 
 
@@ -158,8 +158,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   parameters[index++] = GetDesignDistanceFromBackFocalPlaneToDetector();
   parameters[index++] = GetActualDistanceFromBackFocalPlaneToDetector();
 
-  parameters[index++] = GetBackgroundIntensity();
-  parameters[index++] = GetMaximumIntensity();
+  parameters[index++] = GetIntensityShift();
+  parameters[index++] = GetIntensityScale();
 
   return parameters;
 }
@@ -275,18 +275,6 @@ GibsonLanniBSFImageSource<TOutputImage>
   SpacingType psfTableSpacing;
   SizeType    psfTableSize;
 
-#if 0
-  // Determine Nyquist sampling (taken from Heintzmann, R. and Sheppard, C.
-  // (2007). The sampling limit in fluorescence microscopy. Micron,
-  // 38(2):145–149. Actually, sample at twice this rate.
-  double NA     = GetNumericalAperture();
-  double lambda = GetEmissionWavelength();
-  double n      = GetDesignImmersionOilRefractiveIndex();
-  double alpha = asin(NA/n);
-  psfTableSpacing[0] = psfTableSpacing[1] = 0.5*lambda / (4.0 * NA);
-  psfTableSpacing[2] = 0.5*(2.0 * psfTableSpacing[0] * sin(alpha)) /
-    (1.0 - cos(alpha));
-#endif
   psfTableSpacing[0] = 40.0; // A somewhat arbitrary spacing.
   psfTableSpacing[1] = 40.0;
   psfTableSpacing[2] = 100.0;
@@ -365,8 +353,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_Convolver->UpdateLargestPossibleRegion();
 
   m_RescaleFilter->GraftOutput(this->GetOutput());
-  m_RescaleFilter->SetShift(m_BackgroundIntensity);
-  m_RescaleFilter->SetScale(m_MaximumIntensity);
+  m_RescaleFilter->SetShift(m_IntensityShift);
+  m_RescaleFilter->SetScale(m_IntensityScale);
   m_RescaleFilter->UpdateLargestPossibleRegion();
   this->GraftOutput(m_RescaleFilter->GetOutput());
 }

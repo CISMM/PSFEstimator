@@ -252,11 +252,11 @@ public:
   void   SetGLActualDistanceFromBackFocalPlaneToDetector(double distance);
   double GetGLActualDistanceFromBackFocalPlaneToDetector();
 
-  void   SetGLBackgroundIntensity(double intensity);
-  double GetGLBackgroundIntensity();
+  void   SetGLIntensityShift(double intensity);
+  double GetGLIntensityShift();
 
-  void   SetGLMaximumIntensity(double intensity);
-  double GetGLMaximumIntensity();
+  void   SetGLIntensityScale(double intensity);
+  double GetGLIntensityScale();
 
   void   SetGLParameterEnabled(unsigned int index, bool enabled);
   bool   GetGLParameterEnabled(unsigned int index);

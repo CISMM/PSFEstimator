@@ -81,10 +81,10 @@ QPointSpreadFunctionPropertyTableModel
   m_PropertyNameList.append(QVariant("Actual Distance from Back Focal Plane to Detector"));
   m_UnitsList.append(QVariant("millimeters"));
 
-  m_PropertyNameList.append(QVariant("Background Intensity"));
+  m_PropertyNameList.append(QVariant("Intensity Shift"));
   m_UnitsList.append(QVariant("-"));
 
-  m_PropertyNameList.append(QVariant("Maximum Intensity"));
+  m_PropertyNameList.append(QVariant("Intensity Scale"));
   m_UnitsList.append(QVariant("-"));
 }
 
@@ -304,8 +304,8 @@ QPointSpreadFunctionPropertyTableModel
   m_PropertyValues.append(m_DataModel->GetGLActualPointSourceDepthInSpecimenLayer());
   m_PropertyValues.append(m_DataModel->GetGLDesignDistanceFromBackFocalPlaneToDetector());
   m_PropertyValues.append(m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector());
-  m_PropertyValues.append(m_DataModel->GetGLBackgroundIntensity());
-  m_PropertyValues.append(m_DataModel->GetGLMaximumIntensity());
+  m_PropertyValues.append(m_DataModel->GetGLIntensityShift());
+  m_PropertyValues.append(m_DataModel->GetGLIntensityScale());
 
   for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
     m_OptimizeValues.append(m_DataModel->GetGLParameterEnabled(i));
@@ -350,8 +350,8 @@ QPointSpreadFunctionPropertyTableModel
   m_DataModel->SetGLActualPointSourceDepthInSpecimenLayer(m_PropertyValues[item++]);
   m_DataModel->SetGLDesignDistanceFromBackFocalPlaneToDetector(m_PropertyValues[item++]);
   m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(m_PropertyValues[item++]);
-  m_DataModel->SetGLBackgroundIntensity(m_PropertyValues[item++]);
-  m_DataModel->SetGLMaximumIntensity(m_PropertyValues[item++]);
+  m_DataModel->SetGLIntensityShift(m_PropertyValues[item++]);
+  m_DataModel->SetGLIntensityScale(m_PropertyValues[item++]);
 
   // Set up origin so that (0, 0, 0) is centered in the image volume.
   int dimensions[3];

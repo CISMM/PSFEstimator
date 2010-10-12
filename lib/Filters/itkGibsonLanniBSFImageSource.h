@@ -113,13 +113,8 @@ public:
     ConvolverType;
   typedef typename ConvolverType::Pointer
     ConvolverPointer;
-#if 0
-  typedef RescaleIntensityImageFilter<TOutputImage, TOutputImage>
-    RescaleImageFilterType;
-#else
   typedef ShiftScaleImageFilter<TOutputImage, TOutputImage>
     RescaleImageFilterType;
-#endif
   typedef typename RescaleImageFilterType::Pointer
     RescaleImageFilterPointer;
 
@@ -180,9 +175,6 @@ public:
     if (center != m_Convolver->GetSphereCenter())
       {
       m_Convolver->SetSphereCenter(center);
-
-      std::cout << center << std::endl;
-
       this->Modified();
       }
   }
@@ -242,12 +234,12 @@ public:
   }
 
   /** Set/get the background value. */
-  itkSetMacro(BackgroundIntensity, double);
-  itkGetConstMacro(BackgroundIntensity, double);
+  itkSetMacro(IntensityShift, double);
+  itkGetConstMacro(IntensityShift, double);
 
   /** Set/get the maximum intensity. */
-  itkSetMacro(MaximumIntensity, double);
-  itkGetConstMacro(MaximumIntensity, double);
+  itkSetMacro(IntensityScale, double);
+  itkGetConstMacro(IntensityScale, double);
 
   /** Set/get the emission wavelength (in nanometers). */
   DelegateSetGetMacro(EmissionWavelength, double);
@@ -328,11 +320,11 @@ private:
   GibsonLanniBSFImageSource(const GibsonLanniBSFImageSource&); //purposely not implemented
   void operator=(const GibsonLanniBSFImageSource&); //purposely not implemented
 
-  SizeType    m_Size;                // Size of the output image
-  SpacingType m_Spacing;             // Spacing of the output image
-  PointType   m_Origin;              // Origin of the output image
-  double      m_BackgroundIntensity; // Additive background constant
-  double      m_MaximumIntensity;    // The maximum intensity value
+  SizeType    m_Size;           // Size of the output image
+  SpacingType m_Spacing;        // Spacing of the output image
+  PointType   m_Origin;         // Origin of the output image
+  double      m_IntensityShift; // Additive background constant
+  double      m_IntensityScale; // The maximum intensity value
 
   PSFSourcePointer          m_PSFSource;
   ExtrusionFilterPointer    m_ExtrusionFilter;

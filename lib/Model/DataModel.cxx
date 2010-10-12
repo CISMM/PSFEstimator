@@ -376,12 +376,12 @@ DataModel
   SetGLActualDistanceFromBackFocalPlaneToDetector
     (c.GetValueAsDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
                        GetGLActualDistanceFromBackFocalPlaneToDetector()));
-  SetGLBackgroundIntensity
-    (c.GetValueAsDouble(sec, "BackgroundIntensity",
-                       GetGLBackgroundIntensity()));
-  SetGLMaximumIntensity
-    (c.GetValueAsDouble(sec, "MaximumIntensity",
-                       GetGLMaximumIntensity()));
+  SetGLIntensityShift
+    (c.GetValueAsDouble(sec, "IntensityShift",
+                       GetGLIntensityShift()));
+  SetGLIntensityScale
+    (c.GetValueAsDouble(sec, "IntensityScale",
+                       GetGLIntensityScale()));
 
   sec = std::string("ZSliceCoordinates");
 
@@ -424,8 +424,8 @@ DataModel
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualPointSourceDepthInSpecimenLayer"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
   SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BackgroundIntensity"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "MaximumIntensity"));
+  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityShift"));
+  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityScale"));
 }
 
 
@@ -480,10 +480,10 @@ DataModel
 		      GetGLDesignDistanceFromBackFocalPlaneToDetector());
   c.SetValueFromDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
 		      GetGLActualDistanceFromBackFocalPlaneToDetector());
-  c.SetValueFromDouble(sec, "BackgroundIntensity",
-                      GetGLBackgroundIntensity());
-  c.SetValueFromDouble(sec, "MaximumIntensity",
-                      GetGLMaximumIntensity());
+  c.SetValueFromDouble(sec, "IntensityShift",
+                      GetGLIntensityShift());
+  c.SetValueFromDouble(sec, "IntensityScale",
+                      GetGLIntensityScale());
 
   sec = std::string("ZSliceCoordinates");
 
@@ -525,8 +525,8 @@ DataModel
   c.SetValueFromBool(sec, "ActualPointSourceDepthInSpecimenLayer", GetGLParameterEnabled(index++));
   c.SetValueFromBool(sec, "DesignDistanceFromBackFocalPlaneToDetector", GetGLParameterEnabled(index++));
   c.SetValueFromBool(sec, "ActualDistanceFromBackFocalPlaneToDetector", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "BackgroundIntensity", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "MaximumIntensity", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "IntensityShift", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "IntensityScale", GetGLParameterEnabled(index++));
 }
 
 
@@ -1339,29 +1339,29 @@ DataModel
 
 void
 DataModel
-::SetGLBackgroundIntensity(double intensity) {
-  m_GibsonLanniBSFSource->SetBackgroundIntensity(intensity);
+::SetGLIntensityShift(double intensity) {
+  m_GibsonLanniBSFSource->SetIntensityShift(intensity);
 }
 
 
 double
 DataModel
-::GetGLBackgroundIntensity() {
-  return m_GibsonLanniBSFSource->GetBackgroundIntensity();
+::GetGLIntensityShift() {
+  return m_GibsonLanniBSFSource->GetIntensityShift();
 }
 
 
 void
 DataModel
-::SetGLMaximumIntensity(double intensity) {
-  m_GibsonLanniBSFSource->SetMaximumIntensity(intensity);
+::SetGLIntensityScale(double intensity) {
+  m_GibsonLanniBSFSource->SetIntensityScale(intensity);
 }
 
 
 double
 DataModel
-::GetGLMaximumIntensity() {
-  return m_GibsonLanniBSFSource->GetMaximumIntensity();
+::GetGLIntensityScale() {
+  return m_GibsonLanniBSFSource->GetIntensityScale();
 }
 
 
