@@ -811,9 +811,9 @@ PSFEstimator
   qsub.start("qsub", arguments);
   qsub.waitForStarted();
 
-  QString stdin = script.join(tr(""));
-  std::cout << stdin.toStdString() << std::endl;
-  qsub.write(stdin);
+  QString stdInput = script.join(tr(""));
+  std::cout << stdInput.toStdString() << std::endl;
+  qsub.write(stdInput);
   qsub.closeWriteChannel();
   qsub.waitForFinished();
 
