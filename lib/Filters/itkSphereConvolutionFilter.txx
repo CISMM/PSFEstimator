@@ -90,26 +90,23 @@ unsigned int
 SphereConvolutionFilter<TInputImage,TOutputImage>
 ::IntersectWithVerticalLine(double x, double y, double& z1, double& z2)
 {
-  double cx = m_SphereCenter[0];
-  double cy = m_SphereCenter[1];
-  double cz = m_SphereCenter[2];
   double r  = m_SphereRadius;
-  double sqrtTerm = -(cx*cx)-(cy*cy)+(r*r)+(2*cx*x)-(x*x)+(2*cy*y)-(y*y);
+  double sqrtTerm = (r*r)-(x*x)-(y*y);
 
   if (sqrtTerm < 0)
     {
-    z1 = z2 = 0.0f;
+    z1 = z2 = 0.0;
     return 0; // no solutions
     }
-  else if (sqrtTerm == 0)
+  else if (sqrtTerm == 0.0)
     {
-    z1 = z2 = cz;
+    z1 = z2 = 0.0;
     return 1; // one solution
     }
   else
     {
-    z1 = cz - sqrt(sqrtTerm);
-    z2 = cz + sqrt(sqrtTerm);
+    z1 = -sqrt(sqrtTerm);
+    z2 =  sqrt(sqrtTerm);
     if (z1 > z2)
       {
       double tmp = z1;
@@ -173,10 +170,10 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   double sampleIncrY = diameter / samplesPerDim;
   for ( int j = 0; j <= samplesPerDim; j++ )
     {
-    double ys = j * sampleIncrY - m_SphereRadius + m_SphereCenter[1];
+    double ys = j * sampleIncrY - m_SphereRadius;
     for ( int i = 0; i <= samplesPerDim; i++ )
       {
-      double xs = i * sampleIncrX - m_SphereRadius + m_SphereCenter[0];
+      double xs = i * sampleIncrX - m_SphereRadius;
 
       // Find the intersection z-coordinate values, if they exist.
       double z1 = 0.0f, z2 = 0.0f;
@@ -258,7 +255,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 {
   double value = 0.0f;
 
-  if (m_SphereRadius <= 0.0)
+  if (m_SphereRadius < 0.0)
     {
     return value;
     }
@@ -274,10 +271,10 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
         iter++)
     {
     SphereIntersection intersection = *iter;
-    double xs = intersection.x;
-    double ys = intersection.y;
-    double z1 = intersection.z1;
-    double z2 = intersection.z2;
+    double xs = intersection.x  + m_SphereCenter[0];
+    double ys = intersection.y  + m_SphereCenter[1];
+    double z1 = intersection.z1 + m_SphereCenter[2];
+    double z2 = intersection.z2 + m_SphereCenter[2];
     int numIntersections = intersection.numIntersections;
 
     // Find the intersection z-coordinate values, if they exist.
