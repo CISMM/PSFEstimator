@@ -25,8 +25,20 @@
 #include "itkScanImageFilter.h"
 #include "itkSumProjectionImageFilter.h"
 
+#include <list>
+
 namespace itk
 {
+
+/** Struct to hold sphere intersection data. */
+typedef struct SphereIntersection_struct {
+  double x;
+  double y;
+  double z1;
+  double z2;
+  int numIntersections;
+} SphereIntersection;
+
 
 /** \class SphereConvolutionFilter
  *
@@ -87,6 +99,11 @@ public:
     InterpolatorType;
   typedef typename InterpolatorType::Pointer
     InterpolatorPointer;
+
+  typedef std::list<SphereIntersection>
+    IntersectionArrayType;
+  typedef typename IntersectionArrayType::const_iterator
+    IntersectionArrayConstIterator;
 
   itkStaticConstMacro(ImageDimension, unsigned int,
 		      TOutputImage::ImageDimension);
@@ -196,6 +213,10 @@ protected:
   InterpolatorPointer     m_KernelInterpolator;
   InterpolatorPointer     m_TableInterpolator;
 
+  /** Contains intersection data of a grid of sample points in the
+   * xy-plane. */
+  IntersectionArrayType m_IntersectionArray;
+
   /** Gets the z-coordinate(s) of the intersection of a sphere with a line
    * parallel to the z-axis specified by the x- and y-coordinates. z1 and z2
    * are set to the z-coordinates if there are two intersections, only z1 is
@@ -208,6 +229,8 @@ protected:
   virtual void GenerateInputRequestedRegion();
 
   virtual void GenerateOutputInformation();
+
+  void ComputeIntersections();
 
   virtual void BeforeThreadedGenerateData();
 

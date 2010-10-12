@@ -162,6 +162,45 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 SphereConvolutionFilter<TInputImage,TOutputImage>
+::ComputeIntersections()
+{
+  // Clear the intersection list
+  m_IntersectionArray.clear();
+
+  double samplesPerDim = 10.0;
+  double diameter = 2.0f*m_SphereRadius;
+  double sampleIncrX = diameter / samplesPerDim;
+  double sampleIncrY = diameter / samplesPerDim;
+  for ( int j = 0; j <= samplesPerDim; j++ )
+    {
+    double ys = j * sampleIncrY - m_SphereRadius + m_SphereCenter[1];
+    for ( int i = 0; i <= samplesPerDim; i++ )
+      {
+      double xs = i * sampleIncrX - m_SphereRadius + m_SphereCenter[0];
+
+      // Find the intersection z-coordinate values, if they exist.
+      double z1 = 0.0f, z2 = 0.0f;
+      unsigned int numIntersections;
+      numIntersections = IntersectWithVerticalLine(xs, ys, z1, z2);
+
+      if ( numIntersections > 0 )
+        {
+        SphereIntersection intersection;
+        intersection.x = xs;
+        intersection.y = ys;
+        intersection.z1 = z1;
+        intersection.z2 = z2;
+        intersection.numIntersections = numIntersections;
+        m_IntersectionArray.push_back(intersection);
+        }
+      }
+    }
+}
+
+
+template <class TInputImage, class TOutputImage>
+void
+SphereConvolutionFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   // Compute the scan of the convolution kernel.
@@ -171,6 +210,10 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   // Set the inputs for the interpolators
   m_KernelInterpolator->SetInputImage(this->GetInput());
   m_TableInterpolator->SetInputImage(m_ScanImageFilter->GetOutput());
+
+  // Generate the list of intersections of vertical lines and the
+  // sphere.
+  ComputeIntersections();
 }
 
 
@@ -220,72 +263,65 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     return value;
     }
 
-  // Compute bounds of geometry sampling region
-  double xMin = m_SphereCenter[0] - m_SphereRadius;
-  double xMax = m_SphereCenter[0] + m_SphereRadius;
-  double yMin = m_SphereCenter[1] - m_SphereRadius;
-  double yMax = m_SphereCenter[1] + m_SphereRadius;
-
   // Compute maximum z value in the pre-integrated table.
   InputImagePointer scannedImage = m_ScanImageFilter->GetOutput();
   double tableZMax = (scannedImage->GetSpacing()[2] *
               static_cast<double>(scannedImage->GetLargestPossibleRegion().GetSize()[2]-1)) + scannedImage->GetOrigin()[2];
 
-  double samplesPerDim = 10.0;
-  double diameter = 2.0f*m_SphereRadius;
-  double sampleIncrX = diameter / samplesPerDim;
-  double sampleIncrY = diameter / samplesPerDim;
-  for ( double  ys = yMin; ys <= yMax; ys += sampleIncrY )
+  IntersectionArrayConstIterator iter;
+  for ( IntersectionArrayConstIterator iter = m_IntersectionArray.begin();
+        iter != m_IntersectionArray.end();
+        iter++)
     {
-    for ( double xs = xMin; xs <= xMax; xs += sampleIncrX )
+    SphereIntersection intersection = *iter;
+    double xs = intersection.x;
+    double ys = intersection.y;
+    double z1 = intersection.z1;
+    double z2 = intersection.z2;
+    int numIntersections = intersection.numIntersections;
+
+    // Find the intersection z-coordinate values, if they exist.
+    double x = point[0];
+    double y = point[1];
+    double z = point[2];
+
+    if (numIntersections == 2)
       {
+      OutputImagePointType p1, p2;
+      p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z1;
+      p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z2;
 
-      // Find the intersection z-coordinate values, if they exist.
-      double x = point[0];
-      double y = point[1];
-      double z = point[2];
-      double z1 = 0.0f, z2 = 0.0f;
-      unsigned int intersections;
-      intersections = IntersectWithVerticalLine(xs, ys, z1, z2);
+      // Important: z1 is always less than z2, so p1 is always above p2
 
-      if (intersections == 2)
+      // Subtract z-voxel spacing from p2[2] to get the proper behavior
+      // in the pre-integrated PSF table.
+      p2[2] -= scannedImage->GetSpacing()[2];
+
+      // Get values from the pre-integrated table
+      bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
+      bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
+      InputImagePixelType v1 = 0.0;
+      InputImagePixelType v2 = 0.0;
+      if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
+      if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
+
+      if (!v1Inside && v2Inside && p1[2] > tableZMax)
         {
-        OutputImagePointType p1, p2;
-        p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z1;
-        p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z2;
-
-        // Important: z1 is always less than z2, so p1 is always above p2
-
-        // Subtract z-voxel spacing from p2[2] to get the proper behavior
-        // in the pre-integrated PSF table.
-        p2[2] -= scannedImage->GetSpacing()[2];
-
-        // Get values from the pre-integrated table
-        bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
-        bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
-        InputImagePixelType v1 = 0.0;
-        InputImagePixelType v2 = 0.0;
-        if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
-        if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
-
-        if (!v1Inside && v2Inside && p1[2] > tableZMax)
-          {
-          p1[2] = tableZMax - 1e-5;
-          v1 = m_TableInterpolator->Evaluate(p1);
-          }
-        // z - z1 is always larger than z - z2, and integration goes along
-        // positive z, so we return v1 - v2.
-        value += v1 - v2;
+        p1[2] = tableZMax - 1e-5;
+        v1 = m_TableInterpolator->Evaluate(p1);
         }
-      else if (intersections == 1)
-        {
-        OutputImagePointType p;
-        p[0] = x - xs;   p[1] = y - ys;   p[2] = z - z1;
+      // z - z1 is always larger than z - z2, and integration goes along
+      // positive z, so we return v1 - v2.
+      value += v1 - v2;
+      }
+    else if (numIntersections == 1)
+      {
+      OutputImagePointType p;
+      p[0] = x - xs;   p[1] = y - ys;   p[2] = z - z1;
 
-        if (m_KernelInterpolator->IsInsideBuffer(p))
-          {
-          value += m_KernelInterpolator->Evaluate(p);
-          }
+      if (m_KernelInterpolator->IsInsideBuffer(p))
+        {
+        value += m_KernelInterpolator->Evaluate(p);
         }
       }
     }
