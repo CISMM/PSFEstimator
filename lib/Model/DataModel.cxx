@@ -287,10 +287,12 @@ DataModel
 ::SaveBSFImageFile(std::string fileName) {
   TIFFScaleType::Pointer scaler = TIFFScaleType::New();
   scaler->SetInput(m_GibsonLanniBSFSource->GetOutput());
-  double min = GetBSFImageDataMinimum();
-  double max = GetBSFImageDataMaximum();
-  scaler->SetShift(-min);
-  scaler->SetScale(65535.0f / (max - min));
+  //double min = GetBSFImageDataMinimum();
+  //double max = GetBSFImageDataMaximum();
+  //scaler->SetShift(-min);
+  //scaler->SetScale(65535.0f / (max - min));
+  scaler->SetShift(0.0);
+  scaler->SetScale(1.0);
 
   TIFFWriterType::Pointer writer = TIFFWriterType::New();
   writer->SetFileName(fileName.c_str());
