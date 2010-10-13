@@ -775,14 +775,14 @@ PSFEstimator
   QDir dir;
   QString homeDirectory = dir.homePath();
   QString workingDirectory = homeDirectory;
-  workingDirectory.append("/BatchPSFOptimizer-Files");
+  workingDirectory.append("/BatchPSFEstimator-Files");
 
   if (!dir.exists(workingDirectory))
     dir.mkdir(workingDirectory);
 
   QString dateTimeString = QDateTime::currentDateTime().toString(tr("MM-dd-yyyy-hh-mm-ss")); 
   QString sessionFile = workingDirectory + dir.separator() +
-    tr("BatchPSFOptimizer-") + dateTimeString + tr(".psfe");
+    tr("BatchPSFEstimator-") + dateTimeString + tr(".psfe");
 
   // Write the settings file to the working directory
   m_DataModel->SaveSessionFile(sessionFile.toStdString());
@@ -790,21 +790,21 @@ PSFEstimator
   // Wubmit the job to the queue
   QProcess qsub;
   QStringList arguments;
-  arguments << "-N" << "BatchPSFOptimizer";
+  arguments << "-N" << "BatchPSFEstimator";
 
-  QString batchPSFOptimizerExecutable = QCoreApplication::applicationDirPath();
-  batchPSFOptimizerExecutable.append("/BatchPSFOptimizer");
+  QString batchPSFEstimatorExecutable = QCoreApplication::applicationDirPath();
+  batchPSFEstimatorExecutable.append("/BatchPSFEstimator");
 
   QStringList script;
   script <<
     "#$ -S /bin/bash\n" <<
-    "#$ -o $HOME/BatchPSFOptimizer-Files/$JOB_NAME.$JOB_ID\n" <<
+    "#$ -o $HOME/BatchPSFEstimator-Files/$JOB_NAME.$JOB_ID\n" <<
     "#$ -j y\n" <<
     "#$ -pe smp 16\n" <<
 
     "# Run the job.\n" <<
     "date\n" <<
-    batchPSFOptimizerExecutable << " " << sessionFile << "\n" <<
+    batchPSFEstimatorExecutable << " " << sessionFile << "\n" <<
     "date\n"
     ;
 
