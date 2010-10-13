@@ -46,6 +46,8 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
   m_KernelInterpolator = InterpolatorType::New();
   m_TableInterpolator = InterpolatorType::New();
+
+  m_LineSampleSpacing = 10; // 10 nm line spacing
 }
 
 
@@ -164,33 +166,43 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   // Clear the intersection list
   m_IntersectionArray.clear();
 
-  double samplesPerDim = 10.0;
-  double diameter = 2.0f*m_SphereRadius;
-  double sampleIncrX = diameter / samplesPerDim;
-  double sampleIncrY = diameter / samplesPerDim;
-  for ( int j = 0; j <= samplesPerDim; j++ )
+  // Add intersection at origin point
+  AddIntersection(0.0, 0.0);
+
+  // Iterate over the top left quadrant and use reflections to
+  // determine the other points.
+  double eps = 1e-6;
+  for ( double ys = m_LineSampleSpacing; ys < m_SphereRadius - eps; ys += m_LineSampleSpacing)
     {
-    double ys = j * sampleIncrY - m_SphereRadius;
-    for ( int i = 0; i <= samplesPerDim; i++ )
+    for (double xs = m_LineSampleSpacing; xs < m_SphereRadius - eps; xs += m_LineSampleSpacing)
       {
-      double xs = i * sampleIncrX - m_SphereRadius;
-
-      // Find the intersection z-coordinate values, if they exist.
-      double z1 = 0.0f, z2 = 0.0f;
-      unsigned int numIntersections;
-      numIntersections = IntersectWithVerticalLine(xs, ys, z1, z2);
-
-      if ( numIntersections > 0 )
-        {
-        SphereIntersection intersection;
-        intersection.x = xs;
-        intersection.y = ys;
-        intersection.z1 = z1;
-        intersection.z2 = z2;
-        intersection.numIntersections = numIntersections;
-        m_IntersectionArray.push_back(intersection);
-        }
+      AddIntersection( xs,  ys);
+      AddIntersection(-xs,  ys);
+      AddIntersection( xs, -ys);
+      AddIntersection(-xs, -ys);
       }
+    }
+}
+
+
+template <class TInputImage, class TOutputImage>
+void
+SphereConvolutionFilter<TInputImage,TOutputImage>
+::AddIntersection(double xs, double ys) {
+  // Find the intersection z-coordinate values, if they exist.
+  double z1 = 0.0f, z2 = 0.0f;
+  unsigned int numIntersections;
+  numIntersections = IntersectWithVerticalLine(xs, ys, z1, z2);
+
+  if ( numIntersections > 0 )
+    {
+    SphereIntersection intersection;
+    intersection.x = xs;
+    intersection.y = ys;
+    intersection.z1 = z1;
+    intersection.z2 = z2;
+    intersection.numIntersections = numIntersections;
+    m_IntersectionArray.push_back(intersection);
     }
 }
 
@@ -310,16 +322,6 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
       // z - z1 is always larger than z - z2, and integration goes along
       // positive z, so we return v1 - v2.
       value += v1 - v2;
-      }
-    else if (numIntersections == 1)
-      {
-      OutputImagePointType p;
-      p[0] = x - xs;   p[1] = y - ys;   p[2] = z - z1;
-
-      if (m_KernelInterpolator->IsInsideBuffer(p))
-        {
-        value += m_KernelInterpolator->Evaluate(p);
-        }
       }
     }
 

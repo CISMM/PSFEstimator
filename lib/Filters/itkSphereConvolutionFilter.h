@@ -213,6 +213,9 @@ protected:
   InterpolatorPointer     m_KernelInterpolator;
   InterpolatorPointer     m_TableInterpolator;
 
+  /* Vertical line sample spacing in X and Y. */
+  double m_LineSampleSpacing;
+
   /** Contains intersection data of a grid of sample points in the
    * xy-plane. */
   IntersectionArrayType m_IntersectionArray;
@@ -231,6 +234,11 @@ protected:
   virtual void GenerateOutputInformation();
 
   void ComputeIntersections();
+
+  /** Helper method for ComputeIntersections() method. Adds an
+   * intersection to the m_IntersectionArray if an intersection
+   * occurs. */
+  void AddIntersection(double xs, double ys);
 
   virtual void BeforeThreadedGenerateData();
 
