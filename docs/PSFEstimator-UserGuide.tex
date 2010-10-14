@@ -41,7 +41,9 @@
 
 \section{Introduction}
 
-PSF Estimator is a program for computing a noise-free estimate of a point-spread function (PSF) of widefield and confocal microscopes. It works by fitting an analytical model of the PSF to an image of a sub-diffraction-limit-sized fluorescent bead. The fitting is a a maximum likelihood estimate that assumes noise is either Gaussian distributed;.
+PSF Estimator is a program for computing a noise-free estimate of a point-spread function (PSF) of widefield and confocal microscopes. It works by fitting an analytical model of the \emph{bead-spread function} to an image of a sub-diffraction-limit-sized fluorescent bead. The bead-spread function (BSF) is calculated as the convolution of the PSF with a sphere whose radius is the same as the radius of the physical bead used to produce the measured image.
+
+The fitting process minimizes the mean squared difference between pixels in the measured image and corresponding pixels in the calculated image. This process yields a maximum likelihood estimate of the PSF (assuming that noise is Gaussian distributed).
 
 \subsection{System Requirements}
 
@@ -51,7 +53,7 @@ Your system should have at least 150 MB of hard drive space free to install the 
 
 \subsection{Acknowledgements}
 
-PSF Estimator \ProgramVersion is developed and maintained by the \href{http://www.cismm.org}{Center for Computer Integrated Systems for Microscopy and Manipulation}, a \href{http://www.nibib.nih.gov/}{National Institute of Biomedical Imaging and Bioengineering Resource}, award number P41-EB002025.
+PSF Estimator \ProgramVersion is developed and maintained by the \href{http://www.cismm.org}{Center for Computer Integrated Systems for Microscopy and Manipulation}, a \href{http://www.nibib.nih.gov/}{National Institute of Biomedical Imaging and Bioengineering Resource}, award number P41-EB002025. Additional work was supported by the National Library of Medicine Insight Toolkit Adapters, Algorithms, Data, and Distribution program.
 
 \section{Installation}
 
@@ -104,7 +106,7 @@ The main program window is organized into several sections.
 
 \subsubsection{Visualization Panel}
 
-The visualization panel (center) displays PSFs via three orthogonal cutting planes. A measured PSF imported into the program, a calculated PSF, or a calculated bead-spread function (BSF, the image of a spherical bead convolved with the PSF) can be displayed here. Only one of these images may displayed at one time; switching between them enables visual inspection of the PSF fitting results.
+The \emph{Visualization Panel} (center, Figure \ref{fig:ProgramWindow}) displays PSFs via three orthogonal cutting planes. A measured PSF imported into the program, a calculated PSF, or a calculated bead-spread function (BSF, the image of a spherical bead convolved with the PSF) can be displayed here. Only one of these images may displayed at one time; switching between them enables visual inspection of the PSF fitting results.
 
 \subsubsection{Display Settings}
 
@@ -112,16 +114,15 @@ The \emph{Display Settings} control which PSF image is displayed in the \emph{Vi
 
 \begin{description}
 
-  \item[Image] \hfill \\
-   
+  \item[Image] \hfill
    \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{images/ImageControls}
-    \caption{Image controls.}
+    \caption{The image controls determine which image is displayed in the \emph{Visualization Panel}.}
     \label{fig:ImageControls}
   \end{figure}
  
-  These controls let you choose which image to display: the measured bead-spread function, the point-spread function corresponding to the current PSF settings, or the bead-spread function corresponding to the current PSF settings.
+The controls shown in Figure \ref{fig:ImageControls} let you choose which image to display: the measured bead-spread function, the point-spread function corresponding to the current PSF settings, the bead-spread function corresponding to the current PSF settings, or the difference between the measured image and the bead-spread function. If no measured image is loaded in the program, then the \emph{Measured Bead-Spread Function} and \emph{Measured Minus Calculated BSF} are disabled.
 
   \item[Contrast] \hfill \\
   
@@ -132,7 +133,7 @@ The \emph{Display Settings} control which PSF image is displayed in the \emph{Vi
     \label{fig:ContrastControls}
   \end{figure}
   
-  Controls which PSF/BSF image voxel value maps to black and which voxel value maps to white.
+  The contrast controls (Figure \ref{fig:ContrastControls}) determine which PSF/BSF image voxel value maps to black and which voxel value maps to white. The range of the controls is set to the minimum and maximum voxel values in the image selected in the \emph{Image} panel.
 
   \item[Image Plane Settings] \hfill \\
   
@@ -143,7 +144,7 @@ The \emph{Display Settings} control which PSF image is displayed in the \emph{Vi
     \label{fig:ImagePlaneSettingsControls}
   \end{figure}
   
-  Control which slices through the image in the $yz$, $xz$, and $xy$ planes are displayed and whether those image planes are displayed. The range for the \emph{X Plane} setting is from 1 to the number of voxels into the $x$-direction, and the range for the \emph{Y Plane} and \emph{Z Plane} are similarly defined.
+  Shown in Figure \ref{fig:ImagePlaneSettingsControls}, these controls determine which slices through the image in the $yz$, $xz$, and $xy$ planes are displayed and whether those image planes are displayed. The range for the \emph{X Plane} setting is from 1 to the number of voxels into the $x$-direction, and the range for the \emph{Y Plane} and \emph{Z Plane} are similarly defined.
 
   \item[Outline] \hfill \\
   
@@ -191,7 +192,40 @@ The \emph{Image Information} control panel displays information about the image 
   \label{fig:PSFSettingsControlPanel}
 \end{figure}
 
-The PSF settings table is used to set parameters for the analytical PSF and BSF models. These parameters are described in Section \ref{sec:PointSpreadFunctionSettings} of this manual.
+The PSF settings table is used to set parameters for the analytical PSF and BSF models. The table has four columns giving the parameter name, parameter value, unit of measurement of the parameter, and a checkbox indicating whether the parameter will be optimized. Descriptions of individual parameters for PSF models supported by the program are described in Section \ref{sec:PointSpreadFunctionSettings} of this manual.
+
+The remaining controls are described below.
+
+\begin{description}
+
+  \item[Custom Z slice positions] \hfill \\
+  
+When checked, the \emph{Use custom Z slice positions} checkbox adds one PSF parameter in the PSF settings table for each Z slice in the image. This feature can be used to fit image stacks obtained on microscopes with motorized stages that do not produce a uniform Z spacing at nanometer accuracy.
+
+  \item[Reset Custom Slice Positions] \hfill \\
+  
+When clicked, this button resets the custom Z slice position parameters in the PSF settings table to be evenly spaced with the spacing determined by the \emph{Z slice spacing} parameter. The center of the image along the Z dimension is defined to be at position Z = 0. This button is enabled only when the \emph{Custom Z slice positions} option is checked.
+
+  \item[Estimate PSF Center] \hfill \\
+  
+Clicking this button sets the center of the BSF to the center of the voxel with highest intensity in the measured BSF image.
+
+  \item[Apply Changes] \hfill \\
+  
+  Because the computation of the BSF may take several seconds, the BSF image is not updated as soon as a parameter value is changed. Instead, the BSF is updated when the \emph{Apply Changes} button is clicked. This button is enabled only after a parameter has changed.
+  
+  \item[Optimize PSF Parameters] \hfill \\
+  
+  This button starts an optimization routine that searches for parameter values that minimize an objective function. Only parameters selected for optimization (those whose checkbox in the \emph{Optimize?} column of the PSF settings table is checked) are modified by the optimization routine. Optimizing a few parameters is faster than optimizing numerous parameters.
+  
+  \item[Objective Function Value] \hfill \\
+  
+  This displays the value of the objective function used for model fitting. Lower numbers are better.
+
+\end{description}
+
+
+
 
 \subsection{Menu Bar}
 
@@ -203,7 +237,7 @@ The \emph{File Menu} features options for creating PSFs of arbitrary size, openi
 
 \begin{description}
   \item[New Image] \hfill \\
-  Creates a new PSF with default settings. The size and voxel spacing of the new image can be set prior to the creation of the image. This option is useful for generating a theoretical PSF at arbitrary sampling rates when the PSF parameters are known.
+  Creates a new PSF with default settings. The size and voxel spacing of the new image are set prior to the creation of the image. This option is useful for generating a theoretical PSF at arbitrary voxel size when the PSF parameters are known.
 
   \item[Open Image...] \hfill \\
   Opens image data. 3D TIFF, VTK, and LSM files are supported. Sequences of 2D TIFF images currently cannot be imported.
@@ -282,14 +316,14 @@ The \emph{File Menu} features options for creating PSFs of arbitrary size, openi
   \item[Bead center Z] \hfill \\
    The position of the bead center in the $z$ direction. The origin is defined to be the center of the measured BSF image.
     
-  \item[Shear in X] \hfill \\
+  \item[Shear X] \hfill \\
 Models lateral stage movement in the $x$-direction as a linear function directly proportional to the $z$-depth of the focal plane. The $x$-offset in the shear direction is defined as
 \begin{equation}
 x_{\mathrm{offset}} = m_{x} z
 \end{equation}
 where $m_{x}$ is the \emph{Shear in X} setting value and $z$ is the focal plane depth. The $x_{\mathrm{offset}}$ is added to the $x$-coordinate of each voxel position during image generation.
 
-  \item[Shear in Y] \hfill \\
+  \item[Shear Y] \hfill \\
    Same as \emph{Shear in X} but in the $y$-direction.
 
   \item[Emission Wavelength] \hfill \\
@@ -337,15 +371,63 @@ where $m_{x}$ is the \emph{Shear in X} setting value and $z$ is the focal plane 
   \item[Actual Distance from Back Focal Plane to Detector] \hfill \\
    The actual distance from the back focal plane of the objective lens to the CCD camera.
   
-  \item[Background Intensity] \hfill \\
-   A uniform background intensity added to each voxel intensity value.
+  \item[Intensity Shift] \hfill \\
+   A uniform background intensity added to each voxel intensity value. This value is added to the image before the \emph{Intensity Scale} parameter is applied. The parameter value is typically found via optimization.
   
-  \item[Maximum Intensity] \hfill \\
-   The maximum intensity value in calculated PSF or BSF.
-      
+  \item[Intensity Scale] \hfill \\
+   This parameter is a scale factor for each voxel intensity. Each voxel intensity is multiplied by this value after the \emph{Intensity Shift} value is added to it. The parameter value is typically found via optimization.
+ 
 \end{description}
 
 \subsection{Gaussian PSF Model for Confocal Microscopes}
+
+A Gaussian PSF model suitable for confocal microscope PSF estimation will be available in a future version of the PSF Estimator.
+
+\section{Using PSF Estimator}
+
+This section provides some helpful tips for using the program.
+
+\subsection{Preparing Data}
+
+PSF Estimator loads only single files representing a 3D image. Unfortunately, sequences of 2D images cannot be loaded. ImageJ can be used to convert just about any image used in microscopy to a 3D TIF image suitable for importing into PSF Estimator.
+
+\subsection{Locating a Suitable Bead in an Image}
+
+Depending on your protocol for imaging sub-diffraction-limited beads to obtain a point-spread function, your 3D image of fluorescent beads may have numerous beads in the field of view. For performance reasons, you'll want to crop the full 3D image in the X and Y dimensions, but do not crop in Z; you will want as much out-of-focus information as you can get. The cropped region should be sufficiently large to ensure that the full extent of the PSF (wherever the intensities are above the mean background intensity) is retained. Since PSF Estimator is designed to fit the PSF to an image of a single bead, it is important to crop out a region of a bead that is well-separated from neighboring beads. PSF Estimator does not have a feature to crop images, so an external image tool is required for this step. ImageJ can crop 3D images easily.
+
+\subsection{Importing the Image}
+
+Select the \emph{Open Image...} item in the \emph{File} menu. In the file chooser that appears, select the bead image you wish to load.
+
+\subsection{Setting Initial Parameters}
+
+It is likely that you know values for some of the parameters, such as \emph{X pixel size}, \emph{Y pixel size}, and \emph{Z slice spacing}. Set the values you know in the PSF settings table. Depending on the PSF model you are fitting, you may know other parameter values as well. Examples include \emph{Numerical Aperture} and \emph{Design Cover Slip Refractive Index} in the Gibson-Lanni PSF model. Set these values according to what you know about the microscope.
+
+Click the \emph{Estimate PSF Center} button to estimate the bead center parameters.
+
+\subsection{Optimization}
+
+Fitting the PSF to the imported bead image involves an optimization process. Experience has shown that performing several separate optimizations is helpful for obtaining a good PSF fit quickly. These sub-optimizations are described below.
+
+\subsubsection{Optimize Intensity Shift and Intensity Scale}
+
+These parameters are perhaps the most important parameters to estimate accurately. They modify the voxel intensities via a linear transform to match the intensity range of the measured image. Assuming the bead center is close to the true center of the bead, you can optimize just these two parameters to start with. Modifications to the voxel intensities is a relatively quick operation, so this step will not usually take long.
+
+\subsubsection{Optimize Position, Intensity Shift and Intensity Scale}
+
+The optimal \emph{Intensity Shift} and \emph{Intensity Scale} values depend on the bead position being accurate. The accuracy of the bead position, in turn, depends on the intensity shift and scale being correct. Optimizing these parameters together is a helpful next step.
+
+\subsubsection{Optimize Position, Shear, Intensity Shift and Intensity Scale}
+
+If your microscope stage moves laterally as a linear function of its Z position, then you will want to recover the parameters of this lateral motion. The \emph{Shear X} and \emph{Shear Y} parameters define the rate of lateral motion relative to the motion in Z. Optimizing the shear parameters, together with the position and intensity parameters, is often a good next step.
+
+\subsubsection{Optimize Numerical Aperture}
+
+The \emph{Numerical Aperture} parameter has a dramatic effect on the overall size of the bead-spread function. Optimizing this parameter alone is a good idea after the previous sub-optimizations.
+
+\subsubsection{Optimize Most Parameters}
+
+Once the previous suggested sub-optimizations have been run, you can select most of the parameters in the PSF model for optimization. The optimization routine can handle the relatively large number of parameters in the Gibson-Lanni model well with a set of starting parameters close to the true parameter values. Your knowledge of the microscope settings along with the results of the previous sub-optimizations usually provide a good set of starting parameters.
 
 \section{Version History}
 
