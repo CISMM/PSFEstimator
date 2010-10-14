@@ -257,8 +257,8 @@ protected:
 
   void PrecomputeOPDTerms(ComplexType* opdCache, double z_o);
 
-  ComplexType IntegralTerm(ComplexType* opdCache, double K, double a, double z_d,
-			 int rhoIndex, double h, double r_o, double z_o);
+  inline ComplexType IntegralTerm(ComplexType* opdCache, double K, double a, double z_d,
+                                  int rhoIndex, double h, double r_o, double z_o);
 
   /** Computes the light intensity at a specified point. */
   double ComputeSampleValue(ComplexType* opdCache, PointType& point);

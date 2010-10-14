@@ -313,7 +313,7 @@ GibsonLanniPSFImageSource<TOutputImage>
       zSlice = index[2];
       }
 
-    it.Set( ComputeIntegratedPixelValue(opdCache, point) );
+    it.Set( ComputeSampleValue(opdCache, point) );
     progress.CompletedPixel();
     }
 }
