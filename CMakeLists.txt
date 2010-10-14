@@ -60,11 +60,7 @@ ADD_SUBDIRECTORY(lib)
 #######################################
 ADD_SUBDIRECTORY(apps)
 
-
 #######################################
-# Testing components
+# Documentation
 #######################################
-#OPTION (BUILD_IT_TESTS "Include PSFEstimator unit tests" ON)
-#IF (BUILD_IT_TESTS)
-#    SUBDIRS(TestSuite Tests)
-#ENDIF (BUILD_IT_TESTS)
+ADD_SUBDIRECTORY(docs)
