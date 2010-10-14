@@ -43,7 +43,7 @@ IF ( EXISTS "${USER_GUIDE_FILE}" )
     DESTINATION . )
   SET( CPACK_NSIS_MENU_LINKS 
     "${USER_GUIDE_NAME}" "PSF Estimator ${PSFEstimator_VERSION_STRING} User Guide" 
-    "http://www.cismm.org/downloads/?dl_cat=5" "PSF Estimator Download Site"
+    "http://www.cismm.org/downloads/?dl_cat=15" "PSF Estimator Download Site"
     "http://www.cismm.org/" "CISMM Web Site"
   )
 
