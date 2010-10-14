@@ -224,7 +224,7 @@ QPointSpreadFunctionPropertyTableModel
 ::headerData(int section, Qt::Orientation orientation, int role) const {
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
     switch (section) {
-    case 0: return QVariant("Property"); break;
+    case 0: return QVariant("Parameter"); break;
     case 1: return QVariant("Value"); break;
     case 2: return QVariant("Units"); break;
     case 3: return QVariant("Optimize?"); break;
