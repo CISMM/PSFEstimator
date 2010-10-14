@@ -224,7 +224,7 @@ PSFEstimator
   gui->measuredBSFRadioButton->setEnabled(hasMeasuredImage);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
-  gui->measuredMinusCalculatedBSFRadioButton->setEnabled(true);
+  gui->measuredMinusCalculatedBSFRadioButton->setEnabled(hasMeasuredImage);
 
   gui->microscopeTypeWidget->setEnabled(true);
   gui->useRadialInterpolationCheckBox->setEnabled(true);
@@ -351,6 +351,10 @@ PSFEstimator
     return;
   }
   SaveFileChooserDirectory(fileName);
+
+  if (!fileName.toLower().endsWith(tr(".psfe"))) {
+    fileName.append(tr(".psfe"));
+  }
 
   m_DataModel->SaveSessionFile(fileName.toStdString());
   QString message("Saved session file '");
