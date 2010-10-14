@@ -1,10 +1,21 @@
 # Qt frameworks
 SET( QT_FRAMEWORKS
+  Qt3Support
+  QtAssistant
   QtCore
+  QtDBus
   QtGui
+  QtHelp
+  QtNetwork
+  QtOpenGL
+  QtScript
+  QtScriptTools
   QtSql
   QtSvg
+  QtWebKit
   QtXml
+  QtXMLPatterns
+  phonon
 )
 
 FOREACH( FRAMEWORK ${QT_FRAMEWORKS} )
@@ -36,10 +47,19 @@ INSTALL( FILES
 
 # Include all dynamic libraries from VTK.
 FILE( GLOB VTK_LIBRARIES ${VTK_LIBRARY_DIRS}/*.dylib )
-FOREACH( LIBRARY ${VTK_LIBRARIES} )	
+FOREACH( LIBRARY ${VTK_LIBRARIES} )
   INSTALL( FILES
      "${LIBRARY}"
      DESTINATION lib
+  )
+ENDFOREACH( LIBRARY )
+
+# Include all dynamic libraries from ITK.
+FILE (GLOB ITK_LIBRARIES ${ITK_LIBRARY_DIRS}/*.dylib )
+FOREACH( LIBRARY ${ITK_LIBRARIES} )
+  INSTALL( FILES
+    "${LIBRARY}"
+    DESTINATION lib
   )
 ENDFOREACH( LIBRARY )
 
@@ -52,6 +72,15 @@ FOREACH( LIBRARY ${HISTORY_LIBS} )
     DESTINATION lib
   )
 ENDFOREACH( LIBRARY )
+
+
+SET( USER_GUIDE_FILE "${PSFEstimator_BINARY_DIR}/docs/PSFEstimator-${PSFEstimator_VERSION_STRING}-UserGuide.pdf" )
+IF ( EXISTS "${USER_GUIDE_FILE}" )
+  INSTALL( FILES "${PSFEstimator_BINARY_DIR}/docs/PSFEstimator-${PSFEstimator_VERSION_STRING}-UserGuide.pdf"
+    DESTINATION "../../../" )
+ELSE ( EXISTS "${USER_GUIDE_FILE}" )
+  MESSAGE( WARNING "Could not find the user guide PDF file. Please generate it by running LaTeX on ${PSFEstimator_BINARY_DIR}/docs/PSFEstimator-${PSFEstimator_VERSION_STRING}-UserGuide.tex" )
+ENDIF ( EXISTS "${USER_GUIDE_FILE}" )
 
 
 SET( CPACK_GENERATOR "Bundle" )
