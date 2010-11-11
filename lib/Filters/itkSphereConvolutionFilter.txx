@@ -39,6 +39,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   m_ShearX = 0.0f;
   m_ShearY = 0.0f;
   m_UseCustomZCoordinates = false;
+  m_VoxelSamplesPerDimension = 2;
 
   m_ScanImageFilter = ScanImageFilterType::New();
   m_ScanImageFilter->SetScanDimension(2);
@@ -334,8 +335,30 @@ double
 SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ComputeIntegratedVoxelValue(OutputImagePointType& point)
 {
-  // TODO - integrate over voxel xy-plane area
-  return ComputeSampleValue(point);
+  // Take 9 samples over the CCD element centered at the point
+  // parameter.
+  double sum = 0.0;
+
+  int numSamples = this->m_VoxelSamplesPerDimension;
+  double dx = this->GetSpacing()[0] /
+    static_cast<double>(numSamples);
+  double dy = this->GetSpacing()[1] /
+    static_cast<double>(numSamples);
+
+  OutputImagePointType samplePoint;
+  samplePoint[2] = point[2];
+  for (int j = 0; j < numSamples; j++)
+    {
+    samplePoint[1] = point[1]-(0.5*this->GetSpacing()[1]) + (j+0.5)*dy;
+    for (int i = 0; i < numSamples; i++)
+      {
+      samplePoint[0] = point[0]-(0.5*this->GetSpacing()[0]) + (i+0.5)*dx;
+
+      sum += ComputeSampleValue(samplePoint);
+      }
+    }
+
+  return sum;
 }
 
 

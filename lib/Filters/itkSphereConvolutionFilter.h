@@ -189,9 +189,13 @@ public:
   void SetZCoordinate(unsigned int index, double coordinate);
   double GetZCoordinate(unsigned int index);
 
-    /** Get/set use of custom z coordinates. */
+  /** Get/set use of custom z coordinates. */
   itkSetMacro(UseCustomZCoordinates, bool);
   itkGetMacro(UseCustomZCoordinates, bool);
+
+  /** Get/set number of voxel samples per dimension. */
+  itkSetMacro(VoxelSamplesPerDimension, int);
+  itkGetMacro(VoxelSamplesPerDimension, int);
 
 protected:
   SphereConvolutionFilter();
@@ -204,14 +208,18 @@ protected:
   OutputImagePointType   m_SphereCenter; // the center of the sphere
   double                 m_SphereRadius; // the radius of the sphere
 
-  double              m_ShearX;      // shear in the x direction w.r.t. z
-  double              m_ShearY;      // shear in the y direction w.r.t. z
-  std::vector<double> m_ZCoordinate; // z-slice coordinates
-  bool                m_UseCustomZCoordinates;
+  double                 m_ShearX;      // shear in the x direction w.r.t. z
+  double                 m_ShearY;      // shear in the y direction w.r.t. z
+  std::vector<double>    m_ZCoordinate; // z-slice coordinates
+  bool                   m_UseCustomZCoordinates;
 
-  ScanImageFilterPointer  m_ScanImageFilter;
-  InterpolatorPointer     m_KernelInterpolator;
-  InterpolatorPointer     m_TableInterpolator;
+  /** Defines the number of samples per dimension to use to
+   *  approximate the integrated intensity in a voxel. */
+  int                    m_VoxelSamplesPerDimension;
+
+  ScanImageFilterPointer m_ScanImageFilter;
+  InterpolatorPointer    m_KernelInterpolator;
+  InterpolatorPointer    m_TableInterpolator;
 
   /* Vertical line sample spacing in X and Y. */
   double m_LineSampleSpacing;
