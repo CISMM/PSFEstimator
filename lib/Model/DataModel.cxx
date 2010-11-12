@@ -86,7 +86,10 @@ DataModel
   config.Parse(fileName);
 
   // Read the settings from the configuration structure
-  LoadImageFile(config.GetValue("FileInfo", "FileName"));
+  bool success = LoadImageFile(config.GetValue("FileInfo", "FileName"));
+  if (!success) {
+    return false;
+  }
 
   SetConfiguration(config);
 
@@ -208,13 +211,18 @@ DataModel
 }
 
 
-void
+bool
 DataModel
 ::LoadImageFile(std::string fileName) {
   m_ImageFileName = fileName;
   ScalarFileReaderType::Pointer reader = ScalarFileReaderType::New();
   reader->SetFileName(fileName.c_str());
-  reader->Update();
+
+  try {
+    reader->Update();
+  } catch (...) {
+    return false;
+  }
   SetMeasuredImageData(reader->GetOutput());
 
   // Connect this image data to the various pipelines.
@@ -262,6 +270,8 @@ DataModel
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
+
+  return true;
 }
 
 

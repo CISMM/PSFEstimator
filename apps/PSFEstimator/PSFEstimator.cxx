@@ -320,8 +320,11 @@ PSFEstimator
   }
   SaveFileChooserDirectory(fileName);
 
-  // Should probably report if opening the session file failed.
-  m_DataModel->LoadSessionFile(fileName.toStdString());
+  bool success = m_DataModel->LoadSessionFile(fileName.toStdString());
+  if (!success) {
+    m_ErrorDialog.showMessage(tr("Error loading session file. Please check that the image file path is valid."));
+    return;
+  }
 
   m_PSFPropertyTableModel->InitializeSettingsCache();
   m_PSFPropertyTableModel->Refresh();

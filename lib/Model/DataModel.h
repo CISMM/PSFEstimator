@@ -109,7 +109,7 @@ public:
 
   void CreateImageFile(int xSize, int ySize, int zSize,
                        double xSpacing, double ySpacing, double zSpacing);
-  void LoadImageFile(std::string fileName);
+  bool LoadImageFile(std::string fileName);
   void SavePSFImageFile(std::string fileName);
   void SaveBSFImageFile(std::string fileName);
 
