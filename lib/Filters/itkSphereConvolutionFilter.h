@@ -218,7 +218,6 @@ protected:
   int                    m_VoxelSamplesPerDimension;
 
   ScanImageFilterPointer m_ScanImageFilter;
-  InterpolatorPointer    m_KernelInterpolator;
   InterpolatorPointer    m_TableInterpolator;
 
   /* Vertical line sample spacing in X and Y. */

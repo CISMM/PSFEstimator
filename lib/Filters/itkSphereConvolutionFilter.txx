@@ -45,7 +45,6 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   m_ScanImageFilter->SetScanDimension(2);
   m_ScanImageFilter->SetScanOrderToIncreasing();
 
-  m_KernelInterpolator = InterpolatorType::New();
   m_TableInterpolator = InterpolatorType::New();
 
   m_LineSampleSpacing = 10; // 10 nm line spacing
@@ -218,7 +217,6 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   m_ScanImageFilter->UpdateLargestPossibleRegion();
 
   // Set the inputs for the interpolators
-  m_KernelInterpolator->SetInputImage(this->GetInput());
   m_TableInterpolator->SetInputImage(m_ScanImageFilter->GetOutput());
 
   // Generate the list of intersections of vertical lines and the
