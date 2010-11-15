@@ -342,6 +342,7 @@ GibsonLanniBSFImageSource<TOutputImage>
   profileOrigin[1] = 0.0;
   long maxRadialSize = Math::Ceil<long>(maxRadialDistance / profileSpacing[0]);
   profileSize[0] = maxRadialSize;
+  profileSize[1] = 1;
 
   m_PSFSource->SetSize(profileSize);
   m_PSFSource->SetSpacing(profileSpacing);
