@@ -56,7 +56,8 @@ GibsonLanniBSFImageSource<TOutputImage>
   m_ExtrusionFilter->SetInput(m_PSFSource->GetOutput());
 
   m_Convolver = ConvolverType::New();
-  m_Convolver->SetInput(m_ExtrusionFilter->GetOutput());
+  //m_Convolver->SetInput(m_ExtrusionFilter->GetOutput());
+  m_Convolver->SetInput(m_PSFSource->GetOutput());
 
   m_RescaleFilter = RescaleImageFilterType::New();
   m_RescaleFilter->SetInput(m_Convolver->GetOutput());

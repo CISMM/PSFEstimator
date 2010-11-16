@@ -295,9 +295,19 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
     if (numIntersections == 2)
       {
-      OutputImagePointType p1, p2;
+      Point<float, ImageDimension> p1, p2;
       p1[0] = x - xs;   p1[1] = y - ys;   p1[2] = z - z1;
       p2[0] = x - xs;   p2[1] = y - ys;   p2[2] = z - z2;
+
+      // If the input image is one slice thick in the xz-plane, assume
+      // radial interpolation is desired and change the lookup table
+      // accordingly.
+      if ( this->GetInput()->GetLargestPossibleRegion().GetSize()[1] == 1 )
+        {
+        double r = sqrt(p2[0]*p2[0] + p2[1]*p2[1]);
+        p1[0] = r; p1[1] = 0.0;
+        p2[0] = r; p2[1] = 0.0;
+        }
 
       // Important: z1 is always less than z2, so p1 is always above p2
 
@@ -306,12 +316,15 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
       p2[2] -= scannedImage->GetSpacing()[2];
 
       // Get values from the pre-integrated table
-      bool v1Inside = m_TableInterpolator->IsInsideBuffer(p1);
-      bool v2Inside = m_TableInterpolator->IsInsideBuffer(p2);
+      typename InterpolatorType::ContinuousIndexType p1Index, p2Index;
+      bool v1Inside = m_TableInterpolator->GetInputImage()->
+        TransformPhysicalPointToContinuousIndex(p1, p1Index);
+      bool v2Inside = m_TableInterpolator->GetInputImage()->
+        TransformPhysicalPointToContinuousIndex(p2, p2Index);
       InputImagePixelType v1 = 0.0;
       InputImagePixelType v2 = 0.0;
-      if (v1Inside) v1 = m_TableInterpolator->Evaluate(p1);
-      if (v2Inside) v2 = m_TableInterpolator->Evaluate(p2);
+      if (v1Inside) v1 = m_TableInterpolator->EvaluateAtContinuousIndex(p1Index);
+      if (v2Inside) v2 = m_TableInterpolator->EvaluateAtContinuousIndex(p2Index);
 
       if (!v1Inside && v2Inside && p1[2] > tableZMax)
         {
