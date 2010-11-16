@@ -93,6 +93,35 @@ public:
     return outPt;
   }
 
+  /**  Method to transform a vector. */
+  virtual OutputVectorType    TransformVector(const InputVectorType &) const
+  {
+    itkExceptionMacro(<< "TransformVector method not implemented for RotationalExtrusionTransform");
+  }
+
+  /**  Method to transform a vnl_vector. */
+  virtual OutputVnlVectorType TransformVector(const InputVnlVectorType &) const
+  {
+    itkExceptionMacro(<< "TransformVector method not implemented for RotationalExtrusionTransform");
+  }
+
+  /**  Method to transform a CovariantVector. */
+  virtual OutputCovariantVectorType TransformCovariantVector(const InputCovariantVectorType &) const
+  {
+    itkExceptionMacro(<< "TransformCovariantVector method not implemented for RotationalExtrusionTransform");
+  }
+
+  virtual void SetParameters(const ParametersType& params) {}
+
+  virtual void SetFixedParameters(const ParametersType& params) {}
+
+  virtual const JacobianType & GetJacobian (const InputPointType &) const
+  {
+    this->m_Jacobian.Fill(0.0);
+
+    return this->m_Jacobian;
+  }
+
 protected:
   /** Construct a RotationalExtrusionTransform object
    *
