@@ -33,6 +33,18 @@
 
 DataModel
 ::DataModel() {
+  // ITK will detect the number of cores on the system and set the
+  // global number of threads to the number of cores by default.
+  // Here we can override that setting if the proper environment
+  // variable is set.
+  char *var = getenv("PSFEstimator_THREADS");
+  if (var) {
+    int numberOfThreads = atoi(var);
+    if (numberOfThreads > 0)
+      SetNumberOfThreads(numberOfThreads);
+  }
+
+
   m_MeasuredImageData = NULL;
 
   m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
@@ -56,17 +68,6 @@ DataModel
   m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
 
   SetInitialSimplexDeltas();
-
-  // ITK will detect the number of cores on the system and set it by default.
-  // Here we can override that setting if the proper environment variable is
-  // set.
-  char *var = getenv("PSFEstimator_THREADS");
-  if (var) {
-    int numberOfThreads = atoi(var);
-    if (numberOfThreads > 0)
-      SetNumberOfThreads(numberOfThreads);
-  }
-
 }
 
 
