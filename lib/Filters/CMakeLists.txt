@@ -1,5 +1,4 @@
 SET(filterSrc
-  PassThroughFilter.cxx
   itkGibsonLanniBSFImageSource.txx
   itkGibsonLanniPSFImageSource.txx
   itkImageToParametricImageSourceMetric.txx
@@ -8,5 +7,3 @@ SET(filterSrc
   itkScanImageFilter.txx
   itkSphereConvolutionFilter.txx
 )
-
-ADD_LIBRARY(psfeFilter ${filterSrc})

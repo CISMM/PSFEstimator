@@ -58,7 +58,7 @@ ENDIF (WIN32)
 
 ADD_EXECUTABLE( PSFEstimator
   ${WinIcon}
-  ${QtGuiSrcs} 
+  ${QtGuiSrcs}
   ${UISrcs}
   ${MOCSrcs}
 )
@@ -79,7 +79,6 @@ TARGET_LINK_LIBRARIES( PSFEstimator
   ITKBasicFilters
   ITKIO
   ITKNumerics
-  psfeFilter
   psfeModel
   psfeIO
   psfeVisualization

@@ -7,6 +7,5 @@ TARGET_LINK_LIBRARIES( BatchPSFEstimator
   ITKIO
   ITKNumerics
   psfeModel
-  psfeFilter
   psfeIO
 )
