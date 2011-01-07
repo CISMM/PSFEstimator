@@ -200,7 +200,7 @@ public:
   /** Specify the design immersion oil thickness (in micrometers). */
   itkSetMacro(DesignImmersionOilThickness, double);
 
-  /** Get the actual immersion oil refractive index (in micrometers). */
+  /** Get the design immersion oil refractive index (in micrometers). */
   itkGetConstMacro(DesignImmersionOilThickness, double);
 
   /** Specify the design specimen layer refractive index (unitless). */
