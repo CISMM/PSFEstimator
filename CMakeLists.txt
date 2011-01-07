@@ -39,15 +39,13 @@ ELSE(VTK_FOUND)
 ENDIF (VTK_FOUND)
 
 #######################################
-# Personal filter library and support classes.
+# Project library and support classes.
 #
-# FibrinAnalysis is split up into several logical groups.
-# apps      - a place for various applications related to the main application
+# PSFEstimator is split up into several logical groups.
 #######################################
 INCLUDE_DIRECTORIES (
     ${PSFEstimator_SOURCE_DIR}/lib
-    ${PSFEstimator_SOURCE_DIR}/lib/Filters
-    ${PSFEstimator_SOURCE_DIR}/lib/Filters/itk
+    ${PSFEstimator_SOURCE_DIR}/lib/ITK
     ${PSFEstimator_SOURCE_DIR}/lib/IO
     ${PSFEstimator_SOURCE_DIR}/lib/Model
     ${PSFEstimator_SOURCE_DIR}/lib/Visualization
