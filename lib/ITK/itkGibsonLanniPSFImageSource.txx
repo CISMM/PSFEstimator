@@ -40,10 +40,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   this->m_Size.Fill(32);
   this->m_Spacing.Fill(65.0);
   this->m_Origin.Fill(0.0);
-  this->m_PointCenter.Fill(0.0);
-
-  this->m_ShearX = 0.0;
-  this->m_ShearY = 0.0;
 
   // Set default PSF model parameters.
   this->m_EmissionWavelength   = 550.0; // in nanometers
@@ -80,90 +76,65 @@ void
 GibsonLanniPSFImageSource<TOutputImage>
 ::SetParameter(unsigned int index, ParametersValueType value)
 {
-  SpacingType spacing = this->GetSpacing();
-  PointType   center  = this->GetPointCenter();
-
   switch (index)
     {
     case 0:
-    case 1:
-    case 2:
-      spacing[index] = value;
-      this->SetSpacing(spacing);
-      break;
-
-    case 3:
-    case 4:
-    case 5:
-      center[index - 3] = value;
-      this->SetPointCenter(center);
-      break;
-
-    case 6:
-      this->SetShearX(value);
-      break;
-
-    case 7:
-      this->SetShearY(value);
-      break;
-
-    case 8:
       this->SetEmissionWavelength(value);
       break;
 
-    case 9:
+    case 1:
       this->SetNumericalAperture(value);
       break;
 
-    case 10:
+    case 2:
       this->SetMagnification(value);
       break;
 
-    case 11:
+    case 3:
       this->SetDesignCoverSlipRefractiveIndex(value);
       break;
 
-    case 12:
+    case 4:
       this->SetActualCoverSlipRefractiveIndex(value);
       break;
 
-    case 13:
+    case 5:
       this->SetDesignCoverSlipThickness(value);
       break;
 
-    case 14:
+    case 6:
       this->SetActualCoverSlipThickness(value);
       break;
 
-    case 15:
+    case 7:
       this->SetDesignImmersionOilRefractiveIndex(value);
       break;
 
-    case 16:
+    case 8:
       this->SetActualImmersionOilRefractiveIndex(value);
       break;
 
-    case 17:
+    case 9:
       this->SetDesignImmersionOilThickness(value);
       break;
 
-    case 18:
+    case 10:
       this->SetDesignSpecimenLayerRefractiveIndex(value);
       break;
 
-    case 19:
+    case 11:
       this->SetActualSpecimenLayerRefractiveIndex(value);
       break;
 
-    case 20:
+    case 12:
       this->SetActualPointSourceDepthInSpecimenLayer(value);
       break;
 
-    case 21:
+    case 13:
       this->SetDesignDistanceFromBackFocalPlaneToDetector(value);
       break;
 
-    case 22:
+    case 14:
       this->SetActualDistanceFromBackFocalPlaneToDetector(value);
       break;
     }
@@ -176,88 +147,65 @@ typename GibsonLanniPSFImageSource<TOutputImage>::ParametersValueType
 GibsonLanniPSFImageSource<TOutputImage>
 ::GetParameter(unsigned int index) const
 {
-  SpacingType spacing = this->GetSpacing();
-  PointType   center  = this->GetPointCenter();
-
   switch (index)
     {
     case 0:
-    case 1:
-    case 2:
-      return spacing[index];
-      break;
-
-    case 3:
-    case 4:
-    case 5:
-      return center[index];
-      break;
-
-    case 6:
-      return this->GetShearX();
-      break;
-
-    case 7:
-      return this->GetShearY();
-      break;
-
-    case 8:
       return this->GetEmissionWavelength();
       break;
 
-    case 9:
+    case 1:
       return this->GetNumericalAperture();
       break;
 
-    case 10:
+    case 2:
       return this->GetMagnification();
       break;
 
-    case 11:
+    case 3:
       return this->GetDesignCoverSlipRefractiveIndex();
       break;
 
-    case 12:
+    case 4:
       return this->GetActualCoverSlipRefractiveIndex();
       break;
 
-    case 13:
+    case 5:
       return this->GetDesignCoverSlipThickness();
       break;
 
-    case 14:
+    case 6:
       return this->GetActualCoverSlipThickness();
       break;
 
-    case 15:
+    case 7:
       return this->GetDesignImmersionOilRefractiveIndex();
       break;
 
-    case 16:
+    case 8:
       return this->GetActualImmersionOilRefractiveIndex();
       break;
 
-    case 17:
+    case 9:
       return this->GetDesignImmersionOilThickness();
       break;
 
-    case 18:
+    case 10:
       return this->GetDesignSpecimenLayerRefractiveIndex();
       break;
 
-    case 19:
+    case 11:
       return this->GetActualSpecimenLayerRefractiveIndex();
       break;
 
-    case 20:
+    case 12:
       return this->GetActualPointSourceDepthInSpecimenLayer();
       break;
 
-    case 21:
+    case 13:
       return this->GetDesignDistanceFromBackFocalPlaneToDetector();
       break;
 
-    case 22:
+    case 14:
       return this->GetActualDistanceFromBackFocalPlaneToDetector();
       break;
 
@@ -275,20 +223,6 @@ GibsonLanniPSFImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters)
 {
   int index = 0;
-  SpacingType spacing;
-  spacing[0] = parameters[index++];
-  spacing[1] = parameters[index++];
-  spacing[2] = parameters[index++];
-  SetSpacing(spacing);
-
-  PointType center;
-  center[0] = parameters[index++];
-  center[1] = parameters[index++];
-  center[2] = parameters[index++];
-  SetPointCenter(center);
-
-  SetShearX(parameters[index++]);
-  SetShearY(parameters[index++]);
 
   SetEmissionWavelength(parameters[index++]);
   SetNumericalAperture(parameters[index++]);
@@ -318,19 +252,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   ParametersType parameters(GetNumberOfParameters());
 
   int index = 0;
-  for ( unsigned int i = 0; i < this->m_Spacing.Size(); i++ )
-    {
-    parameters[index++] = this->GetSpacing()[i];
-    }
-
-  for ( unsigned int i = 0; i < this->m_PointCenter.Size(); i++ )
-    {
-    parameters[index++] = this->GetPointCenter()[i];
-    }
-
-  parameters[index++] = this->GetShearX();
-  parameters[index++] = this->GetShearY();
-
   parameters[index++] = this->GetEmissionWavelength();
   parameters[index++] = this->GetNumericalAperture();
   parameters[index++] = this->GetMagnification();
@@ -359,7 +280,7 @@ unsigned int
 GibsonLanniPSFImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
-  return 23;
+  return 15;
 }
 
 
@@ -370,63 +291,6 @@ GibsonLanniPSFImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
-  unsigned int i;
-
-  os << indent << "PointCenter: [";
-  for ( i=0; i < this->m_PointCenter.Size() - 1; i++ )
-    {
-    os << this->m_PointCenter[i] << ", ";
-    }
-  os << this->m_PointCenter[i] << "]" << std::endl;
-
-  os << "ShearX: " << this->m_ShearX << std::endl;
-  os << "ShearY: " << this->m_ShearY << std::endl;
-
-  os << indent << "EmissionWavelength (nanometers): "
-     << this->m_EmissionWavelength << std::endl;
-
-  os << indent << "NumericalAperture: "
-     << this->m_NumericalAperture << std::endl;
-
-  os << indent << "Magnification: "
-     << this->m_Magnification << std::endl;
-
-  os << indent << "DesignCoverSlipRefractiveIndex: "
-     << this->m_DesignCoverSlipRefractiveIndex << std::endl;
-
-  os << indent << "ActualCoverSlipRefractiveIndex: "
-     << this->m_ActualCoverSlipRefractiveIndex << std::endl;
-
-  os << indent << "DesignCoverSlipThickness (micrometers): "
-     << this->m_DesignCoverSlipThickness << std::endl;
-
-  os << indent << "ActualCoverSlipThickness (micrometers): "
-     << this->m_ActualCoverSlipThickness << std::endl;
-
-  os << indent << "DesignImmersionOilRefractiveIndex: "
-     << this->m_DesignImmersionOilRefractiveIndex << std::endl;
-
-  os << indent << "ActualImmersionOilRefractiveIndex: "
-     << this->m_ActualImmersionOilRefractiveIndex << std::endl;
-
-  os << indent << "DesignImmersionOilThickness (micrometers): "
-     << this->m_DesignImmersionOilThickness << std::endl;
-
-  os << indent << "DesignSpecimenLayerRefractiveIndex: "
-     << this->m_DesignSpecimenLayerRefractiveIndex << std::endl;
-
-  os << indent << "ActualSpecimenLayerRefractiveIndex: "
-     << this->m_ActualSpecimenLayerRefractiveIndex << std::endl;
-
-  os << indent << "ActualPointSourceDepthInSpecimenLayer (nanometers): "
-     << this->m_ActualPointSourceDepthInSpecimenLayer << std::endl;
-
-  os << indent << "DesignDistanceFromBackFocalPlaneToDetector (millimeters): "
-     << this->m_DesignDistanceFromBackFocalPlaneToDetector << std::endl;
-
-  os << indent << "ActualDistanceFromBackFocalPlaneToDetector (millimeters): "
-     << this->m_ActualDistanceFromBackFocalPlaneToDetector << std::endl;
-
 }
 
 //----------------------------------------------------------------------------
@@ -473,11 +337,11 @@ GibsonLanniPSFImageSource<TOutputImage>
     image->TransformIndexToPhysicalPoint(index, point);
 
     // Apply x and y shear here
-    point[0] = point[0] - this->m_ShearX*(point[2] - this->m_PointCenter[2]);
-    point[1] = point[1] - this->m_ShearY*(point[2] - this->m_PointCenter[2]);
+    //point[0] = point[0] - this->m_ShearX*(point[2] - this->m_PointCenter[2]);
+    //point[1] = point[1] - this->m_ShearY*(point[2] - this->m_PointCenter[2]);
 
     // Shift the center of the point
-    for (int i = 0; i < 3; i++) point[i] -= this->m_PointCenter[i];
+    //for (int i = 0; i < 3; i++) point[i] -= this->m_PointCenter[i];
 
     // See if we have switched slices. If so, we need to precompute some
     // integral terms for the new slice.

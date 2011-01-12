@@ -9,6 +9,7 @@
 #include <itkBeadSpreadFunctionImageSource.h>
 #include <itkGridImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
+#include <itkParametricGaussianImageSource.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
@@ -48,10 +49,16 @@ public:
     DummyImageSourceType;
   typedef DummyImageSourceType::Pointer
     DummyImageSourcePointer;
+  typedef itk::ParametricImageSource<Float3DImageType>
+    ParametricImageSourceType;
   typedef itk::GibsonLanniPSFImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
+  typedef itk::ParametricGaussianImageSource<Float3DImageType>
+    GaussianPSFImageSourceType;
+  typedef GaussianPSFImageSourceType::Pointer
+    GaussianPSFImageSourcePointer;
   typedef itk::BeadSpreadFunctionImageSource< Float3DImageType >
     BeadSpreadFunctionImageSourceType;
   typedef BeadSpreadFunctionImageSourceType::Pointer
@@ -209,6 +216,7 @@ public:
   void   SetBeadRadius(double radius);
   double GetBeadRadius();
 
+#if 0
   void   SetGLEmissionWavelength(double wavelength);
   double GetGLEmissionWavelength();
 
@@ -251,15 +259,19 @@ public:
   double GetGLDesignDistanceFromBackFocalPlaneToDetector();
   void   SetGLActualDistanceFromBackFocalPlaneToDetector(double distance);
   double GetGLActualDistanceFromBackFocalPlaneToDetector();
+#endif
 
-  void   SetGLIntensityShift(double intensity);
-  double GetGLIntensityShift();
+  void   SetIntensityShift(double intensity);
+  double GetIntensityShift();
 
-  void   SetGLIntensityScale(double intensity);
-  double GetGLIntensityScale();
+  void   SetIntensityScale(double intensity);
+  double GetIntensityScale();
 
-  void   SetGLParameterEnabled(unsigned int index, bool enabled);
-  bool   GetGLParameterEnabled(unsigned int index);
+  void   SetParameterValue(unsigned int index, double value);
+  double GetParameterValue(unsigned int index);
+
+  void   SetParameterEnabled(unsigned int index, bool enabled);
+  bool   GetParameterEnabled(unsigned int index);
 
   void   SetZCoordinate(unsigned int index, double coordinate);
   double GetZCoordinate(unsigned int index);
@@ -278,9 +290,10 @@ protected:
 
   TImage::Pointer m_MeasuredImageData;
 
-  GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
+  GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFSource;
+  GaussianPSFImageSourcePointer        m_GaussianPSFSource;
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;
-  DifferenceFilterPointer          m_BSFDifferenceImageFilter;
+  DifferenceFilterPointer              m_BSFDifferenceImageFilter;
 
   MinMaxType::Pointer m_MeasuredImageMinMaxFilter;
   MinMaxType::Pointer m_PSFImageMinMaxFilter;

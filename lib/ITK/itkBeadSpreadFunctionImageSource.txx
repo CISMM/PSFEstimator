@@ -97,7 +97,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
     }
   else
     {
-    this->m_KernelSource->SetParameter(index - numberOfBSFParameters + 8, value);
+    this->m_KernelSource->SetParameter(index - numberOfBSFParameters, value);
     }
 }
 
@@ -153,7 +153,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
     }
   else
     {
-    return this->m_KernelSource->GetParameter(index - numberOfBSFParameters + 8);
+    return this->m_KernelSource->GetParameter(index - numberOfBSFParameters);
     }
 }
 
@@ -239,7 +239,7 @@ unsigned int
 BeadSpreadFunctionImageSource< TOutputImage >
 ::GetNumberOfParameters() const
 {
-  return this->m_KernelSource->GetNumberOfParameters()-8 + 2*ImageDimension + 5;
+  return this->m_KernelSource->GetNumberOfParameters() + 2*ImageDimension + 5;
 }
 
 

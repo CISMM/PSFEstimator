@@ -14,6 +14,7 @@
 
 #include <itkBeadSpreadFunctionImageSource.txx>
 #include <itkGibsonLanniPSFImageSource.txx>
+#include <itkParametricGaussianImageSource.txx>
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
 #include <itkImageFileWriter.txx>
@@ -48,8 +49,10 @@ DataModel
   m_MeasuredImageData = NULL;
 
   m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
+  m_GaussianPSFSource                = GaussianPSFImageSourceType::New();
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
   m_BeadSpreadFunctionSource->SetKernelSource(GibsonLanniPSFImageSourceType::New());
+  //m_BeadSpreadFunctionSource->SetKernelSource(GaussianPSFImageSourceType::New());
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
   m_MeasuredImageMinMaxFilter        = MinMaxType::New();
@@ -346,6 +349,7 @@ DataModel
   double shearY = c.GetValueAsDouble(sec, "ShearY");
   m_BeadSpreadFunctionSource->SetShearY(shearY);
 
+#if 0
   SetGLEmissionWavelength
     (c.GetValueAsDouble(sec, "EmissionWavelength", GetGLEmissionWavelength()));
 
@@ -389,12 +393,14 @@ DataModel
   SetGLActualDistanceFromBackFocalPlaneToDetector
     (c.GetValueAsDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
                        GetGLActualDistanceFromBackFocalPlaneToDetector()));
-  SetGLIntensityShift
+#endif
+
+  SetIntensityShift
     (c.GetValueAsDouble(sec, "IntensityShift",
-                       GetGLIntensityShift()));
-  SetGLIntensityScale
+                       GetIntensityShift()));
+  SetIntensityScale
     (c.GetValueAsDouble(sec, "IntensityScale",
-                       GetGLIntensityScale()));
+                       GetIntensityScale()));
 
   sec = std::string("ZSliceCoordinates");
 
@@ -409,36 +415,36 @@ DataModel
 
   unsigned int index = 0;
   sec = std::string("Optimization");
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingX"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingY"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingZ"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingX"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingY"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingZ"));
 
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BeadRadius"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadRadius"));
 
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterX"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterY"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterZ"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterX"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterY"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterZ"));
 
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ShearX"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ShearY"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ShearX"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ShearY"));
 
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "EmissionWavelength"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "NumericalAperture"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "Magnification"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignCoverSlipRefractiveIndex"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualCoverSlipRefractiveIndex"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignCoverSlipThickness"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualCoverSlipThickness"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignImmersionOilRefractiveIndex"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualImmersionOilRefractiveIndex"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignImmersionOilThickness"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignSpecimenLayerRefractiveIndex"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualSpecimenLayerRefractiveIndex"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualPointSourceDepthInSpecimenLayer"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityShift"));
-  SetGLParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityScale"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "EmissionWavelength"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "NumericalAperture"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "Magnification"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignCoverSlipRefractiveIndex"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualCoverSlipRefractiveIndex"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignCoverSlipThickness"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualCoverSlipThickness"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignImmersionOilRefractiveIndex"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualImmersionOilRefractiveIndex"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignImmersionOilThickness"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignSpecimenLayerRefractiveIndex"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualSpecimenLayerRefractiveIndex"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualPointSourceDepthInSpecimenLayer"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityShift"));
+  SetParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityScale"));
 }
 
 
@@ -511,36 +517,36 @@ DataModel
 
   int index = 0;
   sec = std::string("Optimization");
-  c.SetValueFromBool(sec, "VoxelSpacingX", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "VoxelSpacingY", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "VoxelSpacingZ", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "VoxelSpacingX", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "VoxelSpacingY", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "VoxelSpacingZ", GetParameterEnabled(index++));
 
-  c.SetValueFromBool(sec, "BeadRadius", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "BeadRadius", GetParameterEnabled(index++));
 
-  c.SetValueFromBool(sec, "BeadCenterX", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "BeadCenterY", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "BeadCenterZ", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "BeadCenterX", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "BeadCenterY", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "BeadCenterZ", GetParameterEnabled(index++));
 
-  c.SetValueFromBool(sec, "ShearX", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ShearY", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ShearX", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ShearY", GetParameterEnabled(index++));
 
-  c.SetValueFromBool(sec, "EmissionWavelength", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "NumericalAperture", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "Magnification", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignCoverSlipRefractiveIndex", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualCoverSlipRefractiveIndex", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignCoverSlipThickness", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualCoverSlipThickness", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignImmersionOilRefractiveIndex", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualImmersionOilRefractiveIndex", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignImmersionOilThickness", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignSpecimenLayerRefractiveIndex", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualSpecimenLayerRefractiveIndex", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualPointSourceDepthInSpecimenLayer", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignDistanceFromBackFocalPlaneToDetector", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualDistanceFromBackFocalPlaneToDetector", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "IntensityShift", GetGLParameterEnabled(index++));
-  c.SetValueFromBool(sec, "IntensityScale", GetGLParameterEnabled(index++));
+  c.SetValueFromBool(sec, "EmissionWavelength", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "NumericalAperture", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "Magnification", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "DesignCoverSlipRefractiveIndex", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ActualCoverSlipRefractiveIndex", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "DesignCoverSlipThickness", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ActualCoverSlipThickness", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "DesignImmersionOilRefractiveIndex", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ActualImmersionOilRefractiveIndex", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "DesignImmersionOilThickness", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "DesignSpecimenLayerRefractiveIndex", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ActualSpecimenLayerRefractiveIndex", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ActualPointSourceDepthInSpecimenLayer", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "DesignDistanceFromBackFocalPlaneToDetector", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "ActualDistanceFromBackFocalPlaneToDetector", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "IntensityShift", GetParameterEnabled(index++));
+  c.SetValueFromBool(sec, "IntensityScale", GetParameterEnabled(index++));
 }
 
 
@@ -1026,17 +1032,21 @@ DataModel
 void
 DataModel
 ::SetPSFPointCenter(double center[3]) {
-  PointType thisCenter;
+  //PointType thisCenter;
+  typedef ParametricImageSourceType::TransformType::OutputVectorType CenterType;
+  CenterType thisCenter;
   for (int i = 0; i < 3; i++)
     thisCenter[i] = static_cast<PointValueType>(center[i]);
-  m_GibsonLanniPSFSource->SetPointCenter(thisCenter);
+  m_GibsonLanniPSFSource->GetTransform()->SetTranslation(thisCenter);
 }
 
 
 void
 DataModel
 ::GetPSFPointCenter(double center[3]) {
-  PointType thisCenter = m_GibsonLanniPSFSource->GetPointCenter();
+  //PointType thisCenter = m_GibsonLanniPSFSource->GetPointCenter();
+  typedef ParametricImageSourceType::TransformType::OutputVectorType CenterType;
+  CenterType thisCenter = m_GibsonLanniPSFSource->GetTransform()->GetTranslation();
   for (int i = 0; i < 3; i++)
     center[i] = static_cast<double>(thisCenter[i]);
 }
@@ -1126,6 +1136,7 @@ DataModel
 }
 
 
+#if 0
 void
 DataModel
 ::SetGLEmissionWavelength(double wavelength) {
@@ -1349,40 +1360,54 @@ DataModel
 ::GetGLActualDistanceFromBackFocalPlaneToDetector() {
   return m_BeadSpreadFunctionSource->GetParameter(25);
 }
+#endif
 
 
 void
 DataModel
-::SetGLIntensityShift(double intensity) {
+::SetIntensityShift(double intensity) {
   m_BeadSpreadFunctionSource->SetParameter(10, intensity);
 }
 
 
 double
 DataModel
-::GetGLIntensityShift() {
+::GetIntensityShift() {
   return m_BeadSpreadFunctionSource->GetParameter(10);
 }
 
 
 void
 DataModel
-::SetGLIntensityScale(double scale) {
+::SetIntensityScale(double scale) {
   m_BeadSpreadFunctionSource->SetParameter(9, scale);
 }
 
 
 double
 DataModel
-::GetGLIntensityScale() {
+::GetIntensityScale() {
   return m_BeadSpreadFunctionSource->GetParameter(9);
 }
 
 
+void
+DataModel
+::SetParameterValue(unsigned int index, double value) {
+  m_BeadSpreadFunctionSource->SetParameter(index, value);
+}
+
+
+double
+DataModel
+::GetParameterValue(unsigned int index) {
+  return m_BeadSpreadFunctionSource->GetParameter(index);
+}
+
 
 void
 DataModel
-::SetGLParameterEnabled(unsigned int index, bool enabled) {
+::SetParameterEnabled(unsigned int index, bool enabled) {
   try {
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
     if (index < parametersMask->Size()) {
@@ -1394,7 +1419,7 @@ DataModel
 
 bool
 DataModel
-::GetGLParameterEnabled(unsigned int index) {
+::GetParameterEnabled(unsigned int index) {
   bool enabled = false;
   try {
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();

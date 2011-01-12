@@ -36,6 +36,12 @@ QPointSpreadFunctionPropertyTableModel
   m_PropertyNameList.append(QVariant("Shear Y"));
   m_UnitsList.append(QVariant("nanometers in Y vs nanometers in Z"));
 
+  m_PropertyNameList.append(QVariant("Intensity Shift"));
+  m_UnitsList.append(QVariant("-"));
+
+  m_PropertyNameList.append(QVariant("Intensity Scale"));
+  m_UnitsList.append(QVariant("-"));
+
   m_PropertyNameList.append(QVariant("Emission Wavelength"));
   m_UnitsList.append(QVariant("nanometers"));
 
@@ -80,12 +86,6 @@ QPointSpreadFunctionPropertyTableModel
 
   m_PropertyNameList.append(QVariant("Actual Distance from Back Focal Plane to Detector"));
   m_UnitsList.append(QVariant("millimeters"));
-
-  m_PropertyNameList.append(QVariant("Intensity Shift"));
-  m_UnitsList.append(QVariant("-"));
-
-  m_PropertyNameList.append(QVariant("Intensity Scale"));
-  m_UnitsList.append(QVariant("-"));
 }
 
 
@@ -272,43 +272,12 @@ QPointSpreadFunctionPropertyTableModel
 void
 QPointSpreadFunctionPropertyTableModel
 ::InitializeSettingsCache() {
-  double triplet[3];
-
   m_PropertyValues.clear();
   m_OptimizeValues.clear();
 
-  m_DataModel->GetMeasuredImageVoxelSpacing(triplet);
-  for (int i = 0; i < 3; i++)
-    m_PropertyValues.append(triplet[i]);
-
-  m_PropertyValues.append(m_DataModel->GetBeadRadius());
-
-  m_DataModel->GetBSFPointCenter(triplet);
-  for (int i = 0; i < 3; i++)
-    m_PropertyValues.append(triplet[i]);
-
-  m_PropertyValues.append(m_DataModel->GetShearX());
-  m_PropertyValues.append(m_DataModel->GetShearY());
-  m_PropertyValues.append(m_DataModel->GetGLEmissionWavelength());
-  m_PropertyValues.append(m_DataModel->GetGLNumericalAperture());
-  m_PropertyValues.append(m_DataModel->GetGLMagnification());
-  m_PropertyValues.append(m_DataModel->GetGLDesignCoverSlipRefractiveIndex());
-  m_PropertyValues.append(m_DataModel->GetGLActualCoverSlipRefractiveIndex());
-  m_PropertyValues.append(m_DataModel->GetGLDesignCoverSlipThickness());
-  m_PropertyValues.append(m_DataModel->GetGLActualCoverSlipThickness());
-  m_PropertyValues.append(m_DataModel->GetGLDesignImmersionOilRefractiveIndex());
-  m_PropertyValues.append(m_DataModel->GetGLActualImmersionOilRefractiveIndex());
-  m_PropertyValues.append(m_DataModel->GetGLDesignImmersionOilThickness());
-  m_PropertyValues.append(m_DataModel->GetGLDesignSpecimenLayerRefractiveIndex());
-  m_PropertyValues.append(m_DataModel->GetGLActualSpecimenLayerRefractiveIndex());
-  m_PropertyValues.append(m_DataModel->GetGLActualPointSourceDepthInSpecimenLayer());
-  m_PropertyValues.append(m_DataModel->GetGLDesignDistanceFromBackFocalPlaneToDetector());
-  m_PropertyValues.append(m_DataModel->GetGLActualDistanceFromBackFocalPlaneToDetector());
-  m_PropertyValues.append(m_DataModel->GetGLIntensityShift());
-  m_PropertyValues.append(m_DataModel->GetGLIntensityScale());
-
   for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
-    m_OptimizeValues.append(m_DataModel->GetGLParameterEnabled(i));
+    m_PropertyValues.append(m_DataModel->GetParameterValue(i));
+    m_OptimizeValues.append(m_DataModel->GetParameterEnabled(i));
   }
 }
 
@@ -317,42 +286,6 @@ QPointSpreadFunctionPropertyTableModel
 void
 QPointSpreadFunctionPropertyTableModel
 ::SaveSettingsCache() {
-  double triplet[3];
-  int item = 0;
-
-  for (int i = 0; i < 3; i++)
-    triplet[i] = m_PropertyValues[item++];
-  m_DataModel->SetMeasuredImageVoxelSpacing(triplet);
-  m_DataModel->SetPSFImageVoxelSpacing(triplet);
-  m_DataModel->SetBSFImageVoxelSpacing(triplet);
-
-  m_DataModel->SetBeadRadius(m_PropertyValues[item++]);
-
-  for (int i = 0; i < 3; i++)
-    triplet[i] = m_PropertyValues[item++];
-  m_DataModel->SetPSFPointCenter(triplet);
-  m_DataModel->SetBSFPointCenter(triplet);
-
-  m_DataModel->SetShearX(m_PropertyValues[item++]);
-  m_DataModel->SetShearY(m_PropertyValues[item++]);
-  m_DataModel->SetGLEmissionWavelength(m_PropertyValues[item++]);
-  m_DataModel->SetGLNumericalAperture(m_PropertyValues[item++]);
-  m_DataModel->SetGLMagnification(m_PropertyValues[item++]);
-  m_DataModel->SetGLDesignCoverSlipRefractiveIndex(m_PropertyValues[item++]);
-  m_DataModel->SetGLActualCoverSlipRefractiveIndex(m_PropertyValues[item++]);
-  m_DataModel->SetGLDesignCoverSlipThickness(m_PropertyValues[item++]);
-  m_DataModel->SetGLActualCoverSlipThickness(m_PropertyValues[item++]);
-  m_DataModel->SetGLDesignImmersionOilRefractiveIndex(m_PropertyValues[item++]);
-  m_DataModel->SetGLActualImmersionOilRefractiveIndex(m_PropertyValues[item++]);
-  m_DataModel->SetGLDesignImmersionOilThickness(m_PropertyValues[item++]);
-  m_DataModel->SetGLDesignSpecimenLayerRefractiveIndex(m_PropertyValues[item++]);
-  m_DataModel->SetGLActualSpecimenLayerRefractiveIndex(m_PropertyValues[item++]);
-  m_DataModel->SetGLActualPointSourceDepthInSpecimenLayer(m_PropertyValues[item++]);
-  m_DataModel->SetGLDesignDistanceFromBackFocalPlaneToDetector(m_PropertyValues[item++]);
-  m_DataModel->SetGLActualDistanceFromBackFocalPlaneToDetector(m_PropertyValues[item++]);
-  m_DataModel->SetGLIntensityShift(m_PropertyValues[item++]);
-  m_DataModel->SetGLIntensityScale(m_PropertyValues[item++]);
-
   // Set up origin so that (0, 0, 0) is centered in the image volume.
   int dimensions[3];
   double spacing[3], origin[3];
@@ -368,6 +301,7 @@ QPointSpreadFunctionPropertyTableModel
 
 
   for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
-    m_DataModel->SetGLParameterEnabled(i, m_OptimizeValues[i]);
+    m_DataModel->SetParameterValue(i, m_PropertyValues[i]);
+    m_DataModel->SetParameterEnabled(i, m_OptimizeValues[i]);
   }
 }

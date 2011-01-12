@@ -19,6 +19,7 @@
 #define __itkParametricImageSource_h
 
 #include "itkArray.h"
+#include "itkAffineTransform.h"
 #include "itkImageSource.h"
 
 namespace itk
@@ -68,6 +69,10 @@ public:
                       unsigned int,
                       TOutputImage::ImageDimension);
 
+  typedef AffineTransform< PointValueType, Self::OutputImageDimension >
+    TransformType;
+  typedef typename TransformType::Pointer TransformPointer;
+
   /** Set/get the image origin. */
   itkSetMacro(Origin, PointType);
   itkGetConstReferenceMacro(Origin, PointType);
@@ -79,6 +84,10 @@ public:
   /** Set/get the image size. */
   itkSetMacro(Size, SizeType);
   itkGetConstReferenceMacro(Size, SizeType);
+
+  /** Set/get the transform. */
+  itkSetObjectMacro(Transform, TransformType);
+  itkGetObjectMacro(Transform, TransformType);
 
   /** Set the parameters for this source. */
   virtual void SetParameter(unsigned int index, ParametersValueType value) = 0;
@@ -93,9 +102,10 @@ protected:
   virtual ~ParametricImageSource() {}
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  PointType   m_Origin;  // origin
-  SpacingType m_Spacing; // spacing
-  SizeType    m_Size;    // size of the output image
+  PointType        m_Origin;    // origin
+  SpacingType      m_Spacing;   // spacing
+  SizeType         m_Size;      // size of the output image
+  TransformPointer m_Transform; // transform to apply to image sample coordinates
 
 private:
   ParametricImageSource(const Self&); //purposely not implemented

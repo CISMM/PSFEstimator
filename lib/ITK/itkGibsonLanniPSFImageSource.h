@@ -20,7 +20,7 @@
 
 #include <complex>
 
-#include "itkParametricImageSource.h"
+#include "itkOPDBasedWidefieldMicroscopePointSpreadFunctionImageSource.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -39,16 +39,16 @@ namespace itk
  *
  * \ingroup DataSources Multithreaded
  */
-template <class TOutputImage>
+template< class TOutputImage >
 class ITK_EXPORT GibsonLanniPSFImageSource :
-  public ParametricImageSource<TOutputImage>
+  public OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource< TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef GibsonLanniPSFImageSource           Self;
-  typedef ParametricImageSource<TOutputImage> Superclass;
-  typedef SmartPointer<Self>                  Pointer;
-  typedef SmartPointer<const Self>            ConstPointer;
+  typedef GibsonLanniPSFImageSource                              Self;
+  typedef OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource< TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                   Pointer;
+  typedef SmartPointer< const Self >                             ConstPointer;
 
   /** Typedef for the output image PixelType. */
   typedef TOutputImage                             OutputImageType;
@@ -76,124 +76,6 @@ public:
 
   typedef typename Superclass::ParametersValueType ParametersValueType;
   typedef typename Superclass::ParametersType      ParametersType;
-
-  /** Get the origin of the output image (in nanometers). */
-  itkGetConstReferenceMacro(Origin, PointType);
-
-  /** Specify the point source center (in nanometers). */
-  virtual void SetPointCenter(const PointType & center)
-  {
-    if (center != m_PointCenter)
-      {
-      m_PointCenter = center;
-      this->Modified();
-      }
-  }
-
-  /** Get the point source center (in nanometers). */
-  itkGetConstReferenceMacro(PointCenter, PointType);
-
-  /** Specify the X shear. */
-  itkSetMacro(ShearX, double);
-
-  /** Get the X shear. */
-  itkGetConstMacro(ShearX, double);
-
-  /** Specify the Y shear. */
-  itkSetMacro(ShearY, double);
-
-  /** Get the Y shear. */
-  itkGetConstMacro(ShearY, double);
-
-  /** Specify the emission wavelength (in nanometers). */
-  itkSetMacro(EmissionWavelength, double);
-
-  /** Get the emission wavelength (in nanometers). */
-  itkGetConstMacro(EmissionWavelength, double);
-
-  /** Specify the numerical aperture (unitless). */
-  itkSetMacro(NumericalAperture, double);
-
-  /** Get the numerical aperture (unitless). */
-  itkGetConstMacro(NumericalAperture, double);
-
-  /** Specify the magnification (unitless). */
-  itkSetMacro(Magnification, double);
-
-  /** Get the magnification (unitless). */
-  itkGetConstMacro(Magnification, double);
-
-  /** Specify the design cover slip refractive index (unitless). */
-  itkSetMacro(DesignCoverSlipRefractiveIndex, double);
-
-  /** Get the design cover slip refractive index (unitless). */
-  itkGetConstMacro(DesignCoverSlipRefractiveIndex, double);
-
-  /** Specify the actual cover slip refractive index (unitless). */
-  itkSetMacro(ActualCoverSlipRefractiveIndex, double);
-
-  /** Get the actual cover slip refractive index (unitless). */
-  itkGetConstMacro(ActualCoverSlipRefractiveIndex, double);
-
-  /** Specify the design cover slip thickness (in micrometers). */
-  itkSetMacro(DesignCoverSlipThickness, double);
-
-  /** Get the design cover slip thickness (in micrometers). */
-  itkGetConstMacro(DesignCoverSlipThickness, double);
-
-  /** Specify the actual cover slip thickness (in micrometers). */
-  itkSetMacro(ActualCoverSlipThickness, double);
-
-  /** Get the actual cover slip thickness (in micrometers). */
-  itkGetConstMacro(ActualCoverSlipThickness, double);
-
-  /** Specify the design immersion oil refractive index (unitless). */
-  itkSetMacro(DesignImmersionOilRefractiveIndex, double);
-
-  /** Get the design immersion oil refractive index (unitless). */
-  itkGetConstMacro(DesignImmersionOilRefractiveIndex, double);
-
-  /** Specify the actual immersion oil refractive index (unitless). */
-  itkSetMacro(ActualImmersionOilRefractiveIndex, double);
-
-  /** Get the actual immersion oil refractive index (unitless). */
-  itkGetConstMacro(ActualImmersionOilRefractiveIndex, double);
-
-  /** Specify the design immersion oil thickness (in micrometers). */
-  itkSetMacro(DesignImmersionOilThickness, double);
-
-  /** Get the design immersion oil refractive index (in micrometers). */
-  itkGetConstMacro(DesignImmersionOilThickness, double);
-
-  /** Specify the design specimen layer refractive index (unitless). */
-  itkSetMacro(DesignSpecimenLayerRefractiveIndex, double);
-
-  /** Get the design specimen layer refractive index (unitless). */
-  itkGetConstMacro(DesignSpecimenLayerRefractiveIndex, double);
-
-  /** Specify the actual specimen layer refractive index (unitless). */
-  itkSetMacro(ActualSpecimenLayerRefractiveIndex, double);
-
-  /** Get the actual specimen layer refractive index (unitless). */
-  itkGetConstMacro(ActualSpecimenLayerRefractiveIndex, double);
-
-  /** Specify the actual point source depth in the specimen layer (in nanometers). */
-  itkSetMacro(ActualPointSourceDepthInSpecimenLayer, double);
-
-  /** Get the actual point source depth in the specimen layer (in nanometers). */
-  itkGetConstMacro(ActualPointSourceDepthInSpecimenLayer, double);
-
-  /** Specify the design distance from the back focal plane to the detector (in millimeters). */
-  itkSetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Get the design distance from the back focal plane to the detector (in millimeters). */
-  itkGetConstMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
-  itkSetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Get the actual distance from the back focal plane to the detector (in millimeters). */
-  itkGetConstMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
 
   /** Set a single parameter value. */
   virtual void SetParameter(unsigned int index, ParametersValueType value);
@@ -239,27 +121,6 @@ protected:
 private:
   GibsonLanniPSFImageSource(const GibsonLanniPSFImageSource&); //purposely not implemented
   void operator=(const GibsonLanniPSFImageSource&); //purposely not implemented
-
-  PointType   m_PointCenter; // the center of the point source
-  double      m_ShearX;      // Shear in the x-direction with respect to z
-  double      m_ShearY;      // Shear in the y-direction with respect to z
-
-  /** Point-spread function model parameters. */
-  double m_EmissionWavelength;
-  double m_NumericalAperture;
-  double m_Magnification;
-  double m_DesignCoverSlipRefractiveIndex;
-  double m_ActualCoverSlipRefractiveIndex;
-  double m_DesignCoverSlipThickness;
-  double m_ActualCoverSlipThickness;
-  double m_DesignImmersionOilRefractiveIndex;
-  double m_ActualImmersionOilRefractiveIndex;
-  double m_DesignImmersionOilThickness;
-  double m_DesignSpecimenLayerRefractiveIndex;
-  double m_ActualSpecimenLayerRefractiveIndex;
-  double m_ActualPointSourceDepthInSpecimenLayer;
-  double m_DesignDistanceFromBackFocalPlaneToDetector;
-  double m_ActualDistanceFromBackFocalPlaneToDetector;
 
 };
 } // end namespace itk

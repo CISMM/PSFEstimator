@@ -42,6 +42,9 @@ ParametricImageSource<TOutputImage>
   // output bulk data prior to GenerateData() in case that bulk data
   // can be reused (an thus avoid a costly deallocate/allocate cycle).
   this->ReleaseDataBeforeUpdateFlagOff();
+
+  // Set the transform to the identity
+  this->m_Transform = TransformType::New();
 }
 
 
