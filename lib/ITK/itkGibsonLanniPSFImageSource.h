@@ -79,42 +79,6 @@ public:
   typedef typename Superclass::ParametersValueType ParametersValueType;
   typedef typename Superclass::ParametersType      ParametersType;
 
-  /** Specify the size of the output image. */
-  virtual void SetSize(const SizeType & size)
-  {
-    if (size != m_Size)
-      {
-      m_Size = size;
-      this->Modified();
-      }
-  }
-
-  /** Get the size of the output image. */
-  itkGetConstReferenceMacro(Size, SizeType);
-
-  /** Specify the spacing of the output image (in nanometers). */
-  virtual void SetSpacing(const SpacingType & spacing)
-  {
-    if (spacing != m_Spacing)
-      {
-      m_Spacing = spacing;
-      this->Modified();
-      }
-  }
-
-  /** Get the spacing of the output image (in nanometers). */
-  itkGetConstReferenceMacro(Spacing, SpacingType);
-
-  /** Specify the origin of the output image (in nanometers). */
-  virtual void SetOrigin(const PointType & origin)
-  {
-    if (origin != m_Origin)
-      {
-      m_Origin = origin;
-      this->Modified();
-      }
-  }
-
   /** Get the origin of the output image (in nanometers). */
   itkGetConstReferenceMacro(Origin, PointType);
 
@@ -233,6 +197,12 @@ public:
   /** Get the actual distance from the back focal plane to the detector (in millimeters). */
   itkGetConstMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
 
+  /** Set a single parameter value. */
+  virtual void SetParameter(unsigned int index, ParametersValueType value);
+
+  /** Get a single parameter value. */
+  virtual ParametersValueType GetParameter(unsigned int index) const;
+
   /** Expects the parameters argument to contain values for ALL parameters. */
   virtual void SetParameters(const ParametersType& parameters);
 
@@ -272,9 +242,6 @@ private:
   GibsonLanniPSFImageSource(const GibsonLanniPSFImageSource&); //purposely not implemented
   void operator=(const GibsonLanniPSFImageSource&); //purposely not implemented
 
-  SizeType    m_Size;        // size of the output image
-  SpacingType m_Spacing;     // spacing
-  PointType   m_Origin;      // origin
   PointType   m_PointCenter; // the center of the point source
   double      m_ShearX;      // Shear in the x-direction with respect to z
   double      m_ShearY;      // Shear in the y-direction with respect to z

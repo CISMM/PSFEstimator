@@ -12,7 +12,7 @@
 #include <itkPoint.h>
 #include <itkImageFileWriter.h>
 
-#include <itkGibsonLanniBSFImageSource.txx>
+#include <itkBeadSpreadFunctionImageSource.txx>
 #include <itkGibsonLanniPSFImageSource.txx>
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
@@ -48,7 +48,8 @@ DataModel
   m_MeasuredImageData = NULL;
 
   m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
-  m_GibsonLanniBSFSource             = GibsonLanniBSFImageSourceType::New();
+  m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
+  m_BeadSpreadFunctionSource->SetKernelSource(GibsonLanniPSFImageSourceType::New());
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
   m_MeasuredImageMinMaxFilter        = MinMaxType::New();
@@ -65,7 +66,7 @@ DataModel
   m_CostFunction = ParametricCostFunctionType::New();
   m_CostFunction->SetInterpolator(InterpolatorType::New());
   m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
-  m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
+  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
   SetInitialSimplexDeltas();
 }
@@ -114,7 +115,7 @@ void
 DataModel
 ::SetInitialSimplexDeltas() {
   m_InitialSimplexDelta.
-    SetSize(m_GibsonLanniBSFSource->GetNumberOfParameters());
+    SetSize(m_BeadSpreadFunctionSource->GetNumberOfParameters());
 
   int index = 0;
   m_InitialSimplexDelta[index++] = 1.0; // X-spacing
@@ -194,7 +195,7 @@ DataModel
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<double>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
-  m_GibsonLanniBSFSource->SetOrigin(origin);
+  m_BeadSpreadFunctionSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
@@ -202,13 +203,12 @@ DataModel
   m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
 
   m_BSFImageMinMaxFilter = MinMaxType::New();
-  m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
-  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());
+  m_BSFImageMinMaxFilter->SetImage(m_BeadSpreadFunctionSource->GetOutput());
+  m_BSFImageITKToVTKFilter->SetInput(m_BeadSpreadFunctionSource->GetOutput());
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
-  m_CostFunction->SetMovingImageSource(m_GibsonLanniBSFSource);
-
+  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 }
 
 
@@ -251,7 +251,7 @@ DataModel
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<double>(size[i])*0.5;
   m_GibsonLanniPSFSource->SetOrigin(origin);
-  m_GibsonLanniBSFSource->SetOrigin(origin);
+  m_BeadSpreadFunctionSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
 
   m_PSFImageMinMaxFilter = MinMaxType::New();
@@ -259,11 +259,11 @@ DataModel
   m_PSFImageITKToVTKFilter->SetInput(m_GibsonLanniPSFSource->GetOutput());
 
   m_BSFImageMinMaxFilter = MinMaxType::New();
-  m_BSFImageMinMaxFilter->SetImage(m_GibsonLanniBSFSource->GetOutput());
-  m_BSFImageITKToVTKFilter->SetInput(m_GibsonLanniBSFSource->GetOutput());
+  m_BSFImageMinMaxFilter->SetImage(m_BeadSpreadFunctionSource->GetOutput());
+  m_BSFImageITKToVTKFilter->SetInput(m_BeadSpreadFunctionSource->GetOutput());
 
   m_BSFDifferenceImageFilter->SetInput1(m_MeasuredImageData);
-  m_BSFDifferenceImageFilter->SetInput2(m_GibsonLanniBSFSource->GetOutput());
+  m_BSFDifferenceImageFilter->SetInput2(m_BeadSpreadFunctionSource->GetOutput());
 
   m_BSFDifferenceImageMinMaxFilter = MinMaxType::New();
   m_BSFDifferenceImageMinMaxFilter->SetImage(m_BSFDifferenceImageFilter->GetOutput());
@@ -297,7 +297,7 @@ void
 DataModel
 ::SaveBSFImageFile(std::string fileName) {
   TIFFScaleType::Pointer scaler = TIFFScaleType::New();
-  scaler->SetInput(m_GibsonLanniBSFSource->GetOutput());
+  scaler->SetInput(m_BeadSpreadFunctionSource->GetOutput());
   //double min = GetBSFImageDataMinimum();
   //double max = GetBSFImageDataMaximum();
   //scaler->SetShift(-min);
@@ -342,9 +342,9 @@ DataModel
   SetBeadRadius(beadRadius);
 
   double shearX = c.GetValueAsDouble(sec, "ShearX");
-  m_GibsonLanniBSFSource->SetShearX(shearX);
+  m_BeadSpreadFunctionSource->SetShearX(shearX);
   double shearY = c.GetValueAsDouble(sec, "ShearY");
-  m_GibsonLanniBSFSource->SetShearY(shearY);
+  m_BeadSpreadFunctionSource->SetShearY(shearY);
 
   SetGLEmissionWavelength
     (c.GetValueAsDouble(sec, "EmissionWavelength", GetGLEmissionWavelength()));
@@ -401,7 +401,7 @@ DataModel
   SetUseCustomZCoordinates(c.GetValueAsBool(sec, "UseCustomZCoordinates",
                                             GetUseCustomZCoordinates()));
 
-  for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
+  for (unsigned int i = 0; i < m_BeadSpreadFunctionSource->GetSize()[2]; i++) {
     char name[128];
     sprintf(name, "ZCoordinate%d", i);
     SetZCoordinate(i, c.GetValueAsDouble(sec, name));
@@ -460,49 +460,50 @@ DataModel
 
   c.SetValueFromDouble(sec, "BeadRadius", GetBeadRadius());
 
-  c.SetValueFromDouble(sec, "ShearX", m_GibsonLanniBSFSource->GetShearX());
-  c.SetValueFromDouble(sec, "ShearY", m_GibsonLanniBSFSource->GetShearY());
+  c.SetValueFromDouble(sec, "ShearX", m_BeadSpreadFunctionSource->GetShearX());
+  c.SetValueFromDouble(sec, "ShearY", m_BeadSpreadFunctionSource->GetShearY());
 
-  c.SetValueFromDouble(sec, "EmissionWavelength", m_GibsonLanniBSFSource->GetEmissionWavelength());
+  c.SetValueFromDouble(sec, "EmissionWavelength",
+                       m_BeadSpreadFunctionSource->GetParameter(11));
 
   c.SetValueFromDouble(sec, "NumericalAperture",
-		      GetGLNumericalAperture());
+                       m_BeadSpreadFunctionSource->GetParameter(12));
   c.SetValueFromDouble(sec, "Magnification",
-		      GetGLMagnification());
+                       m_BeadSpreadFunctionSource->GetParameter(13));
   c.SetValueFromDouble(sec, "DesignCoverSlipRefractiveIndex",
-		      GetGLDesignCoverSlipRefractiveIndex());
+                       m_BeadSpreadFunctionSource->GetParameter(14));
   c.SetValueFromDouble(sec, "ActualCoverSlipRefractiveIndex",
-		      GetGLActualCoverSlipRefractiveIndex());
+                       m_BeadSpreadFunctionSource->GetParameter(15));
   c.SetValueFromDouble(sec, "DesignCoverSlipThickness",
-		      GetGLDesignCoverSlipThickness());
+		       m_BeadSpreadFunctionSource->GetParameter(16));
   c.SetValueFromDouble(sec, "ActualCoverSlipThickness",
-		      GetGLActualCoverSlipThickness());
+                       m_BeadSpreadFunctionSource->GetParameter(17));
   c.SetValueFromDouble(sec, "DesignImmersionOilRefractiveIndex",
-		      GetGLDesignImmersionOilRefractiveIndex());
+		       m_BeadSpreadFunctionSource->GetParameter(18));
   c.SetValueFromDouble(sec, "ActualImmersionOilRefractiveIndex",
-		      GetGLActualImmersionOilRefractiveIndex());
+                       m_BeadSpreadFunctionSource->GetParameter(19));
   c.SetValueFromDouble(sec, "DesignImmersionOilThickness",
-		      GetGLDesignImmersionOilThickness());
+                       m_BeadSpreadFunctionSource->GetParameter(20));
   c.SetValueFromDouble(sec, "DesignSpecimenLayerRefractiveIndex",
-		      GetGLDesignSpecimenLayerRefractiveIndex());
+                       m_BeadSpreadFunctionSource->GetParameter(21));
   c.SetValueFromDouble(sec, "ActualSpecimenLayerRefractiveIndex",
-		      GetGLActualSpecimenLayerRefractiveIndex());
+                       m_BeadSpreadFunctionSource->GetParameter(22));
   c.SetValueFromDouble(sec, "ActualPointSourceDepthInSpecimenLayer",
-		      GetGLActualPointSourceDepthInSpecimenLayer());
+                       m_BeadSpreadFunctionSource->GetParameter(23));
   c.SetValueFromDouble(sec, "DesignDistanceFromBackFocalPlaneToDetector",
-		      GetGLDesignDistanceFromBackFocalPlaneToDetector());
+                       m_BeadSpreadFunctionSource->GetParameter(24));
   c.SetValueFromDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
-		      GetGLActualDistanceFromBackFocalPlaneToDetector());
+                       m_BeadSpreadFunctionSource->GetParameter(25));
   c.SetValueFromDouble(sec, "IntensityShift",
-                      GetGLIntensityShift());
+                       m_BeadSpreadFunctionSource->GetParameter(9));
   c.SetValueFromDouble(sec, "IntensityScale",
-                      GetGLIntensityScale());
+                       m_BeadSpreadFunctionSource->GetParameter(10));
 
   sec = std::string("ZSliceCoordinates");
 
   c.SetValueFromBool(sec, "UseCustomZCoordinates", GetUseCustomZCoordinates());
 
-  for (unsigned int i = 0; i < m_GibsonLanniBSFSource->GetSize()[2]; i++) {
+  for (unsigned int i = 0; i < m_BeadSpreadFunctionSource->GetSize()[2]; i++) {
     char name[128];
     sprintf(name, "ZCoordinate%d", i);
     c.SetValueFromDouble(sec, name, GetZCoordinate(i));
@@ -646,7 +647,7 @@ DataModel
 int
 DataModel
 ::GetNumberOfProperties() {
-  return m_GibsonLanniBSFSource->GetNumberOfParameters();
+  return m_BeadSpreadFunctionSource->GetNumberOfParameters();
 }
 
 
@@ -757,7 +758,7 @@ DataModel
     return 0.0;
   }
 
-  m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
+  m_BeadSpreadFunctionSource->UpdateLargestPossibleRegion();
 
   m_BSFImageMinMaxFilter->Compute();
   return m_BSFImageMinMaxFilter->GetMinimum();
@@ -771,7 +772,7 @@ DataModel
     return 0.0;
   }
 
-  m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
+  m_BeadSpreadFunctionSource->UpdateLargestPossibleRegion();
 
   m_BSFImageMinMaxFilter->Compute();
   return m_BSFImageMinMaxFilter->GetMaximum();
@@ -855,7 +856,7 @@ DataModel
   for (int i = 0; i < 3; i++)
     size[i] = static_cast<SizeValueType>(dimensions[i]);
 
-  m_GibsonLanniBSFSource->SetSize(size);
+  m_BeadSpreadFunctionSource->SetSize(size);
 }
 
 
@@ -936,7 +937,7 @@ DataModel
   for (int i = 0; i < 3; i++)
     thisSpacing[i] = static_cast<SpacingValueType>(spacing[i]);
 
-  m_GibsonLanniBSFSource->SetSpacing(thisSpacing);
+  m_BeadSpreadFunctionSource->SetSpacing(thisSpacing);
   m_BSFImageITKToVTKFilter->GetOutputPort()->GetProducer()->Modified();
 }
 
@@ -992,15 +993,15 @@ DataModel
 void
 DataModel
 ::SetBSFImageOrigin(double origin[3]) {
-  m_GibsonLanniBSFSource->SetOrigin(origin);
-  m_GibsonLanniBSFSource->Modified();
+  m_BeadSpreadFunctionSource->SetOrigin(origin);
+  m_BeadSpreadFunctionSource->Modified();
 }
 
 
 void
 DataModel
 ::GetBSFImageOrigin(double origin[3]) {
-  PointType thisOrigin = m_GibsonLanniBSFSource->GetOrigin();
+  PointType thisOrigin = m_BeadSpreadFunctionSource->GetOrigin();
   for (int i = 0; i < 3; i++)
     origin[i] = static_cast<double>(thisOrigin[i]);
 }
@@ -1047,14 +1048,14 @@ DataModel
   PointType thisCenter;
   for (int i = 0; i < 3; i++)
     thisCenter[i] = static_cast<PointValueType>(center[i]);
-  m_GibsonLanniBSFSource->SetBeadCenter(thisCenter);
+  m_BeadSpreadFunctionSource->SetBeadCenter(thisCenter);
 }
 
 
 void
 DataModel
 ::GetBSFPointCenter(double center[3]) {
-  PointType thisCenter = m_GibsonLanniBSFSource->GetBeadCenter();
+  PointType thisCenter = m_BeadSpreadFunctionSource->GetBeadCenter();
   for (int i = 0; i < 3; i++)
     center[i] = static_cast<double>(thisCenter[i]);
 }
@@ -1070,7 +1071,7 @@ DataModel
 void
 DataModel
 ::UpdateGibsonLanniBSFImage() {
-  m_GibsonLanniBSFSource->UpdateLargestPossibleRegion();
+  m_BeadSpreadFunctionSource->UpdateLargestPossibleRegion();
   m_BSFImageMinMaxFilter->Compute();
 }
 
@@ -1086,42 +1087,42 @@ DataModel
 void
 DataModel
 ::SetBeadRadius(double radius) {
-  m_GibsonLanniBSFSource->SetBeadRadius(radius);
+  m_BeadSpreadFunctionSource->SetBeadRadius(radius);
 }
 
 
 double
 DataModel
 ::GetBeadRadius() {
-  return m_GibsonLanniBSFSource->GetBeadRadius();
+  return m_BeadSpreadFunctionSource->GetBeadRadius();
 }
 
 
 void
 DataModel
 ::SetShearX(double shear) {
-  m_GibsonLanniBSFSource->SetShearX(shear);
+  m_BeadSpreadFunctionSource->SetShearX(shear);
 }
 
 
 double
 DataModel
 ::GetShearX() {
-  return m_GibsonLanniBSFSource->GetShearX();
+  return m_BeadSpreadFunctionSource->GetShearX();
 }
 
 
 void
 DataModel
 ::SetShearY(double shear) {
-  m_GibsonLanniBSFSource->SetShearY(shear);
+  m_BeadSpreadFunctionSource->SetShearY(shear);
 }
 
 
 double
 DataModel
 ::GetShearY() {
-  return m_GibsonLanniBSFSource->GetShearY();
+  return m_BeadSpreadFunctionSource->GetShearY();
 }
 
 
@@ -1129,14 +1130,14 @@ void
 DataModel
 ::SetGLEmissionWavelength(double wavelength) {
   m_GibsonLanniPSFSource->SetEmissionWavelength(wavelength);
-  m_GibsonLanniBSFSource->SetEmissionWavelength(wavelength);
+  m_BeadSpreadFunctionSource->SetParameter(11, wavelength);
 }
 
 
 double
 DataModel
 ::GetGLEmissionWavelength() {
-  return m_GibsonLanniBSFSource->GetEmissionWavelength();
+  return m_BeadSpreadFunctionSource->GetParameter(11);
 }
 
 
@@ -1144,14 +1145,14 @@ void
 DataModel
 ::SetGLNumericalAperture(double na) {
   m_GibsonLanniPSFSource->SetNumericalAperture(na);
-  m_GibsonLanniBSFSource->SetNumericalAperture(na);
+  m_BeadSpreadFunctionSource->SetParameter(12, na);
 }
 
 
 double
 DataModel
 ::GetGLNumericalAperture() {
-  return m_GibsonLanniBSFSource->GetNumericalAperture();
+  return m_BeadSpreadFunctionSource->GetParameter(12);
 }
 
 
@@ -1159,14 +1160,14 @@ void
 DataModel
 ::SetGLMagnification(double magnification) {
   m_GibsonLanniPSFSource->SetMagnification(magnification);
-  m_GibsonLanniBSFSource->SetMagnification(magnification);
+  m_BeadSpreadFunctionSource->SetParameter(13, magnification);
 }
 
 
 double
 DataModel
 ::GetGLMagnification() {
-  return m_GibsonLanniBSFSource->GetMagnification();
+  return m_BeadSpreadFunctionSource->GetParameter(13);
 }
 
 
@@ -1174,14 +1175,14 @@ void
 DataModel
 ::SetGLDesignCoverSlipRefractiveIndex(double ri) {
   m_GibsonLanniPSFSource->SetDesignCoverSlipRefractiveIndex(ri);
-  m_GibsonLanniBSFSource->SetDesignCoverSlipRefractiveIndex(ri);
+  m_BeadSpreadFunctionSource->SetParameter(14, ri);
 }
 
 
 double
 DataModel
 ::GetGLDesignCoverSlipRefractiveIndex() {
-  return m_GibsonLanniBSFSource->GetDesignCoverSlipRefractiveIndex();
+  return m_BeadSpreadFunctionSource->GetParameter(14);
 }
 
 
@@ -1189,14 +1190,14 @@ void
 DataModel
 ::SetGLActualCoverSlipRefractiveIndex(double ri) {
   m_GibsonLanniPSFSource->SetActualCoverSlipRefractiveIndex(ri);
-  m_GibsonLanniBSFSource->SetActualCoverSlipRefractiveIndex(ri);
+  m_BeadSpreadFunctionSource->SetParameter(15, ri);
 }
 
 
 double
 DataModel
 ::GetGLActualCoverSlipRefractiveIndex() {
-  return m_GibsonLanniBSFSource->GetActualCoverSlipRefractiveIndex();
+  return m_BeadSpreadFunctionSource->GetParameter(15);
 }
 
 
@@ -1204,14 +1205,14 @@ void
 DataModel
 ::SetGLDesignCoverSlipThickness(double thickness) {
   m_GibsonLanniPSFSource->SetDesignCoverSlipThickness(thickness);
-  m_GibsonLanniBSFSource->SetDesignCoverSlipThickness(thickness);
+  m_BeadSpreadFunctionSource->SetParameter(16, thickness);
 }
 
 
 double
 DataModel
 ::GetGLDesignCoverSlipThickness() {
-  return m_GibsonLanniBSFSource->GetDesignCoverSlipThickness();
+  return m_BeadSpreadFunctionSource->GetParameter(16);
 }
 
 
@@ -1219,14 +1220,14 @@ void
 DataModel
 ::SetGLActualCoverSlipThickness(double thickness) {
   m_GibsonLanniPSFSource->SetActualCoverSlipThickness(thickness);
-  m_GibsonLanniBSFSource->SetActualCoverSlipThickness(thickness);
+  m_BeadSpreadFunctionSource->SetParameter(17, thickness);
 }
 
 
 double
 DataModel
 ::GetGLActualCoverSlipThickness() {
-  return m_GibsonLanniBSFSource->GetActualCoverSlipThickness();
+  return m_BeadSpreadFunctionSource->GetParameter(17);
 }
 
 
@@ -1234,14 +1235,14 @@ void
 DataModel
 ::SetGLDesignImmersionOilRefractiveIndex(double ri) {
   m_GibsonLanniPSFSource->SetDesignImmersionOilRefractiveIndex(ri);
-  m_GibsonLanniBSFSource->SetDesignImmersionOilRefractiveIndex(ri);
+  m_BeadSpreadFunctionSource->SetParameter(18, ri);
 }
 
 
 double
 DataModel
 ::GetGLDesignImmersionOilRefractiveIndex() {
-  return m_GibsonLanniBSFSource->GetDesignImmersionOilRefractiveIndex();
+  return m_BeadSpreadFunctionSource->GetParameter(18);
 }
 
 
@@ -1249,14 +1250,14 @@ void
 DataModel
 ::SetGLActualImmersionOilRefractiveIndex(double ri) {
   m_GibsonLanniPSFSource->SetActualImmersionOilRefractiveIndex(ri);
-  m_GibsonLanniBSFSource->SetActualImmersionOilRefractiveIndex(ri);
+  m_BeadSpreadFunctionSource->SetParameter(19, ri);
 }
 
 
 double
 DataModel
 ::GetGLActualImmersionOilRefractiveIndex() {
-  return m_GibsonLanniBSFSource->GetActualImmersionOilRefractiveIndex();
+  return m_BeadSpreadFunctionSource->GetParameter(19);
 }
 
 
@@ -1264,14 +1265,14 @@ void
 DataModel
 ::SetGLDesignImmersionOilThickness(double thickness) {
   m_GibsonLanniPSFSource->SetDesignImmersionOilThickness(thickness);
-  m_GibsonLanniBSFSource->SetDesignImmersionOilThickness(thickness);
+  m_BeadSpreadFunctionSource->SetParameter(20, thickness);
 }
 
 
 double
 DataModel
 ::GetGLDesignImmersionOilThickness() {
-  return m_GibsonLanniBSFSource->GetDesignImmersionOilThickness();
+  return m_BeadSpreadFunctionSource->GetParameter(20);
 }
 
 
@@ -1279,14 +1280,14 @@ void
 DataModel
 ::SetGLDesignSpecimenLayerRefractiveIndex(double ri) {
   m_GibsonLanniPSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
-  m_GibsonLanniBSFSource->SetDesignSpecimenLayerRefractiveIndex(ri);
+  m_BeadSpreadFunctionSource->SetParameter(21, ri);
 }
 
 
 double
 DataModel
 ::GetGLDesignSpecimenLayerRefractiveIndex() {
-  return m_GibsonLanniBSFSource->GetDesignSpecimenLayerRefractiveIndex();
+  return m_BeadSpreadFunctionSource->GetParameter(21);
 }
 
 
@@ -1294,14 +1295,14 @@ void
 DataModel
 ::SetGLActualSpecimenLayerRefractiveIndex(double ri) {
   m_GibsonLanniPSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
-  m_GibsonLanniBSFSource->SetActualSpecimenLayerRefractiveIndex(ri);
+  m_BeadSpreadFunctionSource->SetParameter(22, ri);
 }
 
 
 double
 DataModel
 ::GetGLActualSpecimenLayerRefractiveIndex() {
-  return m_GibsonLanniBSFSource->GetActualSpecimenLayerRefractiveIndex();
+  return m_BeadSpreadFunctionSource->GetParameter(22);
 }
 
 
@@ -1309,14 +1310,14 @@ void
 DataModel
 ::SetGLActualPointSourceDepthInSpecimenLayer(double depth) {
   m_GibsonLanniPSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
-  m_GibsonLanniBSFSource->SetActualPointSourceDepthInSpecimenLayer(depth);
+  m_BeadSpreadFunctionSource->SetParameter(23, depth);
 }
 
 
 double
 DataModel
 ::GetGLActualPointSourceDepthInSpecimenLayer() {
-  return m_GibsonLanniBSFSource->GetActualPointSourceDepthInSpecimenLayer();
+  return m_BeadSpreadFunctionSource->GetParameter(23);
 }
 
 
@@ -1324,14 +1325,14 @@ void
 DataModel
 ::SetGLDesignDistanceFromBackFocalPlaneToDetector(double distance) {
   m_GibsonLanniPSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
-  m_GibsonLanniBSFSource->SetDesignDistanceFromBackFocalPlaneToDetector(distance);
+  m_BeadSpreadFunctionSource->SetParameter(24, distance);
 }
 
 
 double
 DataModel
 ::GetGLDesignDistanceFromBackFocalPlaneToDetector() {
-  return m_GibsonLanniBSFSource->GetDesignDistanceFromBackFocalPlaneToDetector();
+  return m_BeadSpreadFunctionSource->GetParameter(24);
 }
 
 
@@ -1339,42 +1340,42 @@ void
 DataModel
 ::SetGLActualDistanceFromBackFocalPlaneToDetector(double distance) {
   m_GibsonLanniPSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
-  m_GibsonLanniBSFSource->SetActualDistanceFromBackFocalPlaneToDetector(distance);
+  m_BeadSpreadFunctionSource->SetParameter(25, distance);
 }
 
 
 double
 DataModel
 ::GetGLActualDistanceFromBackFocalPlaneToDetector() {
-  return m_GibsonLanniBSFSource->GetActualDistanceFromBackFocalPlaneToDetector();
+  return m_BeadSpreadFunctionSource->GetParameter(25);
 }
 
 
 void
 DataModel
 ::SetGLIntensityShift(double intensity) {
-  m_GibsonLanniBSFSource->SetIntensityShift(intensity);
+  m_BeadSpreadFunctionSource->SetParameter(10, intensity);
 }
 
 
 double
 DataModel
 ::GetGLIntensityShift() {
-  return m_GibsonLanniBSFSource->GetIntensityShift();
+  return m_BeadSpreadFunctionSource->GetParameter(10);
 }
 
 
 void
 DataModel
-::SetGLIntensityScale(double intensity) {
-  m_GibsonLanniBSFSource->SetIntensityScale(intensity);
+::SetGLIntensityScale(double scale) {
+  m_BeadSpreadFunctionSource->SetParameter(9, scale);
 }
 
 
 double
 DataModel
 ::GetGLIntensityScale() {
-  return m_GibsonLanniBSFSource->GetIntensityScale();
+  return m_BeadSpreadFunctionSource->GetParameter(9);
 }
 
 
@@ -1409,13 +1410,13 @@ DataModel
 void
 DataModel
 ::SetZCoordinate(unsigned int index, double coordinate) {
-  m_GibsonLanniBSFSource->SetZCoordinate(index, coordinate);
+  m_BeadSpreadFunctionSource->SetZCoordinate(index, coordinate);
 }
 
 double
 DataModel
 ::GetZCoordinate(unsigned int index) {
-  return m_GibsonLanniBSFSource->GetZCoordinate(index);
+  return m_BeadSpreadFunctionSource->GetZCoordinate(index);
 }
 
 
@@ -1423,14 +1424,14 @@ DataModel
 void
 DataModel
 ::SetUseCustomZCoordinates(bool use) {
-  m_GibsonLanniBSFSource->SetUseCustomZCoordinates(use);
+  m_BeadSpreadFunctionSource->SetUseCustomZCoordinates(use);
 }
 
 
 bool
 DataModel
 ::GetUseCustomZCoordinates() {
-  return m_GibsonLanniBSFSource->GetUseCustomZCoordinates();
+  return m_BeadSpreadFunctionSource->GetUseCustomZCoordinates();
 }
 
 
@@ -1447,7 +1448,7 @@ DataModel
     for (unsigned int i = 0; i < mask->Size(); i++) {
       if (mask->GetElement(i)) {
         activeParameters[activeIndex++] =
-          m_GibsonLanniBSFSource->GetParameters()[i];
+          m_BeadSpreadFunctionSource->GetParameters()[i];
       }
     }
 
@@ -1469,14 +1470,14 @@ DataModel
   int activeIndex = 0;
   for (unsigned int i = 0; i < mask->Size(); i++) {
     if (mask->GetElement(i)) {
-      activeParameters[activeIndex] = m_GibsonLanniBSFSource->GetParameters()[i];
+      activeParameters[activeIndex] = m_BeadSpreadFunctionSource->GetParameters()[i];
       initialSimplexDelta[activeIndex++] = m_InitialSimplexDelta[i];
     }
   }
 
   // Connect to the cost function, set the initial parameters, and optimize.
   m_ImageToImageCostFunction
-    ->SetFixedImageRegion(m_GibsonLanniBSFSource->GetOutput()->GetLargestPossibleRegion());
+    ->SetFixedImageRegion(m_BeadSpreadFunctionSource->GetOutput()->GetLargestPossibleRegion());
 
   m_Optimizer = OptimizerType::New();
   m_Optimizer->AutomaticInitialSimplexOff();
@@ -1489,7 +1490,7 @@ DataModel
 
   // Write the parameters back to the source object
   ParametersType optimizedParameters = m_Optimizer->GetCurrentPosition();
-  ParametersType allParameters = m_GibsonLanniBSFSource->GetParameters();
+  ParametersType allParameters = m_BeadSpreadFunctionSource->GetParameters();
   activeIndex = 0;
   for (unsigned int i = 0; i < mask->Size(); i++) {
     if (mask->GetElement(i)) {
@@ -1497,7 +1498,7 @@ DataModel
     }
   }
 
-  m_GibsonLanniBSFSource->SetParameters(allParameters);
+  m_BeadSpreadFunctionSource->SetParameters(allParameters);
 }
 
 #endif // _DATA_MODEL_CXX_

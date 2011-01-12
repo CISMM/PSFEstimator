@@ -44,6 +44,36 @@ ParametricImageSource<TOutputImage>
   this->ReleaseDataBeforeUpdateFlagOff();
 }
 
+
+template<class TOutputImage>
+void
+ParametricImageSource<TOutputImage>
+::PrintSelf(std::ostream& os, Indent indent) const
+{
+  unsigned int i;
+  os << indent << "Origin: [";
+  for ( i=0; i < this->m_Origin.Size() - 1; i++ )
+    {
+    os << this->m_Origin[i] << ", ";
+    }
+  os << this->m_Origin[i] << "]" << std::endl;
+
+  os << indent << "Spacing: [";
+  for ( i=0; i < this->m_Spacing.Size() - 1; i++ )
+    {
+    os << this->m_Spacing[i] << ", ";
+    }
+  os << this->m_Spacing[i] << "] (nanometers)" << std::endl;
+
+  os << indent << "Size: [";
+  for ( i=0; i < this->m_Size.GetSizeDimension() - 1; i++ )
+    {
+    os << this->m_Size[i] << ", ";
+    }
+  os << this->m_Size[i] << "]" << std::endl;
+
+}
+
 } // end namespace itk
 
 #endif

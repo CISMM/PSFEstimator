@@ -6,8 +6,8 @@
 #include <Configuration.h>
 
 #define ITK_MANUAL_INSTANTIATION
+#include <itkBeadSpreadFunctionImageSource.h>
 #include <itkGridImageSource.h>
-#include <itkGibsonLanniBSFImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -52,10 +52,10 @@ public:
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
-  typedef itk::GibsonLanniBSFImageSource<Float3DImageType>
-    GibsonLanniBSFImageSourceType;
-  typedef GibsonLanniBSFImageSourceType::Pointer
-    GibsonLanniBSFImageSourcePointer;
+  typedef itk::BeadSpreadFunctionImageSource< Float3DImageType >
+    BeadSpreadFunctionImageSourceType;
+  typedef BeadSpreadFunctionImageSourceType::Pointer
+    BeadSpreadFunctionImageSourcePointer;
 
   typedef itk::SubtractImageFilter<Float3DImageType, Float3DImageType, Float3DImageType>
     DifferenceFilterType;
@@ -84,7 +84,7 @@ public:
     TIFFWriterType;
 
   // Types for optimization.
-  typedef itk::ImageToParametricImageSourceMetric<TImage, GibsonLanniBSFImageSourceType>
+  typedef itk::ImageToParametricImageSourceMetric<TImage, BeadSpreadFunctionImageSourceType>
     ParametricCostFunctionType;
   typedef ParametricCostFunctionType::ParametersMaskType
     ParametersMaskType;
@@ -279,7 +279,7 @@ protected:
   TImage::Pointer m_MeasuredImageData;
 
   GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
-  GibsonLanniBSFImageSourcePointer m_GibsonLanniBSFSource;
+  BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;
   DifferenceFilterPointer          m_BSFDifferenceImageFilter;
 
   MinMaxType::Pointer m_MeasuredImageMinMaxFilter;
