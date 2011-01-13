@@ -40,6 +40,11 @@ ParametricImageSource< TOutputImage >
   // can be reused (an thus avoid a costly deallocate/allocate cycle).
   this->ReleaseDataBeforeUpdateFlagOff();
 
+  // Initialize the image parameters
+  this->m_Origin.Fill(0.0);
+  this->m_Spacing.Fill(1.0);
+  this->m_Size.Fill(1);
+
   // Set the transform to the identity
   this->m_Transform = TransformType::New();
 }
