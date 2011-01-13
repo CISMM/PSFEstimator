@@ -40,6 +40,72 @@ ParametricGaussianImageSource<TOutputImage>
 template<typename TOutputImage>
 void
 ParametricGaussianImageSource<TOutputImage>
+::SetSigma(const ArrayType& sigma)
+{
+  if (sigma != this->m_GaussianImageSource->GetSigma())
+    {
+    this->m_GaussianImageSource->SetSigma(sigma);
+    this->Modified();
+    }
+}
+
+
+template< typename TOutputImage >
+const typename ParametricGaussianImageSource< TOutputImage >::ArrayType&
+ParametricGaussianImageSource< TOutputImage >
+::GetSigma() const
+{
+  return this->m_GaussianImageSource->GetSigma();
+}
+
+
+template< typename TOutputImage >
+void
+ParametricGaussianImageSource< TOutputImage >
+::SetMean(const ArrayType& mean)
+{
+  if (mean != this->m_GaussianImageSource->GetMean())
+    {
+    this->m_GaussianImageSource->SetMean(mean);
+    this->Modified();
+    }
+}
+
+
+template< typename TOutputImage >
+const typename ParametricGaussianImageSource< TOutputImage >::ArrayType&
+ParametricGaussianImageSource< TOutputImage >
+::GetMean() const
+{
+  return this->m_GaussianImageSource->GetMean();
+}
+
+
+template< typename TOutputImage >
+void
+ParametricGaussianImageSource< TOutputImage >
+::SetScale(double scale)
+{
+  if (scale != this->m_GaussianImageSource->GetScale())
+    {
+    this->m_GaussianImageSource->SetScale(scale);
+    this->Modified();
+    }
+}
+
+
+template< typename TOutputImage >
+double
+ParametricGaussianImageSource< TOutputImage >
+::GetScale() const
+{
+  return this->m_GaussianImageSource->GetScale();
+}
+
+
+template<typename TOutputImage>
+void
+ParametricGaussianImageSource<TOutputImage>
 ::SetParameter(unsigned int index, ParametersValueType value)
 {
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
@@ -88,10 +154,9 @@ void
 ParametricGaussianImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters)
 {
-  unsigned int i;
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
   ArrayType sigma, mean;
-  for (i=0; i<dimensions; i++)
+  for ( unsigned int i=0; i<dimensions; i++)
     {
     sigma[i] = parameters[i];
     mean[i]  = parameters[dimensions + i];
@@ -111,9 +176,8 @@ ParametricGaussianImageSource<TOutputImage>
   ArrayType sigma = this->GetSigma();
   ArrayType mean  = this->GetMean();
 
-  unsigned int i;
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
-  for (i=0; i<dimensions; i++)
+  for (unsigned int i=0; i<dimensions; i++)
     {
     parameters[i] = sigma[i];
     parameters[dimensions + i] = mean[i];
@@ -138,6 +202,11 @@ void
 ParametricGaussianImageSource<TOutputImage>
 ::GenerateData()
 {
+  m_GaussianImageSource->SetSize(this->m_Size);
+  m_GaussianImageSource->SetSpacing(this->m_Spacing);
+  m_GaussianImageSource->SetOrigin(this->m_Origin);
+  m_GaussianImageSource->UpdateLargestPossibleRegion();
+
   m_GaussianImageSource->GraftOutput(this->GetOutput());
   this->GraftOutput(m_GaussianImageSource->GetOutput());
 }

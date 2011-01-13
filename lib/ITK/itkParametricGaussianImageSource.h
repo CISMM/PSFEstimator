@@ -73,47 +73,14 @@ public:
   typedef double                       ParametersValueType;
   typedef Array< ParametersValueType > ParametersType;
 
-  void SetSigma(const ArrayType& sigma)
-  {
-    if (sigma != this->m_GaussianImageSource->GetSigma())
-      {
-      this->m_GaussianImageSource->SetSigma(sigma);
-      this->Modified();
-      }
-  }
+  void SetSigma(const ArrayType& sigma);
+  const ArrayType& GetSigma() const;
 
-  const ArrayType& GetSigma() const
-  {
-    return this->m_GaussianImageSource->GetSigma();
-  }
+  void SetMean(const ArrayType& mean);
+  const ArrayType& GetMean() const;
 
-  void SetMean(const ArrayType& mean)
-  {
-    if (mean != this->m_GaussianImageSource->GetMean())
-      {
-      this->m_GaussianImageSource->SetMean(mean);
-      this->Modified();
-      }
-  }
-
-  const ArrayType& GetMean() const
-  {
-    return this->m_GaussianImageSource->GetMean();
-  }
-
-  void SetScale(double scale)
-  {
-    if (scale != this->m_GaussianImageSource->GetScale())
-      {
-      this->m_GaussianImageSource->SetScale(scale);
-      this->Modified();
-      }
-  }
-
-  double GetScale() const
-  {
-    return this->m_GaussianImageSource->GetScale();
-  }
+  void SetScale(double scale);
+  double GetScale() const;
 
   /** Define methods defined by ParametricImageSource. */
   void                SetParameter(unsigned int index, ParametersValueType value);
