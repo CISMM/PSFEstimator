@@ -293,26 +293,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   Superclass::PrintSelf(os,indent);
 }
 
-//----------------------------------------------------------------------------
-template <typename TOutputImage>
-void
-GibsonLanniPSFImageSource<TOutputImage>
-::GenerateOutputInformation()
-{
-  OutputImageType *output;
-  IndexType index = {{0}};
-  SizeType size( this->m_Size );
-
-  output = this->GetOutput(0);
-
-  RegionType largestPossibleRegion;
-  largestPossibleRegion.SetSize( size );
-  largestPossibleRegion.SetIndex( index );
-  output->SetLargestPossibleRegion( largestPossibleRegion );
-
-  output->SetSpacing(this->m_Spacing);
-  output->SetOrigin(this->m_Origin);
-}
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>

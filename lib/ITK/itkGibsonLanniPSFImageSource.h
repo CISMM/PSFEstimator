@@ -97,9 +97,7 @@ protected:
   ~GibsonLanniPSFImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  virtual void
-  ThreadedGenerateData(const RegionType& outputRegionForThread, int threadId );
-  virtual void GenerateOutputInformation();
+  virtual void ThreadedGenerateData(const RegionType& outputRegionForThread, int threadId );
 
   ComplexType OPD_term(double NA, double n_oil, double rho, double n, double t);
 
