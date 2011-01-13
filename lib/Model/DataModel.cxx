@@ -120,6 +120,7 @@ DataModel
   m_InitialSimplexDelta.
     SetSize(m_BeadSpreadFunctionSource->GetNumberOfParameters());
 
+#if 0
   int index = 0;
   m_InitialSimplexDelta[index++] = 1.0; // X-spacing
   m_InitialSimplexDelta[index++] = 1.0; // Y-spacing
@@ -147,6 +148,7 @@ DataModel
   m_InitialSimplexDelta[index++] = 1.0;   // Actual distance from back focal plane
   m_InitialSimplexDelta[index++] = 1.0;   // Background intensity
   m_InitialSimplexDelta[index++] = 1.0;   // Maximum intensity
+#endif
 }
 
 
