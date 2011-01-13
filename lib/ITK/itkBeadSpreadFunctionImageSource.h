@@ -81,117 +81,33 @@ public:
   typedef typename Superclass::ParametersValueType ParametersValueType;
   typedef typename Superclass::ParametersType      ParametersType;
 
-  /** Specify the size of the output image. */
-  void SetSize(const SizeType & size)
-  {
-    if (size != m_Convolver->GetSize())
-      {
-      this->Modified();
-      }
-    m_Convolver->SetSize(size);
-  }
+  /** Set/get the size of the output image. */
+  void SetSize(const SizeType & size);
+  const SizeType & GetSize() const;
 
-  /** Get the size of the output image. */
-  const SizeType & GetSize() const
-  {
-    return m_Convolver->GetSize();
-  }
+  /** Set/get the spacing of the output image (in nanometers). */
+  void SetSpacing(const SpacingType & spacing);
+  const SpacingType & GetSpacing() const;
 
-  /** Specify the spacing of the output image (in nanometers). */
-  void SetSpacing(const SpacingType & spacing)
-  {
-    if (spacing != m_Convolver->GetSpacing())
-      {
-      this->Modified();
-      }
-    m_Convolver->SetSpacing(spacing);
-  }
+  /** Set/get the origin of the output image (in nanometers). */
+  virtual void SetOrigin(const PointType & origin);
+  const PointType & GetOrigin() const;
 
-  /** Get the spacing of the output image (in nanometers). */
-  const SpacingType & GetSpacing() const
-  {
-    return m_Convolver->GetSpacing();
-  }
+  /** Set/get the point source center (in nanometers). */
+  virtual void SetBeadCenter(const PointType & center);
+  const PointType & GetBeadCenter() const;
 
-  /** Specify the origin of the output image (in nanometers). */
-  virtual void SetOrigin(const PointType & origin)
-  {
-    if (origin != m_Convolver->GetOrigin())
-      {
-      this->Modified();
-      }
-    m_Convolver->SetOrigin(origin);
-  }
+  /** Set/get the bead radius (in nanometers). */
+  void SetBeadRadius(double radius);
+  double GetBeadRadius() const;
 
-  /** Get the origin of the output image (in nanometers). */
-  const PointType & GetOrigin() const
-  {
-    return m_Convolver->GetOrigin();
-  }
+  /** Set/get the shear in the X direction. */
+  void SetShearX(double shear);
+  double GetShearX() const;
 
-  /** Specify the point source center (in nanometers). */
-  virtual void SetBeadCenter(const PointType & center)
-  {
-    if (center != m_Convolver->GetSphereCenter())
-      {
-      m_Convolver->SetSphereCenter(center);
-      this->Modified();
-      }
-  }
-
-  /** Get the point source center (in nanometers). */
-  const PointType & GetBeadCenter() const
-  {
-    return m_Convolver->GetSphereCenter();
-  }
-
-  /** Specify the bead radius (in nanometers). */
-  void SetBeadRadius(double radius)
-  {
-    if (radius != m_Convolver->GetSphereRadius())
-      {
-      m_Convolver->SetSphereRadius(radius);
-      this->Modified();
-      }
-  }
-
-  /** Get the bead radius. */
-  double GetBeadRadius() const
-  {
-    return m_Convolver->GetSphereRadius();
-  }
-
-  /** Specify the shear in the X direction. */
-  void SetShearX(double shear)
-  {
-    if (shear != m_Convolver->GetShearX())
-      {
-      m_Convolver->SetShearX(shear);
-      this->Modified();
-      }
-  }
-
-  /** Get the shear in the X direction. */
-  double GetShearX() const
-  {
-    return m_Convolver->GetShearX();
-  }
-
-  /** Specify the shear in the Y direction. */
-  void SetShearY(double shear)
-  {
-    if (shear != m_Convolver->GetShearY())
-      {
-      m_Convolver->SetShearY(shear);
-      this->Modified();
-      }
-  }
-
-  /** Get the shear in the Y direction. */
-  double GetShearY() const
-  {
-    return m_Convolver->GetShearY();
-  }
+  /** Set/get the shear in the Y direction. */
+  void SetShearY(double shear);
+  double GetShearY() const;
 
   /** Set/get the background value. */
   itkSetMacro(IntensityShift, double);

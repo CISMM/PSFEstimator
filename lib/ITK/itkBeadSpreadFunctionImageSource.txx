@@ -50,6 +50,161 @@ BeadSpreadFunctionImageSource< TOutputImage >
 template< class TOutputImage >
 void
 BeadSpreadFunctionImageSource< TOutputImage >
+::SetSize(const SizeType& size)
+{
+  if (size != m_Convolver->GetSize())
+    {
+    this->Modified();
+    }
+  m_Convolver->SetSize(size);
+}
+
+
+template< class TOutputImage >
+const typename BeadSpreadFunctionImageSource< TOutputImage >::SizeType&
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetSize() const
+{
+  return m_Convolver->GetSize();
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetSpacing(const SpacingType& spacing)
+{
+  if (spacing != m_Convolver->GetSpacing())
+    {
+    this->Modified();
+    }
+  m_Convolver->SetSpacing(spacing);
+}
+
+
+template< class TOutputImage >
+const typename BeadSpreadFunctionImageSource< TOutputImage >::SpacingType&
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetSpacing() const
+{
+  return m_Convolver->GetSpacing();
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetOrigin(const PointType& origin)
+{
+  if (origin != m_Convolver->GetOrigin())
+    {
+    this->Modified();
+    }
+  m_Convolver->SetOrigin(origin);
+}
+
+
+template< class TOutputImage >
+const typename BeadSpreadFunctionImageSource< TOutputImage >::PointType&
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetOrigin() const
+{
+  return m_Convolver->GetOrigin();
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetBeadCenter(const PointType& center)
+{
+  if (center != m_Convolver->GetSphereCenter())
+    {
+    m_Convolver->SetSphereCenter(center);
+    this->Modified();
+    }
+}
+
+
+template< class TOutputImage >
+const typename BeadSpreadFunctionImageSource< TOutputImage >::PointType&
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetBeadCenter() const
+{
+  return m_Convolver->GetSphereCenter();
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetBeadRadius(double radius)
+{
+  if (radius != m_Convolver->GetSphereRadius())
+    {
+    m_Convolver->SetSphereRadius(radius);
+    this->Modified();
+    }
+}
+
+
+template< class TOutputImage >
+double
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetBeadRadius() const
+{
+  return m_Convolver->GetSphereRadius();
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetShearX(double shear)
+{
+  if (shear != m_Convolver->GetShearX())
+    {
+    m_Convolver->SetShearX(shear);
+    this->Modified();
+    }
+}
+
+
+template< class TOutputImage >
+double
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetShearX() const
+{
+  return m_Convolver->GetShearX();
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetShearY(double shear)
+{
+  if (shear != m_Convolver->GetShearY())
+    {
+    m_Convolver->SetShearY(shear);
+    this->Modified();
+    }
+}
+
+
+template< class TOutputImage >
+double
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetShearY() const
+{
+  return m_Convolver->GetShearY();
+}
+
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
 ::SetParameter(unsigned int index, ParametersValueType value)
 {
   unsigned int numberOfBSFParameters = 2 * ImageDimension + 5;
