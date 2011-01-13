@@ -115,13 +115,7 @@ ParametricGaussianImageSource<TOutputImage>
     sigma[index] = value;
     this->SetSigma(sigma);
     }
-  else if (index >= dimensions && index < 2*dimensions)
-    {
-    ArrayType mean = this->GetMean();
-    mean[index-dimensions] = value;
-    this->SetMean(mean);
-    }
-  else
+  else if (index == dimensions)
     {
     this->SetScale(value);
     }
@@ -138,14 +132,12 @@ ParametricGaussianImageSource<TOutputImage>
     {
     return this->GetSigma()[index];
     }
-  else if (index >= dimensions && index < 2*dimensions)
-    {
-    return this->GetMean()[index-dimensions];
-    }
-  else
+  else if (index == dimensions)
     {
     return this->GetScale();
     }
+
+  return 0.0;
 }
 
 
@@ -155,15 +147,13 @@ ParametricGaussianImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters)
 {
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
-  ArrayType sigma, mean;
+  ArrayType sigma;
   for ( unsigned int i=0; i<dimensions; i++)
     {
     sigma[i] = parameters[i];
-    mean[i]  = parameters[dimensions + i];
     }
   this->SetSigma(sigma);
-  this->SetMean(mean);
-  this->SetScale(parameters[2*dimensions]);
+  this->SetScale(parameters[dimensions]);
 }
 
 
@@ -174,15 +164,13 @@ ParametricGaussianImageSource<TOutputImage>
 {
   ParametersType parameters(GetNumberOfParameters());
   ArrayType sigma = this->GetSigma();
-  ArrayType mean  = this->GetMean();
 
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
   for (unsigned int i=0; i<dimensions; i++)
     {
     parameters[i] = sigma[i];
-    parameters[dimensions + i] = mean[i];
     }
-  parameters[2*dimensions] = this->GetScale();
+  parameters[dimensions] = this->GetScale();
 
   return parameters;
 }
@@ -193,7 +181,7 @@ unsigned int
 ParametricGaussianImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
-  return 2*itkGetStaticConstMacro(OutputImageDimension) + 1;
+  return itkGetStaticConstMacro(OutputImageDimension) + 1;
 }
 
 
