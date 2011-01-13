@@ -205,9 +205,11 @@ ParametricGaussianImageSource<TOutputImage>
   m_GaussianImageSource->SetSize(this->m_Size);
   m_GaussianImageSource->SetSpacing(this->m_Spacing);
   m_GaussianImageSource->SetOrigin(this->m_Origin);
-  m_GaussianImageSource->UpdateLargestPossibleRegion();
 
   m_GaussianImageSource->GraftOutput(this->GetOutput());
+
+  m_GaussianImageSource->UpdateLargestPossibleRegion();
+
   this->GraftOutput(m_GaussianImageSource->GetOutput());
 }
 
