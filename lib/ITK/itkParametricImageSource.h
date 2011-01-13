@@ -58,6 +58,7 @@ public:
   typedef typename OutputImageType::PointValueType PointValueType;
   typedef typename OutputImageType::SpacingType    SpacingType;
   typedef typename OutputImageType::IndexType      IndexType;
+  typedef typename OutputImageType::RegionType     RegionType;
   typedef typename OutputImageType::SizeType       SizeType;
   typedef typename OutputImageType::SizeValueType  SizeValueType;
 
@@ -106,6 +107,8 @@ protected:
   SpacingType      m_Spacing;   // spacing
   SizeType         m_Size;      // size of the output image
   TransformPointer m_Transform; // transform to apply to image sample coordinates
+
+  virtual void GenerateOutputInformation();
 
 private:
   ParametricImageSource(const Self&); //purposely not implemented

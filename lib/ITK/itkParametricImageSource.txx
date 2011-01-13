@@ -24,11 +24,8 @@
 namespace itk
 {
 
-/**
- *
- */
-template<class TOutputImage>
-ParametricImageSource<TOutputImage>
+template< class TOutputImage >
+ParametricImageSource< TOutputImage >
 ::ParametricImageSource()
 {
   // Create the output. We use static_cast<> here because we know the default
@@ -48,9 +45,30 @@ ParametricImageSource<TOutputImage>
 }
 
 
-template<class TOutputImage>
+template< class TOutputImage >
 void
-ParametricImageSource<TOutputImage>
+ParametricImageSource< TOutputImage >
+::GenerateOutputInformation()
+{
+  OutputImageType *output;
+  IndexType index = {{0}};
+  SizeType size( this->m_Size );
+
+  output = this->GetOutput(0);
+
+  RegionType largestPossibleRegion;
+  largestPossibleRegion.SetSize( size );
+  largestPossibleRegion.SetIndex( index );
+  output->SetLargestPossibleRegion( largestPossibleRegion );
+
+  output->SetSpacing(this->m_Spacing);
+  output->SetOrigin(this->m_Origin);
+}
+
+
+template< class TOutputImage >
+void
+ParametricImageSource< TOutputImage >
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   unsigned int i;
