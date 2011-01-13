@@ -52,6 +52,7 @@ DataModel
   m_GaussianPSFSource                = GaussianPSFImageSourceType::New();
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
   m_BeadSpreadFunctionSource->SetKernelSource(GibsonLanniPSFImageSourceType::New());
+  m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
   //m_BeadSpreadFunctionSource->SetKernelSource(GaussianPSFImageSourceType::New());
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 

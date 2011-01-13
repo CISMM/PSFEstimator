@@ -32,6 +32,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
   m_IntensityScale = 1.0;
 
   m_KernelSource = NULL;
+  m_KernelIsRadiallySymmetric = false;
 
   m_Convolver = ConvolverType::New();
 
@@ -442,22 +443,18 @@ BeadSpreadFunctionImageSource< TOutputImage >
 {
   // Set the PSF sampling spacing and size parameters, and update.
   PointType   psfTableOrigin;
-  SpacingType psfTableSpacing;
   SizeType    psfTableSize;
-
-  psfTableSpacing[0] = 40.0; // A somewhat arbitrary spacing.
-  psfTableSpacing[1] = 40.0;
-  psfTableSpacing[2] = 100.0;
+  SpacingType psfTableSpacing(40.0); // An arbitrary spacing
 
   // Determine necessary spatial extent of PSF table.
-  PointType minExtent;
+  PointType minExtent(this->GetOrigin());
   PointType maxExtent;
-  for ( int i = 0; i < 3; i++ )
+  const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
+  for ( unsigned int i = 0; i < dimensions; i++ )
     {
     // First calculate extent of BSF in this dimension.
-    minExtent[i] = GetOrigin()[i];
-    maxExtent[i] = static_cast<PointValueType>(GetSize()[i]-1)*GetSpacing()[i] +
-      minExtent[i];
+    maxExtent[i] = static_cast<PointValueType>
+      (this->GetSize()[i]-1) * this->GetSpacing()[i] + minExtent[i];
 
     // Now modify calculated PSF dimension to account for bead shift and radius
     minExtent[i] += -GetBeadCenter()[i] - GetBeadRadius();
@@ -472,47 +469,39 @@ BeadSpreadFunctionImageSource< TOutputImage >
     psfTableSize[i] = iDimMax - iDimMin + 1;
     }
 
-  // We need only half the radial profile image here.
-  PointType   profileOrigin(psfTableOrigin);
-  SpacingType profileSpacing(psfTableSpacing);
-  SizeType    profileSize(psfTableSize);
-
-  // Calculate distance from image corners to bead center, projected
-  // to the xy-plane.
-  minExtent[2] = 0.0;
-  maxExtent[2] = 0.0;
-  PointType beadCenter(GetBeadCenter());
-  beadCenter[2] = 0.0;
-
-  PointType pt[4];
-  pt[0][0] = minExtent[0];  pt[0][1] = minExtent[1];  pt[0][2] = 0.0;
-  pt[1][0] = minExtent[0];  pt[1][1] = maxExtent[1];  pt[1][2] = 0.0;
-  pt[2][0] = maxExtent[0];  pt[2][1] = minExtent[1];  pt[2][2] = 0.0;
-  pt[3][0] = maxExtent[0];  pt[3][1] = maxExtent[1];  pt[3][2] = 0.0;
-
-  double maxRadialDistance = NumericTraits<double>::min();
-  for ( unsigned int i = 0; i < 4; i++)
+  // Generate just a radial profile of the PSF if it is radially symmetric
+  if (this->m_KernelIsRadiallySymmetric)
     {
-    VectorType v = pt[i] - beadCenter;
-    double distance = v.GetNorm();
-    if (distance > maxRadialDistance)
+
+    // Calculate distance from image corners to bead center, projected
+    // to the xy-plane.
+    typedef Point< double, 2> Point2DType;
+    Point2DType beadCenter(GetBeadCenter().GetDataPointer());
+
+    Point2DType pt[4];
+    pt[0][0] = minExtent[0];  pt[0][1] = minExtent[1];
+    pt[1][0] = minExtent[0];  pt[1][1] = maxExtent[1];
+    pt[2][0] = maxExtent[0];  pt[2][1] = minExtent[1];
+    pt[3][0] = maxExtent[0];  pt[3][1] = maxExtent[1];
+
+    double maxRadialDistance = NumericTraits<double>::min();
+    for ( unsigned int i = 0; i < 4; i++)
       {
-      maxRadialDistance = distance;
+      double distance = pt[i].EuclideanDistanceTo(beadCenter);
+      if (distance > maxRadialDistance) maxRadialDistance = distance;
       }
+
+    // Need to change some values here
+    psfTableOrigin[0] = 0.0;
+    psfTableOrigin[1] = 0.0;
+    long maxRadialSize = Math::Ceil<long>(maxRadialDistance / psfTableSpacing[0]);
+    psfTableSize[0] = maxRadialSize;
+    psfTableSize[1] = 1;
     }
 
-  // Need to change some values here
-  profileSpacing[0] = 0.5 * psfTableSpacing[0];
-  profileSpacing[1] = 0.5 * psfTableSpacing[1];
-  profileOrigin[0] = 0.0;
-  profileOrigin[1] = 0.0;
-  long maxRadialSize = Math::Ceil<long>(maxRadialDistance / profileSpacing[0]);
-  profileSize[0] = maxRadialSize;
-  profileSize[1] = 1;
-
-  m_KernelSource->SetSize(profileSize);
-  m_KernelSource->SetSpacing(profileSpacing);
-  m_KernelSource->SetOrigin(profileOrigin);
+  m_KernelSource->SetSize(psfTableSize);
+  m_KernelSource->SetSpacing(psfTableSpacing);
+  m_KernelSource->SetOrigin(psfTableOrigin);
   m_KernelSource->UpdateLargestPossibleRegion();
 
   m_Convolver->SetInput(m_KernelSource->GetOutput());

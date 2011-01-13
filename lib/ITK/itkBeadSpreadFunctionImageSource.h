@@ -121,6 +121,13 @@ public:
   itkSetObjectMacro(KernelSource, KernelImageSourceType);
   itkGetObjectMacro(KernelSource, KernelImageSourceType);
 
+  /** Set/get kernel radial symmetry flag. If this flag is set to
+   * true, then only a single slice of the kernel corresponding to a
+   * radial profile of the kernel. */
+  itkSetMacro(KernelIsRadiallySymmetric, bool);
+  itkGetMacro(KernelIsRadiallySymmetric, bool);
+  itkBooleanMacro(KernelIsRadiallySymmetric);
+
   /** Set/get a single parameter value. */
   virtual void SetParameter(unsigned int index, ParametersValueType value);
   virtual ParametersValueType GetParameter(unsigned int index) const;
@@ -162,6 +169,7 @@ private:
   double m_IntensityScale; // The maximum intensity value
 
   KernelImageSourcePointer  m_KernelSource;
+  bool                      m_KernelIsRadiallySymmetric;
   ConvolverPointer          m_Convolver;
   RescaleImageFilterPointer m_RescaleFilter;
 };
