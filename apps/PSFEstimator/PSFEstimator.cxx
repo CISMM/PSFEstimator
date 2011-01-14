@@ -737,9 +737,9 @@ PSFEstimator
 
   // Now update the image
   if (gui->calculatedPSFRadioButton->isChecked()) {
-    m_DataModel->UpdateGibsonLanniPSFImage();
+    m_DataModel->UpdatePSFImage();
   } else if (gui->calculatedBSFRadioButton->isChecked()) {
-    m_DataModel->UpdateGibsonLanniBSFImage();
+    m_DataModel->UpdateBSFImage();
   } else if (gui->measuredMinusCalculatedBSFRadioButton->isChecked()) {
     m_DataModel->UpdateBSFDifferenceImage();
   }

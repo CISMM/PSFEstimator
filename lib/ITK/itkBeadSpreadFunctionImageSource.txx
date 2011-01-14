@@ -395,9 +395,18 @@ unsigned int
 BeadSpreadFunctionImageSource< TOutputImage >
 ::GetNumberOfParameters() const
 {
-  return this->m_KernelSource->GetNumberOfParameters() + 2*ImageDimension + 5;
+  return this->m_KernelSource->GetNumberOfParameters() +
+    this->GetNumberOfBeadSpreadFunctionParameters();
 }
 
+
+template< class TOutputImage >
+unsigned int
+BeadSpreadFunctionImageSource< TOutputImage >
+::GetNumberOfBeadSpreadFunctionParameters() const
+{
+  return 2*ImageDimension + 5;
+}
 
 template< class TOutputImage >
 void

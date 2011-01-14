@@ -57,6 +57,8 @@ public:
     DummyImageSourcePointer;
   typedef itk::ParametricImageSource<Float3DImageType>
     ParametricImageSourceType;
+  typedef ParametricImageSourceType::Pointer
+    ParametricImageSourcePointer;
   typedef itk::GibsonLanniPSFImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
@@ -220,8 +222,8 @@ public:
   void   SetShearY(double shear);
   double GetShearY();
 
-  void   UpdateGibsonLanniPSFImage();
-  void   UpdateGibsonLanniBSFImage();
+  void   UpdatePSFImage();
+  void   UpdateBSFImage();
   void   UpdateBSFDifferenceImage();
 
   void   SetBeadRadius(double radius);
@@ -263,6 +265,7 @@ protected:
   TImage::Pointer m_MeasuredImageData;
 
   // The different point-spread function types
+  ParametricImageSourcePointer         m_PointSpreadFunctionSource;
   GaussianPSFImageSourcePointer        m_GaussianPSFSource;
   GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFSource;
 

@@ -141,6 +141,9 @@ public:
   /** Gets the total number of parameters. */
   virtual unsigned int GetNumberOfParameters() const;
 
+  /** Gets the number of bead-spread function parameters. */
+  virtual unsigned int GetNumberOfBeadSpreadFunctionParameters() const;
+
   /** Get/set the z-coordinate of the image z-plane at the given index. */
   void SetZCoordinate(unsigned int index, double coordinate);
   double GetZCoordinate(unsigned int);
