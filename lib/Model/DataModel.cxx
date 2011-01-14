@@ -123,7 +123,7 @@ DataModel
     GetMeasuredImageDimensions(size);
     SetPSFImageDimensions(size);
 
-    RecenterPSFImageOrigin();
+    RecenterImageOrigin();
   }
 }
 
@@ -1098,7 +1098,7 @@ DataModel
 
 void
 DataModel
-::RecenterPSFImageOrigin() {
+::RecenterImageOrigin() {
   double spacing[3];
   GetPSFImageVoxelSpacing(spacing);
 
@@ -1108,7 +1108,9 @@ DataModel
   PointType origin;
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<double>(size[i]-1)*0.5;
+  m_BeadSpreadFunctionSource->SetOrigin(origin);
   m_PointSpreadFunctionSource->SetOrigin(origin);
+  m_MeasuredImageData->SetOrigin(origin);
 }
 
 
@@ -1279,9 +1281,20 @@ DataModel
 ::SetParameterValue(unsigned int index, double value) {
   m_BeadSpreadFunctionSource->SetParameter(index, value);
 
-  int numBSFParameters = m_BeadSpreadFunctionSource->
+  unsigned int numBSFParameters = m_BeadSpreadFunctionSource->
     GetNumberOfBeadSpreadFunctionParameters();
-  m_PointSpreadFunctionSource->SetParameter(index - numBSFParameters, value);
+
+  if (index < 3) {
+    SpacingType spacing = m_BeadSpreadFunctionSource->GetSpacing();
+    spacing[index] = value;
+    m_MeasuredImageData->SetSpacing(spacing);
+    m_PointSpreadFunctionSource->SetSpacing(spacing);
+
+    RecenterImageOrigin();
+
+  } else if (index >= numBSFParameters) {
+    m_PointSpreadFunctionSource->SetParameter(index - numBSFParameters, value);
+  }
 }
 
 

@@ -206,8 +206,8 @@ public:
   void   SetBSFImageOrigin(double origin[3]);
   void   GetBSFImageOrigin(double origin[3]);
 
-  // Recenters the PSF image origin to the center of the image bounds.
-  void   RecenterPSFImageOrigin();
+  // Recenters the origins of the images to the center of the image bounds.
+  void   RecenterImageOrigin();
 
   // Sets the PSF center
   void   SetPSFPointCenter(double center[3]);
