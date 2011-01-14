@@ -73,6 +73,8 @@ public slots:
   virtual void on_zPlusButton_clicked();
   virtual void on_zMinusButton_clicked();
 
+  virtual void on_psfModelComboBox_currentIndexChanged(int index);
+
   virtual void on_useCustomZSlicePositions_toggled(bool use);
 
   virtual void on_resetCustomSlicePositionsButton_clicked();
@@ -84,7 +86,7 @@ public slots:
   virtual void handle_imageInformationTableModel_dataChanged
     (const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
-  virtual void handle_PSFPropertyTableModel_dataChanged
+  virtual void handle_BSFPropertyTableModel_dataChanged
     (const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
   /** Mark the session state as changed. */
@@ -110,7 +112,7 @@ protected:
 
   QStandardItemModel* m_ImageInformationTableModel;
 
-  QBeadSpreadFunctionPropertyTableModel* m_PSFPropertyTableModel;
+  QBeadSpreadFunctionPropertyTableModel* m_BSFPropertyTableModel;
 
   DisplayImageType m_DisplayedImage;
 

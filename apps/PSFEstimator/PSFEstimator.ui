@@ -157,8 +157,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>297</width>
-          <height>543</height>
+          <width>299</width>
+          <height>529</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -699,7 +699,7 @@
   <widget class="QDockWidget" name="psfSettingsDockWidget">
    <property name="minimumSize">
     <size>
-     <width>271</width>
+     <width>311</width>
      <height>524</height>
     </size>
    </property>
@@ -724,21 +724,21 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="QWidget" name="microscopeTypeWidget" native="true">
+         <widget class="QWidget" name="psfModelWidget" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <property name="margin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="microscopeTypeLabel">
+            <widget class="QLabel" name="psfModelLabel">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
-              <string>Microscope type:</string>
+              <string>PSF model:</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -746,36 +746,26 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="microscopeTypeComboBox">
+            <widget class="QComboBox" name="psfModelComboBox">
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
              <item>
               <property name="text">
-               <string>Widefield</string>
+               <string>Gaussian</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Confocal</string>
+               <string>Gibson-Lanni Widefield</string>
               </property>
              </item>
             </widget>
            </item>
           </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="useRadialInterpolationCheckBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Use radial interpolation</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
          </widget>
         </item>
         <item>

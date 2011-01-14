@@ -47,9 +47,7 @@ PSFEstimator
   gui->setupUi(this);
 
   // Disable these widgets for now
-  gui->microscopeTypeWidget->setVisible(false);
   gui->noiseTypeWidget->setVisible(false);
-  gui->useRadialInterpolationCheckBox->setVisible(false);
 
   // Hide queue submission button if domain is not bass.cs.unc.edu
   QString hostName = QHostInfo::localHostName();
@@ -97,11 +95,11 @@ PSFEstimator
   m_ImageInformationTableModel->setHeaderData(RIGHT_COLUMN, Qt::Horizontal, tr("Value"));
 
   QStandardItem* labelItems[5];
-  labelItems[ 0] = new QStandardItem(tr("Intensity minimum"));
-  labelItems[ 1] = new QStandardItem(tr("Intensity maximum"));
-  labelItems[ 2] = new QStandardItem(tr("X dimension (pixels)"));
-  labelItems[ 3] = new QStandardItem(tr("Y dimension (pixels)"));
-  labelItems[ 4] = new QStandardItem(tr("Z dimension (slices)"));
+  labelItems[ 0] = new QStandardItem(tr("Intensity Minimum"));
+  labelItems[ 1] = new QStandardItem(tr("Intensity Maximum"));
+  labelItems[ 2] = new QStandardItem(tr("X Dimension (pixels)"));
+  labelItems[ 3] = new QStandardItem(tr("Y Dimension (pixels)"));
+  labelItems[ 4] = new QStandardItem(tr("Z Dimension (slices)"));
 
   for (unsigned int i = 0; i < sizeof(labelItems) / sizeof(QStandardItem*); i++) {
     labelItems[i]->setEditable(false);
@@ -121,14 +119,14 @@ PSFEstimator
   int LEFT_COLUMN_WIDTH = 160;
   gui->imageDataView->setColumnWidth(LEFT_COLUMN, LEFT_COLUMN_WIDTH);
 
-  m_PSFPropertyTableModel = new QBeadSpreadFunctionPropertyTableModel();
-  m_PSFPropertyTableModel->SetDataModel(m_DataModel);
+  m_BSFPropertyTableModel = new QBeadSpreadFunctionPropertyTableModel();
+  m_BSFPropertyTableModel->SetDataModel(m_DataModel);
 
-  connect(m_PSFPropertyTableModel,
+  connect(m_BSFPropertyTableModel,
           SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
-          this, SLOT(handle_PSFPropertyTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
+          this, SLOT(handle_BSFPropertyTableModel_dataChanged(const QModelIndex&, const QModelIndex&)));
 
-  gui->psfSettingsTableView->setModel(m_PSFPropertyTableModel);
+  gui->psfSettingsTableView->setModel(m_BSFPropertyTableModel);
   gui->psfSettingsTableView->setColumnWidth(0, 300);
 
   // Refresh the UI
@@ -138,6 +136,7 @@ PSFEstimator
   m_Renderer->ResetCamera();
 
   // Render
+  on_yPlusButton_clicked();
   gui->qvtkWidget->GetRenderWindow()->Render();
 
   // Restore inter-session GUI settings.
@@ -170,8 +169,8 @@ PSFEstimator
     m_DataModel->CreateImageFile(xSize, ySize, zSize,
                                  xSpacing, ySpacing, zSpacing);
 
-    m_PSFPropertyTableModel->InitializeSettingsCache();
-    m_PSFPropertyTableModel->Refresh();
+    m_BSFPropertyTableModel->InitializeSettingsCache();
+    m_BSFPropertyTableModel->Refresh();
 
     SetupInterface(false);
     SetupRenderer();
@@ -202,8 +201,8 @@ PSFEstimator
   // Should probably report if opening the image failed.
   m_DataModel->LoadImageFile(fileName.toStdString());
 
-  m_PSFPropertyTableModel->InitializeSettingsCache();
-  m_PSFPropertyTableModel->Refresh();
+  m_BSFPropertyTableModel->InitializeSettingsCache();
+  m_BSFPropertyTableModel->Refresh();
 
   SetupInterface(true);
   SetupRenderer();
@@ -226,8 +225,7 @@ PSFEstimator
   gui->calculatedBSFRadioButton->setEnabled(true);
   gui->measuredMinusCalculatedBSFRadioButton->setEnabled(hasMeasuredImage);
 
-  gui->microscopeTypeWidget->setEnabled(true);
-  gui->useRadialInterpolationCheckBox->setEnabled(true);
+  gui->psfModelComboBox->setEnabled(true);
   gui->noiseTypeWidget->setEnabled(true);
 
   gui->estimatePSFCenterButton->setEnabled(hasMeasuredImage);
@@ -251,9 +249,12 @@ PSFEstimator
   int dims[3];
   m_DataModel->GetMeasuredImageDimensions(dims);
 
-  m_Visualization->SetXPlane(CLAMP(gui->xPlaneEdit->text().toInt()-1,0,dims[0]-1));
-  m_Visualization->SetYPlane(CLAMP(gui->yPlaneEdit->text().toInt()-1,0,dims[1]-1));
-  m_Visualization->SetZPlane(CLAMP(gui->zPlaneEdit->text().toInt()-1,0,dims[2]-1));
+  m_Visualization->SetXPlane(CLAMP(dims[0]/2, 0, dims[0]-1));
+  m_Visualization->SetYPlane(CLAMP(dims[1]/2, 0, dims[1]-1));
+  m_Visualization->SetZPlane(CLAMP(dims[2]/2, 0, dims[2]-1));
+  gui->xPlaneSlider->setValue(dims[0]/2);
+  gui->yPlaneSlider->setValue(dims[1]/2);
+  gui->zPlaneSlider->setValue(dims[2]/2);
 
   // Refresh the UI
   RefreshUI();
@@ -326,8 +327,8 @@ PSFEstimator
     return;
   }
 
-  m_PSFPropertyTableModel->InitializeSettingsCache();
-  m_PSFPropertyTableModel->Refresh();
+  m_BSFPropertyTableModel->InitializeSettingsCache();
+  m_BSFPropertyTableModel->Refresh();
 
   SetupInterface(true);
   SetupRenderer();
@@ -380,7 +381,7 @@ PSFEstimator
   QModelIndexList indices = selection->selectedIndexes();
   QStringList valueStrings;
   for (int i = 0; i < indices.length(); i++) {
-    QVariant value = m_PSFPropertyTableModel->data(indices[i], Qt::DisplayRole);
+    QVariant value = m_BSFPropertyTableModel->data(indices[i], Qt::DisplayRole);
     valueStrings.append(value.toString());
   }
 
@@ -397,14 +398,14 @@ PSFEstimator
   QStringList valueStrings = clipboard->text().split("\n");
 
   QModelIndex startIndex = gui->psfSettingsTableView->currentIndex();
-  int numModelValues = m_PSFPropertyTableModel->rowCount() - startIndex.row();
+  int numModelValues = m_BSFPropertyTableModel->rowCount() - startIndex.row();
   int numStringValues = valueStrings.length();
 
   int count = (numModelValues < numStringValues) ? numModelValues : numStringValues;
   for (int i = 0; i < count; i++) {
     QVariant value(valueStrings[i]);
-    QModelIndex index = m_PSFPropertyTableModel->index(i+startIndex.row(), 1);
-    m_PSFPropertyTableModel->setData(index, value);
+    QModelIndex index = m_BSFPropertyTableModel->index(i+startIndex.row(), 1);
+    m_BSFPropertyTableModel->setData(index, value);
   }
 
 }
@@ -460,8 +461,6 @@ PSFEstimator
 ::SetDisplayedImageToMeasuredPSF() {
   m_DisplayedImage = MEASURED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetMeasuredImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -472,8 +471,6 @@ PSFEstimator
 ::SetDisplayedImageToCalculatedPSF() {
   m_DisplayedImage = CALCULATED_PSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetPSFImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -484,8 +481,6 @@ PSFEstimator
 ::SetDisplayedImageToCalculatedBSF() {
   m_DisplayedImage = CALCULATED_BSF_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetBSFImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -496,8 +491,6 @@ PSFEstimator
 ::SetDisplayedImageToBSFDifference() {
   m_DisplayedImage = BSF_DIFFERENCE_IMAGE;
   m_Visualization->SetImageInputConnection(m_DataModel->GetBSFDifferenceImageOutputPort());
-  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 }
@@ -673,11 +666,35 @@ PSFEstimator
 
 void
 PSFEstimator
+::on_psfModelComboBox_currentIndexChanged(int index) {
+  switch (index) {
+
+  case DataModel::GAUSSIAN_PSF:
+    m_DataModel->SetPointSpreadFunctionType(DataModel::GAUSSIAN_PSF);
+    break;
+
+  case DataModel::GIBSON_LANNI_PSF:
+    m_DataModel->SetPointSpreadFunctionType(DataModel::GIBSON_LANNI_PSF);
+    break;
+
+  case DataModel::HAEBERLE_PSF:
+    m_DataModel->SetPointSpreadFunctionType(DataModel::HAEBERLE_PSF);
+    break;
+
+  }
+
+  m_BSFPropertyTableModel->SetDataModel(m_DataModel);
+  RefreshUI();
+}
+
+
+void
+PSFEstimator
 ::on_useCustomZSlicePositions_toggled(bool use) {
   m_DataModel->SetUseCustomZCoordinates(use);
   gui->resetCustomSlicePositionsButton->setEnabled(use);
 
-  m_PSFPropertyTableModel->Refresh();
+  m_BSFPropertyTableModel->Refresh();
 
   on_applyButton_clicked();
 }
@@ -700,7 +717,7 @@ PSFEstimator
     m_DataModel->SetZCoordinate(i, z);
   }
 
-  m_PSFPropertyTableModel->Refresh();
+  m_BSFPropertyTableModel->Refresh();
 
   gui->applyButton->setEnabled(true);
 }
@@ -717,8 +734,8 @@ PSFEstimator
   m_DataModel->SetPSFPointCenter(triplet);
   m_DataModel->SetBSFPointCenter(triplet);
 
-  m_PSFPropertyTableModel->InitializeSettingsCache();
-  m_PSFPropertyTableModel->Refresh();
+  m_BSFPropertyTableModel->InitializeSettingsCache();
+  m_BSFPropertyTableModel->Refresh();
 
   gui->applyButton->setEnabled(true);
 
@@ -733,7 +750,7 @@ PSFEstimator
 
   gui->applyButton->setEnabled(false);
 
-  m_PSFPropertyTableModel->SaveSettingsCache();
+  m_BSFPropertyTableModel->SaveSettingsCache();
 
   // Now update the image
   if (gui->calculatedPSFRadioButton->isChecked()) {
@@ -743,9 +760,6 @@ PSFEstimator
   } else if (gui->measuredMinusCalculatedBSFRadioButton->isChecked()) {
     m_DataModel->UpdateBSFDifferenceImage();
   }
-
-  SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
-  SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
 
   RefreshUI();
 
@@ -768,8 +782,8 @@ PSFEstimator
   RefreshUI();
 
   // Load settings from the data model.
-  m_PSFPropertyTableModel->InitializeSettingsCache();
-  m_PSFPropertyTableModel->Refresh();
+  m_BSFPropertyTableModel->InitializeSettingsCache();
+  m_BSFPropertyTableModel->Refresh();
 
   on_applyButton_clicked();
 }
@@ -850,7 +864,7 @@ PSFEstimator
 
 void
 PSFEstimator
-::handle_PSFPropertyTableModel_dataChanged(const QModelIndex& topLeft,
+::handle_BSFPropertyTableModel_dataChanged(const QModelIndex& topLeft,
                                            const QModelIndex& bottomRight) {
 
   if (topLeft != bottomRight) {
@@ -955,6 +969,8 @@ PSFEstimator
 
   if (m_DataModel->GetMeasuredImageData()) {
     m_Visualization->AddToRenderer();
+    SetMapsToBlackValueFromSliderPosition(gui->mapsToBlackSlider->sliderPosition());
+    SetMapsToWhiteValueFromSliderPosition(gui->mapsToWhiteSlider->sliderPosition());
   }
 
   gui->qvtkWidget->GetRenderWindow()->Render();

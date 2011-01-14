@@ -52,9 +52,6 @@ DataModel
   m_GaussianPSFSource                = GaussianPSFImageSourceType::New();
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
 
-  // Default to Gibson-Lanni PSF type.
-  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
-
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
   m_MeasuredImageMinMaxFilter        = MinMaxType::New();
@@ -66,6 +63,9 @@ DataModel
   m_PSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
   m_BSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
   m_BSFDifferenceImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
+
+  // Default to Gibson-Lanni PSF type.
+  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
 
   m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
   m_CostFunction = ParametricCostFunctionType::New();
@@ -110,6 +110,20 @@ DataModel
     // TODO - plugin Haeberle PSF source here
     break;
 
+  }
+
+  m_PSFImageMinMaxFilter->SetImage(m_PointSpreadFunctionSource->GetOutput());
+  m_PSFImageITKToVTKFilter->SetInput(m_PointSpreadFunctionSource->GetOutput());
+  if (m_MeasuredImageData) {
+    double spacing[3];
+    GetMeasuredImageVoxelSpacing(spacing);
+    SetPSFImageVoxelSpacing(spacing);
+
+    int size[3];
+    GetMeasuredImageDimensions(size);
+    SetPSFImageDimensions(size);
+
+    RecenterPSFImageOrigin();
   }
 }
 

@@ -21,12 +21,7 @@ QBeadSpreadFunctionPropertyTableModel
 ::SetDataModel(DataModel* model) {
   m_DataModel = model;
 
-  m_PropertyValues.clear();
-  m_OptimizeValues.clear();
-  for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
-    m_PropertyValues.append(0.0);
-    m_OptimizeValues.append(false);
-  }
+  InitializeSettingsCache();
 
   Refresh();
 }
