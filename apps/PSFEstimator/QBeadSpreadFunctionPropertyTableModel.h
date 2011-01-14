@@ -1,5 +1,5 @@
-#ifndef _Q_POINT_SPREAD_FUNCTION_PROPERTY_TABLE_MODEL_H_
-#define _Q_POINT_SPREAD_FUNCTION_PROPERTY_TABLE_MODEL_H_
+#ifndef _Q_BEAD_SPREAD_FUNCTION_PROPERTY_TABLE_MODEL_H_
+#define _Q_BEAD_SPREAD_FUNCTION_PROPERTY_TABLE_MODEL_H_
 
 #include <QAbstractTableModel>
 
@@ -7,12 +7,12 @@
 class DataModel;
 
 
-class QPointSpreadFunctionPropertyTableModel : public QAbstractTableModel {
+class QBeadSpreadFunctionPropertyTableModel : public QAbstractTableModel {
   Q_OBJECT
 
  public:
-  QPointSpreadFunctionPropertyTableModel(QObject* parent = 0);
-  ~QPointSpreadFunctionPropertyTableModel();
+  QBeadSpreadFunctionPropertyTableModel(QObject* parent = 0);
+  ~QBeadSpreadFunctionPropertyTableModel();
 
   void SetDataModel(DataModel* model);
   DataModel* GetDataModel();
@@ -42,5 +42,5 @@ class QPointSpreadFunctionPropertyTableModel : public QAbstractTableModel {
 
 };
 
-#endif // _Q_POINT_SPREAD_FUNCTION_PROPERTY_TABLE_MODEL_H_
+#endif // _Q_BEAD_SPREAD_FUNCTION_PROPERTY_TABLE_MODEL_H_
 

@@ -1,23 +1,23 @@
-#include <QPointSpreadFunctionPropertyTableModel.h>
+#include <QBeadSpreadFunctionPropertyTableModel.h>
 
 #include <DataModel.h>
 
 
-QPointSpreadFunctionPropertyTableModel
-::QPointSpreadFunctionPropertyTableModel(QObject* parent)
+QBeadSpreadFunctionPropertyTableModel
+::QBeadSpreadFunctionPropertyTableModel(QObject* parent)
   : QAbstractTableModel(parent) {
 
   m_DataModel = NULL;
 }
 
 
-QPointSpreadFunctionPropertyTableModel
-::~QPointSpreadFunctionPropertyTableModel() {
+QBeadSpreadFunctionPropertyTableModel
+::~QBeadSpreadFunctionPropertyTableModel() {
 }
 
 
 void
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::SetDataModel(DataModel* model) {
   m_DataModel = model;
 
@@ -33,14 +33,14 @@ QPointSpreadFunctionPropertyTableModel
 
 
 DataModel*
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::GetDataModel() {
   return m_DataModel;
 }
 
 
 bool
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::setData(const QModelIndex& index, const QVariant& value, int role) {
   int numPSFProperties = m_DataModel->GetNumberOfProperties();
 
@@ -67,7 +67,7 @@ QPointSpreadFunctionPropertyTableModel
 
 
 QVariant
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::data(const QModelIndex& index, int role) const {
   if (m_DataModel == NULL) {
     return QVariant();
@@ -126,7 +126,7 @@ QPointSpreadFunctionPropertyTableModel
 
 
 Qt::ItemFlags
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::flags(const QModelIndex& index) const {
   Qt::ItemFlags flag = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 
@@ -142,7 +142,7 @@ QPointSpreadFunctionPropertyTableModel
 
 
 QVariant
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::headerData(int section, Qt::Orientation orientation, int role) const {
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
     switch (section) {
@@ -161,7 +161,7 @@ QPointSpreadFunctionPropertyTableModel
 
 
 int
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::rowCount(const QModelIndex& parent) const {
   if (m_DataModel == NULL)
     return 0;
@@ -178,21 +178,21 @@ QPointSpreadFunctionPropertyTableModel
 
 
 int
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::columnCount(const QModelIndex& parent) const {
   return 4;
 }
 
 
 void
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::Refresh() {
   reset();
 }
 
 
 void
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::InitializeSettingsCache() {
   m_PropertyValues.clear();
   m_OptimizeValues.clear();
@@ -206,7 +206,7 @@ QPointSpreadFunctionPropertyTableModel
 
 
 void
-QPointSpreadFunctionPropertyTableModel
+QBeadSpreadFunctionPropertyTableModel
 ::SaveSettingsCache() {
   // Set up origin so that (0, 0, 0) is centered in the image volume.
   int dimensions[3];

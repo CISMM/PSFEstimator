@@ -14,7 +14,7 @@ ENDIF(QT_USE_FILE)
 
 SET (QtGuiSrcs
   Main.cxx
-  QPointSpreadFunctionPropertyTableModel.cxx
+  QBeadSpreadFunctionPropertyTableModel.cxx
   PSFEstimator.cxx
 )
 
@@ -31,7 +31,7 @@ SET(UIS
 )
 SET (ApplicationHeaders
   PSFEstimator.h
-  QPointSpreadFunctionPropertyTableModel.h
+  QBeadSpreadFunctionPropertyTableModel.h
 )
 QT4_WRAP_UI(UIHeaders ${UIS})
 QT4_WRAP_CPP(MOCSrcs ${ApplicationHeaders} )

@@ -121,7 +121,7 @@ PSFEstimator
   int LEFT_COLUMN_WIDTH = 160;
   gui->imageDataView->setColumnWidth(LEFT_COLUMN, LEFT_COLUMN_WIDTH);
 
-  m_PSFPropertyTableModel = new QPointSpreadFunctionPropertyTableModel();
+  m_PSFPropertyTableModel = new QBeadSpreadFunctionPropertyTableModel();
   m_PSFPropertyTableModel->SetDataModel(m_DataModel);
 
   connect(m_PSFPropertyTableModel,

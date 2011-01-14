@@ -6,7 +6,7 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 
-#include <QPointSpreadFunctionPropertyTableModel.h>
+#include <QBeadSpreadFunctionPropertyTableModel.h>
 
 #include "ui_PSFEstimator.h"
 #include "ui_NewImageDialog.h"
@@ -110,7 +110,7 @@ protected:
 
   QStandardItemModel* m_ImageInformationTableModel;
 
-  QPointSpreadFunctionPropertyTableModel* m_PSFPropertyTableModel;
+  QBeadSpreadFunctionPropertyTableModel* m_PSFPropertyTableModel;
 
   DisplayImageType m_DisplayedImage;
 
