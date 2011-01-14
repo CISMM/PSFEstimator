@@ -53,7 +53,7 @@ DataModel
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
 
   // Default to Gibson-Lanni PSF type.
-  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+  SetPointSpreadFunctionType(GAUSSIAN_PSF);
 
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
@@ -459,52 +459,6 @@ DataModel
   double shearY = c.GetValueAsDouble(sec, "ShearY");
   m_BeadSpreadFunctionSource->SetShearY(shearY);
 
-#if 0
-  SetGLEmissionWavelength
-    (c.GetValueAsDouble(sec, "EmissionWavelength", GetGLEmissionWavelength()));
-
-  SetGLNumericalAperture
-    (c.GetValueAsDouble(sec, "NumericalAperture", GetGLNumericalAperture()));
-  SetGLMagnification
-    (c.GetValueAsDouble(sec, "Magnification", GetGLMagnification()));
-  SetGLDesignCoverSlipRefractiveIndex
-    (c.GetValueAsDouble(sec, "DesignCoverSlipRefractiveIndex",
-                       GetGLDesignCoverSlipRefractiveIndex()));
-  SetGLActualCoverSlipRefractiveIndex
-    (c.GetValueAsDouble(sec, "ActualCoverSlipRefractiveIndex",
-                       GetGLActualCoverSlipRefractiveIndex()));
-  SetGLDesignCoverSlipThickness
-    (c.GetValueAsDouble(sec, "DesignCoverSlipThickness",
-                       GetGLDesignCoverSlipThickness()));
-  SetGLActualCoverSlipThickness
-    (c.GetValueAsDouble(sec, "ActualCoverSlipThickness",
-                       GetGLActualCoverSlipThickness()));
-  SetGLDesignImmersionOilRefractiveIndex
-    (c.GetValueAsDouble(sec, "DesignImmersionOilRefractiveIndex",
-                       GetGLDesignImmersionOilRefractiveIndex()));
-  SetGLActualImmersionOilRefractiveIndex
-    (c.GetValueAsDouble(sec, "ActualImmersionOilRefractiveIndex",
-                       GetGLActualImmersionOilRefractiveIndex()));
-  SetGLDesignImmersionOilThickness
-    (c.GetValueAsDouble(sec, "DesignImmersionOilThickness",
-                       GetGLDesignImmersionOilThickness()));
-  SetGLDesignSpecimenLayerRefractiveIndex
-    (c.GetValueAsDouble(sec, "DesignSpecimenLayerRefractiveIndex",
-                       GetGLDesignSpecimenLayerRefractiveIndex()));
-  SetGLActualSpecimenLayerRefractiveIndex
-    (c.GetValueAsDouble(sec, "ActualSpecimenLayerRefractiveIndex",
-                       GetGLActualSpecimenLayerRefractiveIndex()));
-  SetGLActualPointSourceDepthInSpecimenLayer
-    (c.GetValueAsDouble(sec, "ActualPointSourceDepthInSpecimenLayer",
-                       GetGLActualPointSourceDepthInSpecimenLayer()));
-  SetGLDesignDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsDouble(sec, "DesignDistanceFromBackFocalPlaneToDetector",
-                       GetGLDesignDistanceFromBackFocalPlaneToDetector()));
-  SetGLActualDistanceFromBackFocalPlaneToDetector
-    (c.GetValueAsDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
-                       GetGLActualDistanceFromBackFocalPlaneToDetector()));
-#endif
-
   SetIntensityShift
     (c.GetValueAsDouble(sec, "IntensityShift",
                        GetIntensityShift()));
@@ -538,6 +492,7 @@ DataModel
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "ShearX"));
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "ShearY"));
 
+#if 0
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "EmissionWavelength"));
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "NumericalAperture"));
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "Magnification"));
@@ -555,6 +510,7 @@ DataModel
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityShift"));
   SetParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityScale"));
+#endif
 }
 
 

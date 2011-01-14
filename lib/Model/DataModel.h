@@ -227,51 +227,6 @@ public:
   void   SetBeadRadius(double radius);
   double GetBeadRadius();
 
-#if 0
-  void   SetGLEmissionWavelength(double wavelength);
-  double GetGLEmissionWavelength();
-
-  void   SetGLNumericalAperture(double na);
-  double GetGLNumericalAperture();
-
-  void   SetGLMagnification(double magnification);
-  double GetGLMagnification();
-
-  void   SetGLDesignCoverSlipRefractiveIndex(double ri);
-  double GetGLDesignCoverSlipRefractiveIndex();
-
-  void   SetGLActualCoverSlipRefractiveIndex(double ri);
-  double GetGLActualCoverSlipRefractiveIndex();
-
-  void   SetGLDesignCoverSlipThickness(double thickness);
-  double GetGLDesignCoverSlipThickness();
-
-  void   SetGLActualCoverSlipThickness(double thickness);
-  double GetGLActualCoverSlipThickness();
-
-  void   SetGLDesignImmersionOilRefractiveIndex(double ri);
-  double GetGLDesignImmersionOilRefractiveIndex();
-
-  void   SetGLActualImmersionOilRefractiveIndex(double ri);
-  double GetGLActualImmersionOilRefractiveIndex();
-
-  void   SetGLDesignImmersionOilThickness(double thickness);
-  double GetGLDesignImmersionOilThickness();
-
-  void   SetGLDesignSpecimenLayerRefractiveIndex(double ri);
-  double GetGLDesignSpecimenLayerRefractiveIndex();
-  void   SetGLActualSpecimenLayerRefractiveIndex(double ri);
-  double GetGLActualSpecimenLayerRefractiveIndex();
-
-  void   SetGLActualPointSourceDepthInSpecimenLayer(double depth);
-  double GetGLActualPointSourceDepthInSpecimenLayer();
-
-  void   SetGLDesignDistanceFromBackFocalPlaneToDetector(double distance);
-  double GetGLDesignDistanceFromBackFocalPlaneToDetector();
-  void   SetGLActualDistanceFromBackFocalPlaneToDetector(double distance);
-  double GetGLActualDistanceFromBackFocalPlaneToDetector();
-#endif
-
   void   SetIntensityShift(double intensity);
   double GetIntensityShift();
 
