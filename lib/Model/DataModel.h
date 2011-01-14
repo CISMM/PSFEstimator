@@ -31,6 +31,12 @@
 class DataModel {
 
 public:
+  typedef enum {
+    GAUSSIAN_PSF = 0,
+    GIBSON_LANNI_PSF,
+    HAEBERLE_PSF
+  } PointSpreadFunctionType;
+
   typedef float                                   FloatPixelType;
   static const unsigned int                       Dimension3 = 3;
   typedef itk::Image<FloatPixelType, Dimension3>  Float3DImageType;
@@ -108,6 +114,9 @@ public:
 
   DataModel();
   virtual ~DataModel();
+
+  void SetPointSpreadFunctionType(PointSpreadFunctionType psfType);
+  PointSpreadFunctionType GetPointSpreadFunctionType() const;
 
   bool LoadSessionFile(const std::string& fileName);
   bool SaveSessionFile(const std::string& fileName);
@@ -284,6 +293,8 @@ public:
   void Optimize();
 
 protected:
+  PointSpreadFunctionType m_PointSpreadFunctionType;
+
   Configuration m_Configuration;
 
   std::string m_ImageFileName;

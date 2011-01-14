@@ -51,9 +51,10 @@ DataModel
   m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
   m_GaussianPSFSource                = GaussianPSFImageSourceType::New();
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
-  m_BeadSpreadFunctionSource->SetKernelSource(GibsonLanniPSFImageSourceType::New());
-  m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
-  //m_BeadSpreadFunctionSource->SetKernelSource(GaussianPSFImageSourceType::New());
+
+  // Default to Gibson-Lanni PSF type.
+  this->SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
   m_MeasuredImageMinMaxFilter        = MinMaxType::New();
@@ -82,6 +83,37 @@ DataModel
   delete m_PSFImageITKToVTKFilter;
   delete m_BSFImageITKToVTKFilter;
   delete m_BSFDifferenceImageITKToVTKFilter;
+}
+
+
+void
+DataModel
+::SetPointSpreadFunctionType(PointSpreadFunctionType psfType) {
+  m_PointSpreadFunctionType = psfType;
+
+  switch (psfType) {
+  case GAUSSIAN_PSF:
+    m_BeadSpreadFunctionSource->SetKernelSource(GaussianPSFImageSourceType::New());
+    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
+    break;
+
+  case GIBSON_LANNI_PSF:
+    m_BeadSpreadFunctionSource->SetKernelSource(GibsonLanniPSFImageSourceType::New());
+    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
+    break;
+
+  case HAEBERLE_PSF:
+    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
+    break;
+
+  }
+}
+
+
+DataModel::PointSpreadFunctionType
+DataModel
+::GetPointSpreadFunctionType() const {
+  return m_PointSpreadFunctionType;
 }
 
 
