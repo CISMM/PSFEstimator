@@ -79,9 +79,6 @@ public:
   void SetMean(const ArrayType& mean);
   const ArrayType& GetMean() const;
 
-  void SetScale(double scale);
-  double GetScale() const;
-
   /** Define methods defined by ParametricImageSource. */
   void                SetParameter(unsigned int index, ParametersValueType value);
   ParametersValueType GetParameter(unsigned int index) const;

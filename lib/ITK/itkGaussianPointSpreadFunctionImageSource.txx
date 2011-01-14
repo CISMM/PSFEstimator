@@ -28,6 +28,9 @@ GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::GaussianPointSpreadFunctionImageSource()
 {
   this->m_GaussianImageSource = GaussianImageSourceType::New();
+
+  ArrayType sigma(200.0);
+  this->SetSigma(sigma);
 }
 
 template <class TOutputImage>
@@ -81,28 +84,6 @@ GaussianPointSpreadFunctionImageSource< TOutputImage >
 }
 
 
-template< typename TOutputImage >
-void
-GaussianPointSpreadFunctionImageSource< TOutputImage >
-::SetScale(double scale)
-{
-  if (scale != this->m_GaussianImageSource->GetScale())
-    {
-    this->m_GaussianImageSource->SetScale(scale);
-    this->Modified();
-    }
-}
-
-
-template< typename TOutputImage >
-double
-GaussianPointSpreadFunctionImageSource< TOutputImage >
-::GetScale() const
-{
-  return this->m_GaussianImageSource->GetScale();
-}
-
-
 template<typename TOutputImage>
 void
 GaussianPointSpreadFunctionImageSource<TOutputImage>
@@ -114,10 +95,6 @@ GaussianPointSpreadFunctionImageSource<TOutputImage>
     ArrayType sigma = this->GetSigma();
     sigma[index] = value;
     this->SetSigma(sigma);
-    }
-  else if (index == dimensions)
-    {
-    this->SetScale(value);
     }
 }
 
@@ -131,10 +108,6 @@ GaussianPointSpreadFunctionImageSource<TOutputImage>
   if (index >= 0 && index < dimensions)
     {
     return this->GetSigma()[index];
-    }
-  else if (index == dimensions)
-    {
-    return this->GetScale();
     }
 
   return 0.0;
@@ -153,7 +126,6 @@ GaussianPointSpreadFunctionImageSource<TOutputImage>
     sigma[i] = parameters[i];
     }
   this->SetSigma(sigma);
-  this->SetScale(parameters[dimensions]);
 }
 
 
@@ -170,7 +142,6 @@ GaussianPointSpreadFunctionImageSource<TOutputImage>
     {
     parameters[i] = sigma[i];
     }
-  parameters[dimensions] = this->GetScale();
 
   return parameters;
 }
@@ -181,7 +152,7 @@ unsigned int
 GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
-  return itkGetStaticConstMacro(OutputImageDimension) + 1;
+  return itkGetStaticConstMacro(OutputImageDimension);
 }
 
 
