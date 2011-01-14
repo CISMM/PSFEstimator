@@ -16,9 +16,9 @@ class QPointSpreadFunctionPropertyTableModel : public QAbstractTableModel {
 
   void SetDataModel(DataModel* model);
   DataModel* GetDataModel();
-  
+
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-  
+\
   QVariant data(const QModelIndex& index, int role) const;
 
   Qt::ItemFlags flags(const QModelIndex& index) const;
@@ -37,8 +37,6 @@ class QPointSpreadFunctionPropertyTableModel : public QAbstractTableModel {
  protected:
   DataModel* m_DataModel;
 
-  QList<QVariant> m_PropertyNameList;
-  QList<QVariant> m_UnitsList;
   QList<double>   m_PropertyValues;
   QList<bool>     m_OptimizeValues;
 

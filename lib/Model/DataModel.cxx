@@ -53,7 +53,8 @@ DataModel
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
 
   // Default to Gibson-Lanni PSF type.
-  this->SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+  //SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+  SetPointSpreadFunctionType(GAUSSIAN_PSF);
 
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
@@ -73,6 +74,7 @@ DataModel
   m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
   m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
+  Initialize();
   SetInitialSimplexDeltas();
 }
 
@@ -144,6 +146,80 @@ DataModel
   config.Write(os);
 
   return true;
+}
+
+
+void
+DataModel
+::Initialize() {
+  // BSF parameters
+  m_BSFParameterNames.clear();
+  m_BSFParameterNames.push_back("X Pixel Size");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Y Pixel Size");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Z Slice Spacing");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Bead Radius");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Bead Center X");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Bead Center Y");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Bead Center Z");
+  m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterNames.push_back("Shear X");
+  m_BSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
+  m_BSFParameterNames.push_back("Shear Y");
+  m_BSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
+  m_BSFParameterNames.push_back("Intensity Shift");
+  m_BSFParameterUnits.push_back("-");
+  m_BSFParameterNames.push_back("Intensity Scale");
+  m_BSFParameterUnits.push_back("-");
+
+  // Gaussian parameters
+  m_GaussianPSFParameterNames.clear();
+  m_GaussianPSFParameterNames.push_back("Standard Deviation X");
+  m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterNames.push_back("Standard Deviation Y");
+  m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterNames.push_back("Standard Deviation Z");
+  m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterNames.push_back("Intensity Scale");
+  m_GaussianPSFParameterUnits.push_back("-");
+
+  // OPD-based PSF parameters
+  m_OPDBasedPSFParameterNames.clear();
+  m_OPDBasedPSFParameterNames.push_back("Emission Wavelength");
+  m_OPDBasedPSFParameterUnits.push_back("nanometers");
+  m_OPDBasedPSFParameterNames.push_back("Numerical Aperture");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Magnification");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Design Cover Slip Refractive Index");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Actual Cover Slip Refractive Index");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Design Cover Slip Thickness");
+  m_OPDBasedPSFParameterUnits.push_back("micrometers");
+  m_OPDBasedPSFParameterNames.push_back("Actual Cover Slip Thickness");
+  m_OPDBasedPSFParameterUnits.push_back("micrometers");
+  m_OPDBasedPSFParameterNames.push_back("Design Immersion Oil Refractive Index");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Actual Immersion Oil Refractive Index");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Design Immersion Oil Thickness");
+  m_OPDBasedPSFParameterUnits.push_back("micrometers");
+  m_OPDBasedPSFParameterNames.push_back("Design Specimen Layer Refractive Index");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Actual Specimen Layer Refractive Index");
+  m_OPDBasedPSFParameterUnits.push_back("-");
+  m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
+  m_OPDBasedPSFParameterUnits.push_back("micrometers");
+  m_OPDBasedPSFParameterNames.push_back("Design Distance from Back Focal Plane to Detector");
+  m_OPDBasedPSFParameterUnits.push_back("millimeters");
+  m_OPDBasedPSFParameterNames.push_back("Actual Distance from Back Focal Plane to Detector");
+  m_OPDBasedPSFParameterUnits.push_back("millimeters");
 }
 
 
@@ -1426,6 +1502,32 @@ DataModel
 }
 
 
+std::string
+DataModel
+::GetParameterName(unsigned int index) const {
+  unsigned int numBSFParameters = 11;
+  if (index < numBSFParameters) {
+    return m_BSFParameterNames[index];
+  } else {
+
+    switch (m_PointSpreadFunctionType) {
+    case GAUSSIAN_PSF:
+      return m_GaussianPSFParameterNames[index - numBSFParameters];
+      break;
+
+    case GIBSON_LANNI_PSF:
+    case HAEBERLE_PSF:
+      return m_OPDBasedPSFParameterNames[index - numBSFParameters];
+      break;
+
+    default:
+      return std::string("unknown");
+      break;
+    }
+  }
+
+}
+
 void
 DataModel
 ::SetParameterValue(unsigned int index, double value) {
@@ -1437,6 +1539,33 @@ double
 DataModel
 ::GetParameterValue(unsigned int index) {
   return m_BeadSpreadFunctionSource->GetParameter(index);
+}
+
+
+std::string
+DataModel
+::GetParameterUnit(unsigned int index) const {
+  unsigned int numBSFParameters = 11;
+  if (index < numBSFParameters) {
+    return m_BSFParameterUnits[index];
+  } else {
+
+    switch (m_PointSpreadFunctionType) {
+    case GAUSSIAN_PSF:
+      return m_GaussianPSFParameterUnits[index - numBSFParameters];
+      break;
+
+    case GIBSON_LANNI_PSF:
+    case HAEBERLE_PSF:
+      return m_OPDBasedPSFParameterUnits[index - numBSFParameters];
+      break;
+
+    default:
+      return std::string("unknown");
+      break;
+    }
+
+  }
 }
 
 

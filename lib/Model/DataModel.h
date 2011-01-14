@@ -121,6 +121,8 @@ public:
   bool LoadSessionFile(const std::string& fileName);
   bool SaveSessionFile(const std::string& fileName);
 
+  void Initialize();
+
   void SetInitialSimplexDeltas();
 
   void CreateImageFile(int xSize, int ySize, int zSize,
@@ -276,8 +278,12 @@ public:
   void   SetIntensityScale(double intensity);
   double GetIntensityScale();
 
+  std::string GetParameterName(unsigned int index) const;
+
   void   SetParameterValue(unsigned int index, double value);
   double GetParameterValue(unsigned int index);
+
+  std::string GetParameterUnit(unsigned int index) const;
 
   void   SetParameterEnabled(unsigned int index, bool enabled);
   bool   GetParameterEnabled(unsigned int index);
@@ -301,8 +307,21 @@ protected:
 
   TImage::Pointer m_MeasuredImageData;
 
-  GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFSource;
+  // The different point-spread function types
   GaussianPSFImageSourcePointer        m_GaussianPSFSource;
+  GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFSource;
+
+  // Lists of parameter names for the BSF and the different PSFs
+  std::vector<std::string> m_BSFParameterNames;
+  std::vector<std::string> m_GaussianPSFParameterNames;
+  std::vector<std::string> m_OPDBasedPSFParameterNames;
+
+  // Lists of units for the BSF and the different PSFs
+  std::vector<std::string> m_BSFParameterUnits;
+  std::vector<std::string> m_GaussianPSFParameterUnits;
+  std::vector<std::string> m_OPDBasedPSFParameterUnits;
+
+  // The bead-spread function
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;
   DifferenceFilterPointer              m_BSFDifferenceImageFilter;
 

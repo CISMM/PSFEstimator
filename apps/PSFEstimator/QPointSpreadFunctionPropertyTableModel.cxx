@@ -8,84 +8,6 @@ QPointSpreadFunctionPropertyTableModel
   : QAbstractTableModel(parent) {
 
   m_DataModel = NULL;
-
-  m_PropertyNameList.append(QVariant("X pixel size"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Y pixel size"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Z slice spacing"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Bead radius"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Bead center X"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Bead center Y"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Bead center Z"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Shear X"));
-  m_UnitsList.append(QVariant("nanometers in X vs nanometers in Z"));
-
-  m_PropertyNameList.append(QVariant("Shear Y"));
-  m_UnitsList.append(QVariant("nanometers in Y vs nanometers in Z"));
-
-  m_PropertyNameList.append(QVariant("Intensity Shift"));
-  m_UnitsList.append(QVariant("-"));
-
-  m_PropertyNameList.append(QVariant("Intensity Scale"));
-  m_UnitsList.append(QVariant("-"));
-
-  m_PropertyNameList.append(QVariant("Emission Wavelength"));
-  m_UnitsList.append(QVariant("nanometers"));
-
-  m_PropertyNameList.append(QVariant("Numerical Aperture"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Magnification"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Design Cover Slip Refractive Index"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Actual Cover Slip Refractive Index"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Design Cover Slip Thickness"));
-  m_UnitsList.append(QVariant("micrometers"));
-
-  m_PropertyNameList.append(QVariant("Actual Cover Slip Thickness"));
-  m_UnitsList.append(QVariant("micrometers"));
-
-  m_PropertyNameList.append(QVariant("Design Immersion Oil Refractive Index"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Actual Immersion Oil Refractive Index"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Design Immersion Oil Thickness"));
-  m_UnitsList.append(QVariant("micrometers"));
-
-  m_PropertyNameList.append(QVariant("Design Specimen Layer Refractive Index"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Actual Specimen Layer Refractive Index"));
-  m_UnitsList.append(QVariant("unitless"));
-
-  m_PropertyNameList.append(QVariant("Actual Point Source Depth in Specimen Layer"));
-  m_UnitsList.append(QVariant("micrometers"));
-
-  m_PropertyNameList.append(QVariant("Design Distance from Back Focal Plane to Detector"));
-  m_UnitsList.append(QVariant("millimeters"));
-
-  m_PropertyNameList.append(QVariant("Actual Distance from Back Focal Plane to Detector"));
-  m_UnitsList.append(QVariant("millimeters"));
 }
 
 
@@ -162,7 +84,7 @@ QPointSpreadFunctionPropertyTableModel
     if (col == 0) { /** Property name **/
 
       if (row < numPSFProperties) {
-        return m_PropertyNameList[row];
+        return QVariant(m_DataModel->GetParameterName(row).c_str());
       } else {
         if (m_DataModel->GetUseCustomZCoordinates())
           return QString().sprintf("Z slice %d position", row - numPSFProperties);
@@ -180,7 +102,7 @@ QPointSpreadFunctionPropertyTableModel
     } else if (col == 2) { /** Property unit **/
 
       if (row < numPSFProperties) {
-        return m_UnitsList[row];
+        return QVariant(m_DataModel->GetParameterUnit(row).c_str());
       } else {
         if (m_DataModel->GetUseCustomZCoordinates())
           return QString("nanometers");
