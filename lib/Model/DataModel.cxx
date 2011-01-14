@@ -53,8 +53,7 @@ DataModel
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
 
   // Default to Gibson-Lanni PSF type.
-  //SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
-  SetPointSpreadFunctionType(GAUSSIAN_PSF);
+  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
 
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
