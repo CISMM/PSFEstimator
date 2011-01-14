@@ -14,7 +14,7 @@
 
 #include <itkBeadSpreadFunctionImageSource.txx>
 #include <itkGibsonLanniPSFImageSource.txx>
-#include <itkParametricGaussianImageSource.txx>
+#include <itkGaussianPointSpreadFunctionImageSource.txx>
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
 #include <itkImageFileWriter.txx>

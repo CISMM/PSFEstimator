@@ -8,8 +8,8 @@
 #define ITK_MANUAL_INSTANTIATION
 #include <itkBeadSpreadFunctionImageSource.h>
 #include <itkGridImageSource.h>
+#include <itkGaussianPointSpreadFunctionImageSource.h>
 #include <itkGibsonLanniPSFImageSource.h>
-#include <itkParametricGaussianImageSource.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
@@ -61,7 +61,7 @@ public:
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
-  typedef itk::ParametricGaussianImageSource<Float3DImageType>
+  typedef itk::GaussianPointSpreadFunctionImageSource<Float3DImageType>
     GaussianPSFImageSourceType;
   typedef GaussianPSFImageSourceType::Pointer
     GaussianPSFImageSourcePointer;

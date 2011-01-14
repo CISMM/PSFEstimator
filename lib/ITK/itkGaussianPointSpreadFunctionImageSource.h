@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkParametricGaussianImageSource_h
-#define __itkParametricGaussianImageSource_h
+#ifndef __itkGaussianPointSpreadFunctionImageSource_h
+#define __itkGaussianPointSpreadFunctionImageSource_h
 
 #include "itkParametricImageSource.h"
 #include "itkFixedArray.h"
@@ -25,7 +25,7 @@
 namespace itk
 {
 
-/** \class ParametricGaussianImageSource
+/** \class GaussianPointSpreadFunctionImageSource
  * \brief Adapter class that addes the interface for the ParametricImageSource
  * to the GaussianImageSource.
  *
@@ -39,12 +39,12 @@ namespace itk
  * \ingroup DataSources
  */
 template <typename TOutputImage>
-class ITK_EXPORT ParametricGaussianImageSource :
+class ITK_EXPORT GaussianPointSpreadFunctionImageSource :
     public ParametricImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef ParametricGaussianImageSource       Self;
+  typedef GaussianPointSpreadFunctionImageSource       Self;
   typedef ParametricImageSource<TOutputImage> Superclass;
   typedef SmartPointer<Self>                  Pointer;
   typedef SmartPointer<const Self>            ConstPointer;
@@ -65,7 +65,7 @@ public:
   typedef typename Superclass::SizeValueType          SizeValueType;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ParametricGaussianImageSource,ParametricImageSource);
+  itkTypeMacro(GaussianPointSpreadFunctionImageSource,ParametricImageSource);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -90,8 +90,8 @@ public:
   unsigned int   GetNumberOfParameters() const;
 
 protected:
-  ParametricGaussianImageSource();
-  ~ParametricGaussianImageSource();
+  GaussianPointSpreadFunctionImageSource();
+  ~GaussianPointSpreadFunctionImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   void GenerateData();
@@ -99,15 +99,15 @@ protected:
   GaussianImageSourcePointer m_GaussianImageSource;
 
 private:
-  ParametricGaussianImageSource(const ParametricGaussianImageSource&); //purposely not implemented
-  void operator=(const ParametricGaussianImageSource&); //purposely not implemented
+  GaussianPointSpreadFunctionImageSource(const GaussianPointSpreadFunctionImageSource&); //purposely not implemented
+  void operator=(const GaussianPointSpreadFunctionImageSource&); //purposely not implemented
 
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkParametricGaussianImageSource.txx"
+#include "itkGaussianPointSpreadFunctionImageSource.txx"
 #endif
 
 #endif

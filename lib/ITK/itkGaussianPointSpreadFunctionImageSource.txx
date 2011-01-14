@@ -15,31 +15,31 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkParametricGaussianImageSource_txx
-#define __itkParametricGaussianImageSource_txx
+#ifndef __itkGaussianPointSpreadFunctionImageSource_txx
+#define __itkGaussianPointSpreadFunctionImageSource_txx
 
-#include "itkParametricGaussianImageSource.h"
+#include "itkGaussianPointSpreadFunctionImageSource.h"
 
 namespace itk
 {
 
 template <class TOutputImage>
-ParametricGaussianImageSource<TOutputImage>
-::ParametricGaussianImageSource()
+GaussianPointSpreadFunctionImageSource<TOutputImage>
+::GaussianPointSpreadFunctionImageSource()
 {
   this->m_GaussianImageSource = GaussianImageSourceType::New();
 }
 
 template <class TOutputImage>
-ParametricGaussianImageSource<TOutputImage>
-::~ParametricGaussianImageSource()
+GaussianPointSpreadFunctionImageSource<TOutputImage>
+::~GaussianPointSpreadFunctionImageSource()
 {
 }
 
 
 template<typename TOutputImage>
 void
-ParametricGaussianImageSource<TOutputImage>
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::SetSigma(const ArrayType& sigma)
 {
   if (sigma != this->m_GaussianImageSource->GetSigma())
@@ -51,8 +51,8 @@ ParametricGaussianImageSource<TOutputImage>
 
 
 template< typename TOutputImage >
-const typename ParametricGaussianImageSource< TOutputImage >::ArrayType&
-ParametricGaussianImageSource< TOutputImage >
+const typename GaussianPointSpreadFunctionImageSource< TOutputImage >::ArrayType&
+GaussianPointSpreadFunctionImageSource< TOutputImage >
 ::GetSigma() const
 {
   return this->m_GaussianImageSource->GetSigma();
@@ -61,7 +61,7 @@ ParametricGaussianImageSource< TOutputImage >
 
 template< typename TOutputImage >
 void
-ParametricGaussianImageSource< TOutputImage >
+GaussianPointSpreadFunctionImageSource< TOutputImage >
 ::SetMean(const ArrayType& mean)
 {
   if (mean != this->m_GaussianImageSource->GetMean())
@@ -73,8 +73,8 @@ ParametricGaussianImageSource< TOutputImage >
 
 
 template< typename TOutputImage >
-const typename ParametricGaussianImageSource< TOutputImage >::ArrayType&
-ParametricGaussianImageSource< TOutputImage >
+const typename GaussianPointSpreadFunctionImageSource< TOutputImage >::ArrayType&
+GaussianPointSpreadFunctionImageSource< TOutputImage >
 ::GetMean() const
 {
   return this->m_GaussianImageSource->GetMean();
@@ -83,7 +83,7 @@ ParametricGaussianImageSource< TOutputImage >
 
 template< typename TOutputImage >
 void
-ParametricGaussianImageSource< TOutputImage >
+GaussianPointSpreadFunctionImageSource< TOutputImage >
 ::SetScale(double scale)
 {
   if (scale != this->m_GaussianImageSource->GetScale())
@@ -96,7 +96,7 @@ ParametricGaussianImageSource< TOutputImage >
 
 template< typename TOutputImage >
 double
-ParametricGaussianImageSource< TOutputImage >
+GaussianPointSpreadFunctionImageSource< TOutputImage >
 ::GetScale() const
 {
   return this->m_GaussianImageSource->GetScale();
@@ -105,7 +105,7 @@ ParametricGaussianImageSource< TOutputImage >
 
 template<typename TOutputImage>
 void
-ParametricGaussianImageSource<TOutputImage>
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::SetParameter(unsigned int index, ParametersValueType value)
 {
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
@@ -123,8 +123,8 @@ ParametricGaussianImageSource<TOutputImage>
 
 
 template<typename TOutputImage>
-typename ParametricGaussianImageSource<TOutputImage>::ParametersValueType
-ParametricGaussianImageSource<TOutputImage>
+typename GaussianPointSpreadFunctionImageSource<TOutputImage>::ParametersValueType
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::GetParameter(unsigned int index) const
 {
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
@@ -143,7 +143,7 @@ ParametricGaussianImageSource<TOutputImage>
 
 template<typename TOutputImage>
 void
-ParametricGaussianImageSource<TOutputImage>
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters)
 {
   const unsigned int dimensions = itkGetStaticConstMacro(OutputImageDimension);
@@ -158,8 +158,8 @@ ParametricGaussianImageSource<TOutputImage>
 
 
 template<typename TOutputImage>
-typename ParametricGaussianImageSource<TOutputImage>::ParametersType
-ParametricGaussianImageSource<TOutputImage>
+typename GaussianPointSpreadFunctionImageSource<TOutputImage>::ParametersType
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::GetParameters() const
 {
   ParametersType parameters(GetNumberOfParameters());
@@ -178,7 +178,7 @@ ParametricGaussianImageSource<TOutputImage>
 
 template<typename TOutputImage>
 unsigned int
-ParametricGaussianImageSource<TOutputImage>
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
   return itkGetStaticConstMacro(OutputImageDimension) + 1;
@@ -187,7 +187,7 @@ ParametricGaussianImageSource<TOutputImage>
 
 template<typename TOutputImage>
 void
-ParametricGaussianImageSource<TOutputImage>
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::GenerateData()
 {
   m_GaussianImageSource->SetSize(this->m_Size);
@@ -204,7 +204,7 @@ ParametricGaussianImageSource<TOutputImage>
 
 template <class TOutputImage>
 void
-ParametricGaussianImageSource<TOutputImage>
+GaussianPointSpreadFunctionImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
