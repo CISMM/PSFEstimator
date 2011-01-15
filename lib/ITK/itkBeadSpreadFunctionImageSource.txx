@@ -551,9 +551,9 @@ BeadSpreadFunctionImageSource< TOutputImage >
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
-  os << indent << m_KernelSource << std::endl;
-  os << indent << m_Convolver << std::endl;
-  os << indent << m_RescaleFilter << std::endl;
+  m_KernelSource->Print(os,indent);
+  m_Convolver->Print(os,indent);
+  m_RescaleFilter->Print(os,indent);
 }
 
 
