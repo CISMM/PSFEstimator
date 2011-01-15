@@ -243,11 +243,11 @@ BeadSpreadFunctionImageSource< TOutputImage >
         break;
 
       case 9:
-        this->SetIntensityScale(value);
+        this->SetIntensityShift(value);
         break;
 
       case 10:
-        this->SetIntensityShift(value);
+        this->SetIntensityScale(value);
         break;
       }
     }
@@ -296,11 +296,11 @@ BeadSpreadFunctionImageSource< TOutputImage >
         break;
 
       case 9:
-        return this->GetIntensityScale();
+        return this->GetIntensityShift();
         break;
 
       case 10:
-        return this->GetIntensityShift();
+        return this->GetIntensityScale();
         break;
 
       default:
@@ -378,6 +378,8 @@ BeadSpreadFunctionImageSource< TOutputImage >
 
   parameters[index++] = this->GetShearX();
   parameters[index++] = this->GetShearY();
+  parameters[index++] = this->GetIntensityShift();
+  parameters[index++] = this->GetIntensityScale();
 
   // The last parameters come from the kernel source
   ParametersType kernelParameters = this->m_KernelSource->GetParameters();
