@@ -124,6 +124,7 @@ public:
   bool SaveSessionFile(const std::string& fileName);
 
   void Initialize();
+  void InitializeParameterScales(PointSpreadFunctionType psfType);
 
   void SetInitialSimplexDeltas();
 
@@ -307,7 +308,7 @@ protected:
   // important to set these appropriately because small changes to some
   // parameters (e.g. actual refractive index) produce huge changes in the
   // shape of the PSF.
-  ParametersType m_InitialSimplexDelta;
+  ParametersType m_ParameterScales;
 };
 
 // _DATA_MODEL_H_

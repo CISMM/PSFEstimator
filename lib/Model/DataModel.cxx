@@ -72,10 +72,8 @@ DataModel
   // Default to Gibson-Lanni PSF type.
   SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
 
-//  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
-
   Initialize();
-  SetInitialSimplexDeltas();
+  InitializeParameterScales(GetPointSpreadFunctionType());
 }
 
 
@@ -112,6 +110,8 @@ DataModel
     break;
 
   }
+
+  InitializeParameterScales(psfType);
 
   m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
@@ -244,39 +244,53 @@ DataModel
 
 void
 DataModel
-::SetInitialSimplexDeltas() {
-  m_InitialSimplexDelta.
-    SetSize(m_BeadSpreadFunctionSource->GetNumberOfParameters());
+::InitializeParameterScales(PointSpreadFunctionType psfType) {
+  m_ParameterScales.clear();
+  int numParameters = m_BeadSpreadFunctionSource->GetNumberOfParameters();
+  m_ParameterScales.SetSize(numParameters);
 
-#if 0
+  // BSF parameter scales
   int index = 0;
-  m_InitialSimplexDelta[index++] = 1.0; // X-spacing
-  m_InitialSimplexDelta[index++] = 1.0; // Y-spacing
-  m_InitialSimplexDelta[index++] = 1.0; // Z-spacing
-  m_InitialSimplexDelta[index++] = 10.0; // Bead radius
-  m_InitialSimplexDelta[index++] = 100.0; // Bead center X
-  m_InitialSimplexDelta[index++] = 100.0; // Bead center Y
-  m_InitialSimplexDelta[index++] = 100.0; // Bead center Z
-  m_InitialSimplexDelta[index++] = 0.1; // Shear X
-  m_InitialSimplexDelta[index++] = 0.1; // Shear Y
-  m_InitialSimplexDelta[index++] = 5.0; // Emission wavelength
-  m_InitialSimplexDelta[index++] = 0.05; // NA
-  m_InitialSimplexDelta[index++] = 1.0; // Magnification
-  m_InitialSimplexDelta[index++] = 0.001; // Design cover slip RI
-  m_InitialSimplexDelta[index++] = 0.001; // Actual cover slip RI
-  m_InitialSimplexDelta[index++] = 1.0;   // Design cover slip thickness
-  m_InitialSimplexDelta[index++] = 1.0;   // Actual cover slip thickness
-  m_InitialSimplexDelta[index++] = 0.001; // Design immersion oil RI
-  m_InitialSimplexDelta[index++] = 0.001; // Actual immersion oil RI
-  m_InitialSimplexDelta[index++] = 1.0;   // Design immersion oil thickness
-  m_InitialSimplexDelta[index++] = 0.001; // Design specimen layer RI
-  m_InitialSimplexDelta[index++] = 0.001; // Actual specimen layer RI
-  m_InitialSimplexDelta[index++] = 1.0;   // Actual point source depth
-  m_InitialSimplexDelta[index++] = 1.0;   // Design distance from back focal plane
-  m_InitialSimplexDelta[index++] = 1.0;   // Actual distance from back focal plane
-  m_InitialSimplexDelta[index++] = 1.0;   // Background intensity
-  m_InitialSimplexDelta[index++] = 1.0;   // Maximum intensity
-#endif
+  m_ParameterScales[index++] = 1.0; // X-spacing
+  m_ParameterScales[index++] = 1.0; // Y-spacing
+  m_ParameterScales[index++] = 1.0; // Z-spacing
+  m_ParameterScales[index++] = 10.0; // Bead radius
+  m_ParameterScales[index++] = 100.0; // Bead center X
+  m_ParameterScales[index++] = 100.0; // Bead center Y
+  m_ParameterScales[index++] = 100.0; // Bead center Z
+  m_ParameterScales[index++] = 0.1; // Shear X
+  m_ParameterScales[index++] = 0.1; // Shear Y
+  m_ParameterScales[index++] = 1.0;   // Intensity shift
+  m_ParameterScales[index++] = 1.0;   // Intensity scale
+
+  // PSF parameter scales
+  switch (psfType) {
+
+  case GAUSSIAN_PSF:
+    m_ParameterScales[index++] = 5.0;
+    m_ParameterScales[index++] = 5.0;
+    m_ParameterScales[index++] = 5.0;
+    break;
+
+  case GIBSON_LANNI_PSF:
+  case HAEBERLE_PSF:
+    m_ParameterScales[index++] = 5.0;   // Emission wavelength
+    m_ParameterScales[index++] = 0.05;  // NA
+    m_ParameterScales[index++] = 1.0;   // Magnification
+    m_ParameterScales[index++] = 0.001; // Design cover slip RI
+    m_ParameterScales[index++] = 0.001; // Actual cover slip RI
+    m_ParameterScales[index++] = 1.0;   // Design cover slip thickness
+    m_ParameterScales[index++] = 1.0;   // Actual cover slip thickness
+    m_ParameterScales[index++] = 0.001; // Design immersion oil RI
+    m_ParameterScales[index++] = 0.001; // Actual immersion oil RI
+    m_ParameterScales[index++] = 1.0;   // Design immersion oil thickness
+    m_ParameterScales[index++] = 0.001; // Design specimen layer RI
+    m_ParameterScales[index++] = 0.001; // Actual specimen layer RI
+    m_ParameterScales[index++] = 1.0;   // Actual point source depth
+    m_ParameterScales[index++] = 1.0;   // Design distance from back focal plane
+    m_ParameterScales[index++] = 1.0;   // Actual distance from back focal plane
+    break;
+  }
 }
 
 
@@ -1417,12 +1431,12 @@ DataModel
 
   // Pluck out the active parameters
   ParametersType activeParameters(m_CostFunction->GetNumberOfParameters());
-  ParametersType initialSimplexDelta(m_CostFunction->GetNumberOfParameters());
+  ParametersType parameterScales(m_CostFunction->GetNumberOfParameters());
   int activeIndex = 0;
   for (unsigned int i = 0; i < mask->Size(); i++) {
     if (mask->GetElement(i)) {
       activeParameters[activeIndex] = m_BeadSpreadFunctionSource->GetParameters()[i];
-      initialSimplexDelta[activeIndex++] = m_InitialSimplexDelta[i];
+      parameterScales[activeIndex++] = m_ParameterScales[i];
     }
   }
 
@@ -1435,7 +1449,7 @@ DataModel
   m_Optimizer->SetCostFunction(m_CostFunction);
   m_Optimizer->SetFunctionConvergenceTolerance(1e-1);
   m_Optimizer->SetInitialPosition(activeParameters);
-  m_Optimizer->SetInitialSimplexDelta(initialSimplexDelta);
+  m_Optimizer->SetInitialSimplexDelta(parameterScales);
 
   m_Optimizer->StartOptimization();
 
