@@ -327,6 +327,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
     {
     spacing[i] = parameters[index++];
     }
+  this->SetSpacing(spacing);
 
   this->SetBeadRadius(parameters[index++]);
 
@@ -335,6 +336,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
     {
     center[i] = parameters[index++];
     }
+  this->SetBeadCenter(center);
 
   this->SetShearX(parameters[index++]);
   this->SetShearY(parameters[index++]);
