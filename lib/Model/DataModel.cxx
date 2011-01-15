@@ -64,14 +64,15 @@ DataModel
   m_BSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
   m_BSFDifferenceImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
 
-  // Default to Gibson-Lanni PSF type.
-  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
-
   m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
   m_CostFunction = ParametricCostFunctionType::New();
   m_CostFunction->SetInterpolator(InterpolatorType::New());
   m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
-  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
+
+  // Default to Gibson-Lanni PSF type.
+  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+
+//  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
   Initialize();
   SetInitialSimplexDeltas();
@@ -111,6 +112,8 @@ DataModel
     break;
 
   }
+
+  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
   m_PSFImageMinMaxFilter->SetImage(m_PointSpreadFunctionSource->GetOutput());
   m_PSFImageITKToVTKFilter->SetInput(m_PointSpreadFunctionSource->GetOutput());
@@ -328,17 +331,14 @@ DataModel
   m_BeadSpreadFunctionSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
 
-  m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_PointSpreadFunctionSource->GetOutput());
   m_PSFImageITKToVTKFilter->SetInput(m_PointSpreadFunctionSource->GetOutput());
 
-  m_BSFImageMinMaxFilter = MinMaxType::New();
   m_BSFImageMinMaxFilter->SetImage(m_BeadSpreadFunctionSource->GetOutput());
   m_BSFImageITKToVTKFilter->SetInput(m_BeadSpreadFunctionSource->GetOutput());
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
-  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 }
 
 
@@ -384,23 +384,21 @@ DataModel
   m_BeadSpreadFunctionSource->SetOrigin(origin);
   m_MeasuredImageData->SetOrigin(origin);
 
-  m_PSFImageMinMaxFilter = MinMaxType::New();
   m_PSFImageMinMaxFilter->SetImage(m_PointSpreadFunctionSource->GetOutput());
   m_PSFImageITKToVTKFilter->SetInput(m_PointSpreadFunctionSource->GetOutput());
 
-  m_BSFImageMinMaxFilter = MinMaxType::New();
   m_BSFImageMinMaxFilter->SetImage(m_BeadSpreadFunctionSource->GetOutput());
   m_BSFImageITKToVTKFilter->SetInput(m_BeadSpreadFunctionSource->GetOutput());
 
   m_BSFDifferenceImageFilter->SetInput1(m_MeasuredImageData);
   m_BSFDifferenceImageFilter->SetInput2(m_BeadSpreadFunctionSource->GetOutput());
 
-  m_BSFDifferenceImageMinMaxFilter = MinMaxType::New();
   m_BSFDifferenceImageMinMaxFilter->SetImage(m_BSFDifferenceImageFilter->GetOutput());
   m_BSFDifferenceImageITKToVTKFilter->SetInput(m_BSFDifferenceImageFilter->GetOutput());
 
   // Set up cost function
   m_CostFunction->SetFixedImage(m_MeasuredImageData);
+  m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
   return true;
 }
@@ -1053,7 +1051,7 @@ DataModel
     return;
   }
 
-  SpacingType thisSpacing = GetMeasuredImageData()->GetSpacing();
+  SpacingType thisSpacing = m_BeadSpreadFunctionSource->GetSpacing();
   for (int i = 0; i < 3; i++)
     spacing[i] = thisSpacing[i];
 }
@@ -1285,10 +1283,10 @@ DataModel
     GetNumberOfBeadSpreadFunctionParameters();
 
   if (index < 3) {
-    SpacingType spacing = m_BeadSpreadFunctionSource->GetSpacing();
-    spacing[index] = value;
-    m_MeasuredImageData->SetSpacing(spacing);
-    m_PointSpreadFunctionSource->SetSpacing(spacing);
+    double spacing[3];
+    GetBSFImageVoxelSpacing(spacing);
+    SetPSFImageVoxelSpacing(spacing);
+    SetMeasuredImageVoxelSpacing(spacing);
 
     RecenterImageOrigin();
 
