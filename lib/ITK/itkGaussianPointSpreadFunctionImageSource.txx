@@ -31,6 +31,8 @@ GaussianPointSpreadFunctionImageSource<TOutputImage>
 
   ArrayType sigma(200.0);
   this->SetSigma(sigma);
+  ArrayType mean(0.0);
+  this->SetMean(mean);
 }
 
 template <class TOutputImage>
