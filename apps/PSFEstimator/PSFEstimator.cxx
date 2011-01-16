@@ -770,6 +770,8 @@ PSFEstimator
     gui->objectiveFunctionValueEdit->setText(QString("-"));
   }
 
+  m_Visualization->Update();
+  gui->qvtkWidget->GetRenderWindow()->Render();
 }
 
 
