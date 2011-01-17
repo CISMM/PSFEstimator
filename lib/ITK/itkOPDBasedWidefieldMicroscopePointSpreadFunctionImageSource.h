@@ -18,6 +18,8 @@
 #ifndef __itkOPDBasedWidefieldMicroscopePointSpreadFunctionImageSource_h
 #define __itkOPDBasedWidefieldMicroscopePointSpreadFunctionImageSource_h
 
+#include <complex>
+
 #include "itkWidefieldMicroscopePointSpreadFunctionImageSource.h"
 
 namespace itk
@@ -120,18 +122,6 @@ public:
   /** Get the actual point source depth in the specimen layer (in nanometers). */
   itkGetConstMacro(ActualPointSourceDepthInSpecimenLayer, double);
 
-  /** Specify the design distance from the back focal plane to the detector (in millimeters). */
-  itkSetMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Get the design distance from the back focal plane to the detector (in millimeters). */
-  itkGetConstMacro(DesignDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Specify the actual distance from the back focal plane to the detector (in millimeters). */
-  itkSetMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
-
-  /** Get the actual distance from the back focal plane to the detector (in millimeters). */
-  itkGetConstMacro(ActualDistanceFromBackFocalPlaneToDetector, double);
-
 protected:
   OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource();
   ~OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource();
@@ -147,8 +137,6 @@ protected:
   double m_DesignSpecimenLayerRefractiveIndex;
   double m_ActualSpecimenLayerRefractiveIndex;
   double m_ActualPointSourceDepthInSpecimenLayer;
-  double m_DesignDistanceFromBackFocalPlaneToDetector;
-  double m_ActualDistanceFromBackFocalPlaneToDetector;
 
 };
 } // end namespace itk

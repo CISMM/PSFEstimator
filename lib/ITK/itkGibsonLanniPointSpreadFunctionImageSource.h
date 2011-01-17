@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkGibsonLanniPSFImageSource_h
-#define __itkGibsonLanniPSFImageSource_h
+#ifndef __itkGibsonLanniPointSpreadFunctionImageSource_h
+#define __itkGibsonLanniPointSpreadFunctionImageSource_h
 
 #include <complex>
 
@@ -26,7 +26,7 @@
 namespace itk
 {
 
-/** \class GibsonLanniPSFImageSource
+/** \class GibsonLanniPointSpreadFunctionImageSource
  * \brief Generate a synthetic point-spread function according to the
  * Gibson-Lanni model.
  *
@@ -40,15 +40,15 @@ namespace itk
  * \ingroup DataSources Multithreaded
  */
 template< class TOutputImage >
-class ITK_EXPORT GibsonLanniPSFImageSource :
+class ITK_EXPORT GibsonLanniPointSpreadFunctionImageSource :
   public OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource< TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef GibsonLanniPSFImageSource                              Self;
+  typedef GibsonLanniPointSpreadFunctionImageSource                                 Self;
   typedef OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource< TOutputImage > Superclass;
-  typedef SmartPointer< Self >                                   Pointer;
-  typedef SmartPointer< const Self >                             ConstPointer;
+  typedef SmartPointer< Self >                                                      Pointer;
+  typedef SmartPointer< const Self >                                                ConstPointer;
 
   /** Typedef for the output image PixelType. */
   typedef TOutputImage                             OutputImageType;
@@ -69,7 +69,7 @@ public:
   typedef std::complex<double> ComplexType;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GibsonLanniPSFImageSource, ParametricImageSource);
+  itkTypeMacro(GibsonLanniPointSpreadFunctionImageSource, ParametricImageSource);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -93,8 +93,8 @@ public:
   virtual unsigned int GetNumberOfParameters() const;
 
 protected:
-  GibsonLanniPSFImageSource();
-  ~GibsonLanniPSFImageSource();
+  GibsonLanniPointSpreadFunctionImageSource();
+  ~GibsonLanniPointSpreadFunctionImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   virtual void ThreadedGenerateData(const RegionType& outputRegionForThread, int threadId );
@@ -117,14 +117,14 @@ protected:
 				    PointType& point);
 
 private:
-  GibsonLanniPSFImageSource(const GibsonLanniPSFImageSource&); //purposely not implemented
-  void operator=(const GibsonLanniPSFImageSource&); //purposely not implemented
+  GibsonLanniPointSpreadFunctionImageSource(const GibsonLanniPointSpreadFunctionImageSource&); //purposely not implemented
+  void operator=(const GibsonLanniPointSpreadFunctionImageSource&); //purposely not implemented
 
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkGibsonLanniPSFImageSource.txx"
+#include "itkGibsonLanniPointSpreadFunctionImageSource.txx"
 #endif
 
 #endif

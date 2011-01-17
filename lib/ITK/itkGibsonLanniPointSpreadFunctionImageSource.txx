@@ -17,10 +17,10 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkGibsonLanniPSFImageSource_txx
-#define __itkGibsonLanniPSFImageSource_txx
+#ifndef __itkGibsonLanniPointSpreadFunctionImageSource_txx
+#define __itkGibsonLanniPointSpreadFunctionImageSource_txx
 
-#include "itkGibsonLanniPSFImageSource.h"
+#include "itkGibsonLanniPointSpreadFunctionImageSource.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkMath.h"
 #include "itkObjectFactory.h"
@@ -34,8 +34,8 @@ namespace itk
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
-GibsonLanniPSFImageSource<TOutputImage>
-::GibsonLanniPSFImageSource()
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
+::GibsonLanniPointSpreadFunctionImageSource()
 {
   this->m_Size.Fill(32);
   this->m_Spacing.Fill(65.0);
@@ -57,15 +57,13 @@ GibsonLanniPSFImageSource<TOutputImage>
   this->m_DesignSpecimenLayerRefractiveIndex         =  1.33; // unitless
   this->m_ActualSpecimenLayerRefractiveIndex         =  1.33; // unitless
   this->m_ActualPointSourceDepthInSpecimenLayer      =   0.0; // in micrometers
-  this->m_DesignDistanceFromBackFocalPlaneToDetector = 160.0; // in millimeters
-  this->m_ActualDistanceFromBackFocalPlaneToDetector = 160.0; // in millimeters
 }
 
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
-GibsonLanniPSFImageSource<TOutputImage>
-::~GibsonLanniPSFImageSource()
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
+::~GibsonLanniPointSpreadFunctionImageSource()
 {
 }
 
@@ -73,7 +71,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <class TOutputImage>
 void
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::SetParameter(unsigned int index, ParametersValueType value)
 {
   switch (index)
@@ -129,22 +127,14 @@ GibsonLanniPSFImageSource<TOutputImage>
     case 12:
       this->SetActualPointSourceDepthInSpecimenLayer(value);
       break;
-
-    case 13:
-      this->SetDesignDistanceFromBackFocalPlaneToDetector(value);
-      break;
-
-    case 14:
-      this->SetActualDistanceFromBackFocalPlaneToDetector(value);
-      break;
     }
 }
 
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
-typename GibsonLanniPSFImageSource<TOutputImage>::ParametersValueType
-GibsonLanniPSFImageSource<TOutputImage>
+typename GibsonLanniPointSpreadFunctionImageSource<TOutputImage>::ParametersValueType
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::GetParameter(unsigned int index) const
 {
   switch (index)
@@ -201,14 +191,6 @@ GibsonLanniPSFImageSource<TOutputImage>
       return this->GetActualPointSourceDepthInSpecimenLayer();
       break;
 
-    case 13:
-      return this->GetDesignDistanceFromBackFocalPlaneToDetector();
-      break;
-
-    case 14:
-      return this->GetActualDistanceFromBackFocalPlaneToDetector();
-      break;
-
     default:
       return 0.0;
       break;
@@ -219,7 +201,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <class TOutputImage>
 void
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::SetParameters(const ParametersType& parameters)
 {
   int index = 0;
@@ -239,14 +221,12 @@ GibsonLanniPSFImageSource<TOutputImage>
   SetDesignSpecimenLayerRefractiveIndex(parameters[index++]);
   SetActualSpecimenLayerRefractiveIndex(parameters[index++]);
   SetActualPointSourceDepthInSpecimenLayer(parameters[index++]);
-  SetDesignDistanceFromBackFocalPlaneToDetector(parameters[index++]);
-  SetActualDistanceFromBackFocalPlaneToDetector(parameters[index++]);
 }
 
 
 template <class TOutputImage>
-typename GibsonLanniPSFImageSource<TOutputImage>::ParametersType
-GibsonLanniPSFImageSource<TOutputImage>
+typename GibsonLanniPointSpreadFunctionImageSource<TOutputImage>::ParametersType
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::GetParameters() const
 {
   ParametersType parameters(GetNumberOfParameters());
@@ -267,8 +247,6 @@ GibsonLanniPSFImageSource<TOutputImage>
   parameters[index++] = this->GetDesignSpecimenLayerRefractiveIndex();
   parameters[index++] = this->GetActualSpecimenLayerRefractiveIndex();
   parameters[index++] = this->GetActualPointSourceDepthInSpecimenLayer();
-  parameters[index++] = this->GetDesignDistanceFromBackFocalPlaneToDetector();
-  parameters[index++] = this->GetActualDistanceFromBackFocalPlaneToDetector();
 
   return parameters;
 }
@@ -277,17 +255,17 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <class TOutputImage>
 unsigned int
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::GetNumberOfParameters() const
 {
-  return 15;
+  return 13;
 }
 
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
 void
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
@@ -297,7 +275,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
 void
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::ThreadedGenerateData(const RegionType& outputRegionForThread, int threadId )
 {
   // Support progress methods/callbacks
@@ -316,13 +294,6 @@ GibsonLanniPSFImageSource<TOutputImage>
     PointType point;
     image->TransformIndexToPhysicalPoint(index, point);
 
-    // Apply x and y shear here
-    //point[0] = point[0] - this->m_ShearX*(point[2] - this->m_PointCenter[2]);
-    //point[1] = point[1] - this->m_ShearY*(point[2] - this->m_PointCenter[2]);
-
-    // Shift the center of the point
-    //for (int i = 0; i < 3; i++) point[i] -= this->m_PointCenter[i];
-
     // See if we have switched slices. If so, we need to precompute some
     // integral terms for the new slice.
     if (zSlice != index[2])
@@ -339,8 +310,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-typename GibsonLanniPSFImageSource<TOutputImage>::ComplexType
-GibsonLanniPSFImageSource<TOutputImage>
+typename GibsonLanniPointSpreadFunctionImageSource<TOutputImage>::ComplexType
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::OPD_term(double NA, double n_oil, double rho, double n, double t)
 {
   double NA_rho_sq = NA*NA*rho*rho;
@@ -360,16 +331,16 @@ GibsonLanniPSFImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-typename GibsonLanniPSFImageSource<TOutputImage>::ComplexType
-GibsonLanniPSFImageSource<TOutputImage>
+typename GibsonLanniPointSpreadFunctionImageSource<TOutputImage>::ComplexType
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::OPD(double rho, double delta_z, double a)
 {
   double NA      = this->m_NumericalAperture;
   double n_oil_d = this->m_DesignImmersionOilRefractiveIndex;
   double n_oil   = this->m_ActualImmersionOilRefractiveIndex;
   double t_oil_d = this->m_DesignImmersionOilThickness * 1e-6;
-  double z_d_d   = this->m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
-  double z_d     = this->m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
+  double z_d_d   = 0.16; // this->m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
+  double z_d     = 0.16; // this->m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
   double n_s     = this->m_ActualSpecimenLayerRefractiveIndex;
   double t_s     = this->m_ActualPointSourceDepthInSpecimenLayer * 1e-6;
   double n_g_d   = this->m_DesignCoverSlipRefractiveIndex;
@@ -399,14 +370,14 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
 void
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::PrecomputeOPDTerms(ComplexType* opdCache, double z_o)
 {
   double K = 2.0f*itk::Math::pi / (this->m_EmissionWavelength * 1e-9);
   double h = 1.0f / static_cast<double>(INTEGRATE_N-1);
   double NA = this->m_NumericalAperture;
   double mag = this->m_Magnification;
-  double z_d_d = this->m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
+  double z_d_d = 0.16; // this->m_DesignDistanceFromBackFocalPlaneToDetector * 1e-3;
   double a = (z_d_d*NA) / sqrt(mag*mag - NA*NA);
 
   for (int i = 0; i < INTEGRATE_N; i++) {
@@ -421,8 +392,8 @@ GibsonLanniPSFImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
-typename GibsonLanniPSFImageSource<TOutputImage>::ComplexType
-GibsonLanniPSFImageSource<TOutputImage>
+typename GibsonLanniPointSpreadFunctionImageSource<TOutputImage>::ComplexType
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::IntegralTerm(ComplexType* opdCache, double K, double a, double z_d,
 	       int rhoIndex, double h, double r_o, double z_o)
 {
@@ -436,7 +407,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
 double
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::ComputeSampleValue(ComplexType* opdCache, typename TOutputImage::PointType& point)
 {
   PixelType px = point[0] * 1e-9;
@@ -447,7 +418,7 @@ GibsonLanniPSFImageSource<TOutputImage>
   double K = 2.0f*itk::Math::pi / (this->m_EmissionWavelength * 1e-9);
   double NA = this->m_NumericalAperture;
   double mag = this->m_Magnification;
-  double z_d = this->m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
+  double z_d = 0.16; // this->m_ActualDistanceFromBackFocalPlaneToDetector * 1e-3;
   double a = (z_d*NA) / sqrt(mag*mag - NA*NA);
 
   // We have to convert to coordinates of the detector points
@@ -489,7 +460,7 @@ GibsonLanniPSFImageSource<TOutputImage>
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
 double
-GibsonLanniPSFImageSource<TOutputImage>
+GibsonLanniPointSpreadFunctionImageSource<TOutputImage>
 ::ComputeIntegratedPixelValue(ComplexType* opdCache, typename TOutputImage::PointType& point)
 {
   double integrated = 0.0f;

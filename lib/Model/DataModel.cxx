@@ -13,7 +13,7 @@
 #include <itkImageFileWriter.h>
 
 #include <itkBeadSpreadFunctionImageSource.txx>
-#include <itkGibsonLanniPSFImageSource.txx>
+#include <itkGibsonLanniPointSpreadFunctionImageSource.txx>
 #include <itkGaussianPointSpreadFunctionImageSource.txx>
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
@@ -238,10 +238,6 @@ DataModel
   m_OPDBasedPSFParameterUnits.push_back("-");
   m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
   m_OPDBasedPSFParameterUnits.push_back("micrometers");
-  m_OPDBasedPSFParameterNames.push_back("Design Distance From Back Focal Plane To Detector");
-  m_OPDBasedPSFParameterUnits.push_back("millimeters");
-  m_OPDBasedPSFParameterNames.push_back("Actual Distance From Back Focal Plane To Detector");
-  m_OPDBasedPSFParameterUnits.push_back("millimeters");
 }
 
 
@@ -290,8 +286,6 @@ DataModel
     m_ParameterScales[index++] = 0.001; // Design specimen layer RI
     m_ParameterScales[index++] = 0.001; // Actual specimen layer RI
     m_ParameterScales[index++] = 1.0;   // Actual point source depth
-    m_ParameterScales[index++] = 1.0;   // Design distance from back focal plane
-    m_ParameterScales[index++] = 1.0;   // Actual distance from back focal plane
     break;
   }
 }

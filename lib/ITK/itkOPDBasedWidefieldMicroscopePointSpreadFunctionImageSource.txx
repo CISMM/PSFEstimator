@@ -23,8 +23,6 @@ OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource< TOutputImage >
   this->m_DesignSpecimenLayerRefractiveIndex         =  1.33; // unitless
   this->m_ActualSpecimenLayerRefractiveIndex         =  1.33; // unitless
   this->m_ActualPointSourceDepthInSpecimenLayer      =   0.0; // in micrometers
-  this->m_DesignDistanceFromBackFocalPlaneToDetector = 160.0; // in millimeters
-  this->m_ActualDistanceFromBackFocalPlaneToDetector = 160.0; // in millimeters
 }
 
 
@@ -62,10 +60,6 @@ OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource< TOutputImage >
             << m_ActualSpecimenLayerRefractiveIndex << std::endl;
   std::cout << indent << "ActualPointSourceDepthInSpecimenLayer: "
             << m_ActualPointSourceDepthInSpecimenLayer << std::endl;
-  std::cout << indent << "DesignDistanceFromBackFocalPlaneToDetector: "
-            << m_DesignDistanceFromBackFocalPlaneToDetector << std::endl;
-  std::cout << indent << "ActualDistanceFromBackFocalPlaneToDetector: "
-            << m_ActualDistanceFromBackFocalPlaneToDetector << std::endl;
 }
 
 } // end namespace itk

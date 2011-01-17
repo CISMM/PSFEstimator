@@ -9,7 +9,7 @@
 #include <itkBeadSpreadFunctionImageSource.h>
 #include <itkGridImageSource.h>
 #include <itkGaussianPointSpreadFunctionImageSource.h>
-#include <itkGibsonLanniPSFImageSource.h>
+#include <itkGibsonLanniPointSpreadFunctionImageSource.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
@@ -59,7 +59,7 @@ public:
     ParametricImageSourceType;
   typedef ParametricImageSourceType::Pointer
     ParametricImageSourcePointer;
-  typedef itk::GibsonLanniPSFImageSource<Float3DImageType>
+  typedef itk::GibsonLanniPointSpreadFunctionImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
@@ -266,11 +266,11 @@ protected:
   TImage::Pointer m_MeasuredImageData;
 
   // The different point-spread function types
-  ParametricImageSourcePointer         m_PointSpreadFunctionSource;
-  GaussianPSFImageSourcePointer        m_GaussianPSFSource;
-  GaussianPSFImageSourcePointer        m_GaussianPSFKernelSource;
-  GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFSource;
-  GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFKernelSource;
+  ParametricImageSourcePointer     m_PointSpreadFunctionSource;
+  GaussianPSFImageSourcePointer    m_GaussianPSFSource;
+  GaussianPSFImageSourcePointer    m_GaussianPSFKernelSource;
+  GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
+  GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFKernelSource;
 
   // Lists of parameter names for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterNames;
