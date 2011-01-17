@@ -21,6 +21,7 @@
 #include "itkParametricImageSource.h"
 #include "itkShiftScaleImageFilter.h"
 #include "itkSphereConvolutionFilter.h"
+#include "itkCommand.h"
 
 namespace itk
 {
@@ -118,7 +119,7 @@ public:
   itkGetConstMacro(IntensityScale, double);
 
   /** Set/get the convolution kernel source. */
-  itkSetObjectMacro(KernelSource, KernelImageSourceType);
+  virtual void SetKernelSource( KernelImageSourceType* source );
   itkGetObjectMacro(KernelSource, KernelImageSourceType);
 
   /** Set/get kernel radial symmetry flag. If this flag is set to
@@ -152,6 +153,9 @@ public:
   void SetUseCustomZCoordinates(bool use);
   bool GetUseCustomZCoordinates();
 
+  /** Callback evoked whenever the KernelSource is modified. */
+  virtual void KernelModified();
+
 protected:
   BeadSpreadFunctionImageSource();
   virtual ~BeadSpreadFunctionImageSource();
@@ -175,6 +179,11 @@ private:
   bool                      m_KernelIsRadiallySymmetric;
   ConvolverPointer          m_Convolver;
   RescaleImageFilterPointer m_RescaleFilter;
+
+  typedef SimpleMemberCommand< Self > MemberCommandType;
+  typedef typename MemberCommandType::Pointer MemberCommandPointer;
+  MemberCommandPointer m_ModifiedEventCommand;
+  unsigned long        m_ObserverTag;
 };
 
 } // end namespace itk

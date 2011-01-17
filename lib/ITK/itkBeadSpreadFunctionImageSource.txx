@@ -38,6 +38,11 @@ BeadSpreadFunctionImageSource< TOutputImage >
 
   m_RescaleFilter = RescaleImageFilterType::New();
   m_RescaleFilter->SetInput(m_Convolver->GetOutput());
+
+  m_ModifiedEventCommand = MemberCommandType::New();
+  m_ModifiedEventCommand->SetCallbackFunction(this,
+                                              &Self::KernelModified);
+  m_ObserverTag = NULL;
 }
 
 
@@ -45,6 +50,15 @@ template< class TOutputImage >
 BeadSpreadFunctionImageSource< TOutputImage >
 ::~BeadSpreadFunctionImageSource()
 {
+}
+
+
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::KernelModified()
+{
+  this->Modified();
 }
 
 
@@ -202,6 +216,25 @@ BeadSpreadFunctionImageSource< TOutputImage >
 }
 
 
+template< class TOutputImage >
+void
+BeadSpreadFunctionImageSource< TOutputImage >
+::SetKernelSource( KernelImageSourceType* source )
+{
+  if ( this->m_KernelSource != source )
+    {
+    if ( this->m_KernelSource )
+      {
+      this->m_KernelSource->RemoveObserver(this->m_ObserverTag);
+      }
+    this->m_KernelSource = source;
+    this->m_ObserverTag = this->m_KernelSource->
+      AddObserver(ModifiedEvent() , m_ModifiedEventCommand);
+    this->Modified();
+    }
+
+}
+
 
 template< class TOutputImage >
 void
@@ -253,14 +286,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
     }
   else
     {
-    // This checks to see if the kernel parameter modifies the kernel
-    // source and calls Modified() if that is the case.
-    unsigned long previousKernelMTime = this->m_KernelSource->GetMTime();
     this->m_KernelSource->SetParameter(index - numberOfBSFParameters, value);
-    if ( this->m_KernelSource->GetMTime() > previousKernelMTime )
-      {
-      this->Modified();
-      }
     }
 }
 
@@ -358,14 +384,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
     kernelParameters[i] = parameters[index++];
     }
 
-  // This checks to see if the kernel parameters modify the kernel
-  // source and calls Modified() if that is the case.
-  unsigned long previousKernelMTime = this->m_KernelSource->GetMTime();
   this->m_KernelSource->SetParameters(kernelParameters);
-  if ( this->m_KernelSource->GetMTime() > previousKernelMTime )
-    {
-    this->Modified();
-    }
 }
 
 
