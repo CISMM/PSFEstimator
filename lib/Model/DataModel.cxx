@@ -30,6 +30,7 @@
 #include <vtkAlgorithm.h>
 
 #include <DataModel.h>
+#include <StringUtils.h>
 
 
 DataModel
@@ -48,8 +49,10 @@ DataModel
 
   m_MeasuredImageData = NULL;
 
-  m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
   m_GaussianPSFSource                = GaussianPSFImageSourceType::New();
+  m_GaussianPSFKernelSource          = GaussianPSFImageSourceType::New();
+  m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniPSFKernelSource       = GibsonLanniPSFImageSourceType::New();
   m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
 
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
@@ -93,15 +96,15 @@ DataModel
 
   switch (psfType) {
   case GAUSSIAN_PSF:
-    m_BeadSpreadFunctionSource->SetKernelSource(GaussianPSFImageSourceType::New());
+    m_BeadSpreadFunctionSource->SetKernelSource(m_GaussianPSFKernelSource);
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
-    m_PointSpreadFunctionSource = GaussianPSFImageSourceType::New();
+    m_PointSpreadFunctionSource = m_GaussianPSFSource;;
     break;
 
   case GIBSON_LANNI_PSF:
-    m_BeadSpreadFunctionSource->SetKernelSource(GibsonLanniPSFImageSourceType::New());
+    m_BeadSpreadFunctionSource->SetKernelSource(m_GibsonLanniPSFKernelSource);
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
-    m_PointSpreadFunctionSource = GibsonLanniPSFImageSourceType::New();
+    m_PointSpreadFunctionSource = m_GibsonLanniPSFSource;
     break;
 
   case HAEBERLE_PSF:
@@ -235,9 +238,9 @@ DataModel
   m_OPDBasedPSFParameterUnits.push_back("-");
   m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
   m_OPDBasedPSFParameterUnits.push_back("micrometers");
-  m_OPDBasedPSFParameterNames.push_back("Design Distance from Back Focal Plane to Detector");
+  m_OPDBasedPSFParameterNames.push_back("Design Distance From Back Focal Plane To Detector");
   m_OPDBasedPSFParameterUnits.push_back("millimeters");
-  m_OPDBasedPSFParameterNames.push_back("Actual Distance from Back Focal Plane to Detector");
+  m_OPDBasedPSFParameterNames.push_back("Actual Distance From Back Focal Plane To Detector");
   m_OPDBasedPSFParameterUnits.push_back("millimeters");
 }
 
@@ -457,43 +460,36 @@ DataModel
 void
 DataModel
 ::SetConfiguration(Configuration & c) {
-  std::string sec = std::string("GibsonLanniPSFSettings");
+  std::string sec = std::string("BeadSpreadFunctionSettings");
 
-  double vec3[3];
-  c.GetValueAsDoubleArray(sec, "VoxelSpacing", vec3, 3);
-  SetMeasuredImageVoxelSpacing(vec3);
-  SetPSFImageVoxelSpacing(vec3);
-  SetBSFImageVoxelSpacing(vec3);
+  // Set the BSF parameter values
+  unsigned int numBSFParameters = m_BeadSpreadFunctionSource->
+    GetNumberOfBeadSpreadFunctionParameters();
+  for (unsigned int i = 0; i < numBSFParameters; i++)
+    {
+    SetParameterValue(i, c.GetValueAsDouble(sec, SqueezeString(GetParameterName(i)),
+                                            GetParameterValue(i)));
+    }
 
-  // Set up origin so that (0, 0, 0) is centered in the image volume.
-  int dimensions[3];
-  double origin[3];
-  GetPSFImageDimensions(dimensions);
-  for (int i = 0; i < 3; i++) {
-    origin[i] = -0.5*static_cast<double>(dimensions[i]-1)*vec3[i];
-  }
-  SetMeasuredImageOrigin(origin);
-  SetPSFImageOrigin(origin);
-  SetBSFImageOrigin(origin);
+  // Set the PSF parameter values for the Gaussian model
+  sec = std::string("GaussianModelSettings");
+  for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
+    {
+    double value = c.GetValueAsDouble(sec, SqueezeString(m_GaussianPSFParameterNames[i]),
+                                      m_GaussianPSFSource->GetParameter(i));
+    m_GaussianPSFSource->SetParameter(i, value);
+    m_GaussianPSFKernelSource->SetParameter(i, value);
+    }
 
-  c.GetValueAsDoubleArray(sec, "BeadCenter", vec3, 3);
-  SetPSFPointCenter(vec3);
-  SetBSFPointCenter(vec3);
-
-  double beadRadius = c.GetValueAsDouble(sec, "BeadRadius", GetBeadRadius());
-  SetBeadRadius(beadRadius);
-
-  double shearX = c.GetValueAsDouble(sec, "ShearX");
-  m_BeadSpreadFunctionSource->SetShearX(shearX);
-  double shearY = c.GetValueAsDouble(sec, "ShearY");
-  m_BeadSpreadFunctionSource->SetShearY(shearY);
-
-  SetIntensityShift
-    (c.GetValueAsDouble(sec, "IntensityShift",
-                       GetIntensityShift()));
-  SetIntensityScale
-    (c.GetValueAsDouble(sec, "IntensityScale",
-                       GetIntensityScale()));
+  // Get the PSF parameter values for the Gibson-Lanni model
+  sec = std::string("GibsonLanniModelSettings");
+  for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
+    {
+    double value = c.GetValueAsDouble(sec, SqueezeString(m_OPDBasedPSFParameterNames[i]),
+                                      m_GibsonLanniPSFSource->GetParameter(i));
+    m_GibsonLanniPSFSource->SetParameter(i, value);
+    m_GibsonLanniPSFKernelSource->SetParameter(i, value);
+    }
 
   sec = std::string("ZSliceCoordinates");
 
@@ -506,40 +502,6 @@ DataModel
     SetZCoordinate(i, c.GetValueAsDouble(sec, name));
   }
 
-  unsigned int index = 0;
-  sec = std::string("Optimization");
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingX"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingY"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "VoxelSpacingZ"));
-
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadRadius"));
-
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterX"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterY"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "BeadCenterZ"));
-
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ShearX"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ShearY"));
-
-#if 0
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "EmissionWavelength"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "NumericalAperture"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "Magnification"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignCoverSlipRefractiveIndex"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualCoverSlipRefractiveIndex"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignCoverSlipThickness"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualCoverSlipThickness"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignImmersionOilRefractiveIndex"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualImmersionOilRefractiveIndex"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignImmersionOilThickness"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignSpecimenLayerRefractiveIndex"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualSpecimenLayerRefractiveIndex"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualPointSourceDepthInSpecimenLayer"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "DesignDistanceFromBackFocalPlaneToDetector"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "ActualDistanceFromBackFocalPlaneToDetector"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityShift"));
-  SetParameterEnabled(index++, c.GetValueAsBool(sec, "IntensityScale"));
-#endif
 }
 
 
@@ -550,55 +512,34 @@ DataModel
   std::string sec("FileInfo");
   c.SetValue(sec, "FileName", m_ImageFileName);
 
-  sec = std::string("GibsonLanniPSFSettings");
+  sec = std::string("BeadSpreadFunctionSettings");
 
-  double vec3[3];
-  GetBSFImageVoxelSpacing(vec3);
-  c.SetValueFromDoubleArray(sec, "VoxelSpacing", vec3, 3);
+  // Get the BSF parameter values
+  unsigned int numBSFParameters = m_BeadSpreadFunctionSource->
+    GetNumberOfBeadSpreadFunctionParameters();
+  for (unsigned int i = 0; i < numBSFParameters; i++)
+    {
+    c.SetValueFromDouble(sec, SqueezeString(GetParameterName(i)),
+                         GetParameterValue(i));
+    }
 
-  GetBSFPointCenter(vec3);
-  c.SetValueFromDoubleArray(sec, "BeadCenter", vec3, 3);
+  // Get the PSF parameter values for the Gaussian model
+  sec = std::string("GaussianModelSettings");
+  for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
+    {
+    c.SetValueFromDouble(sec, SqueezeString(m_GaussianPSFParameterNames[i]),
+                         m_GaussianPSFSource->GetParameters()[i]);
+    }
 
-  c.SetValueFromDouble(sec, "BeadRadius", GetBeadRadius());
+  // Get the PSF parameter values for the Gibson-Lanni model
+  sec = std::string("GibsonLanniModelSettings");
+  for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
+    {
+    c.SetValueFromDouble(sec, SqueezeString(m_OPDBasedPSFParameterNames[i]),
+                         m_GibsonLanniPSFSource->GetParameters()[i]);
+    }
 
-  c.SetValueFromDouble(sec, "ShearX", m_BeadSpreadFunctionSource->GetShearX());
-  c.SetValueFromDouble(sec, "ShearY", m_BeadSpreadFunctionSource->GetShearY());
-
-  c.SetValueFromDouble(sec, "EmissionWavelength",
-                       m_BeadSpreadFunctionSource->GetParameter(11));
-
-  c.SetValueFromDouble(sec, "NumericalAperture",
-                       m_BeadSpreadFunctionSource->GetParameter(12));
-  c.SetValueFromDouble(sec, "Magnification",
-                       m_BeadSpreadFunctionSource->GetParameter(13));
-  c.SetValueFromDouble(sec, "DesignCoverSlipRefractiveIndex",
-                       m_BeadSpreadFunctionSource->GetParameter(14));
-  c.SetValueFromDouble(sec, "ActualCoverSlipRefractiveIndex",
-                       m_BeadSpreadFunctionSource->GetParameter(15));
-  c.SetValueFromDouble(sec, "DesignCoverSlipThickness",
-		       m_BeadSpreadFunctionSource->GetParameter(16));
-  c.SetValueFromDouble(sec, "ActualCoverSlipThickness",
-                       m_BeadSpreadFunctionSource->GetParameter(17));
-  c.SetValueFromDouble(sec, "DesignImmersionOilRefractiveIndex",
-		       m_BeadSpreadFunctionSource->GetParameter(18));
-  c.SetValueFromDouble(sec, "ActualImmersionOilRefractiveIndex",
-                       m_BeadSpreadFunctionSource->GetParameter(19));
-  c.SetValueFromDouble(sec, "DesignImmersionOilThickness",
-                       m_BeadSpreadFunctionSource->GetParameter(20));
-  c.SetValueFromDouble(sec, "DesignSpecimenLayerRefractiveIndex",
-                       m_BeadSpreadFunctionSource->GetParameter(21));
-  c.SetValueFromDouble(sec, "ActualSpecimenLayerRefractiveIndex",
-                       m_BeadSpreadFunctionSource->GetParameter(22));
-  c.SetValueFromDouble(sec, "ActualPointSourceDepthInSpecimenLayer",
-                       m_BeadSpreadFunctionSource->GetParameter(23));
-  c.SetValueFromDouble(sec, "DesignDistanceFromBackFocalPlaneToDetector",
-                       m_BeadSpreadFunctionSource->GetParameter(24));
-  c.SetValueFromDouble(sec, "ActualDistanceFromBackFocalPlaneToDetector",
-                       m_BeadSpreadFunctionSource->GetParameter(25));
-  c.SetValueFromDouble(sec, "IntensityShift",
-                       m_BeadSpreadFunctionSource->GetParameter(9));
-  c.SetValueFromDouble(sec, "IntensityScale",
-                       m_BeadSpreadFunctionSource->GetParameter(10));
+  // TODO - Get the PSF parameter values for the Haeberle model
 
   sec = std::string("ZSliceCoordinates");
 
@@ -606,42 +547,10 @@ DataModel
 
   for (unsigned int i = 0; i < m_BeadSpreadFunctionSource->GetSize()[2]; i++) {
     char name[128];
-    sprintf(name, "ZCoordinate%d", i);
+    sprintf(name, "ZCoordinate%03d", i);
     c.SetValueFromDouble(sec, name, GetZCoordinate(i));
   }
 
-  int index = 0;
-  sec = std::string("Optimization");
-  c.SetValueFromBool(sec, "VoxelSpacingX", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "VoxelSpacingY", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "VoxelSpacingZ", GetParameterEnabled(index++));
-
-  c.SetValueFromBool(sec, "BeadRadius", GetParameterEnabled(index++));
-
-  c.SetValueFromBool(sec, "BeadCenterX", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "BeadCenterY", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "BeadCenterZ", GetParameterEnabled(index++));
-
-  c.SetValueFromBool(sec, "ShearX", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ShearY", GetParameterEnabled(index++));
-
-  c.SetValueFromBool(sec, "EmissionWavelength", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "NumericalAperture", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "Magnification", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignCoverSlipRefractiveIndex", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualCoverSlipRefractiveIndex", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignCoverSlipThickness", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualCoverSlipThickness", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignImmersionOilRefractiveIndex", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualImmersionOilRefractiveIndex", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignImmersionOilThickness", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignSpecimenLayerRefractiveIndex", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualSpecimenLayerRefractiveIndex", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualPointSourceDepthInSpecimenLayer", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "DesignDistanceFromBackFocalPlaneToDetector", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "ActualDistanceFromBackFocalPlaneToDetector", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "IntensityShift", GetParameterEnabled(index++));
-  c.SetValueFromBool(sec, "IntensityScale", GetParameterEnabled(index++));
 }
 
 

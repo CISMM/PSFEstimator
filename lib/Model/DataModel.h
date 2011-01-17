@@ -268,7 +268,9 @@ protected:
   // The different point-spread function types
   ParametricImageSourcePointer         m_PointSpreadFunctionSource;
   GaussianPSFImageSourcePointer        m_GaussianPSFSource;
+  GaussianPSFImageSourcePointer        m_GaussianPSFKernelSource;
   GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFSource;
+  GibsonLanniPSFImageSourcePointer     m_GibsonLanniPSFKernelSource;
 
   // Lists of parameter names for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterNames;
