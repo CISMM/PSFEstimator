@@ -253,7 +253,14 @@ BeadSpreadFunctionImageSource< TOutputImage >
     }
   else
     {
+    // This checks to see if the kernel parameter modifies the kernel
+    // source and calls Modified() if that is the case.
+    unsigned long previousKernelMTime = this->m_KernelSource->GetMTime();
     this->m_KernelSource->SetParameter(index - numberOfBSFParameters, value);
+    if ( this->m_KernelSource->GetMTime() > previousKernelMTime )
+      {
+      this->Modified();
+      }
     }
 }
 
@@ -263,7 +270,7 @@ typename BeadSpreadFunctionImageSource< TOutputImage >::ParametersValueType
 BeadSpreadFunctionImageSource< TOutputImage >
 ::GetParameter(unsigned int index) const
 {
-  unsigned int numberOfBSFParameters = 2 * ImageDimension + 5;
+  unsigned int numberOfBSFParameters = this->GetNumberOfBeadSpreadFunctionParameters();
   if (index < numberOfBSFParameters)
     {
     SpacingType spacing = this->GetSpacing();
@@ -351,7 +358,14 @@ BeadSpreadFunctionImageSource< TOutputImage >
     kernelParameters[i] = parameters[index++];
     }
 
+  // This checks to see if the kernel parameters modify the kernel
+  // source and calls Modified() if that is the case.
+  unsigned long previousKernelMTime = this->m_KernelSource->GetMTime();
   this->m_KernelSource->SetParameters(kernelParameters);
+  if ( this->m_KernelSource->GetMTime() > previousKernelMTime )
+    {
+    this->Modified();
+    }
 }
 
 
