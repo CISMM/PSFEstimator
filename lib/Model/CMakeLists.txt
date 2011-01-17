@@ -1,5 +1,6 @@
 SET(modelSrc
   DataModel.cxx
+  StringUtils.cxx
 )
 
 ADD_LIBRARY(psfeModel ${modelSrc})
