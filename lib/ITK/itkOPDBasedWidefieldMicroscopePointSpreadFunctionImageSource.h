@@ -54,6 +54,7 @@ public:
   typedef typename OutputImageType::SpacingType    SpacingType;
   typedef typename OutputImageType::SizeType       SizeType;
   typedef typename OutputImageType::SizeValueType  SizeValueType;
+  typedef std::complex<double>                     ComplexType;
 
   itkStaticConstMacro(ImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
@@ -126,6 +127,39 @@ protected:
   OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource();
   ~OPDBasedWidefieldMicroscopePointSpreadFunctionImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
+
+  /** Integrates a one-dimensional complex-valued function defined by
+   *  a functor from a to b using 2*m+1 subdivisions. */
+  template< class TFunctor >
+  ComplexType Integrate(const TFunctor& functor, double a, double b,
+                        int m, double x, double y, double z)
+  {
+    int n = 2*m + 1;
+    double h = 1.0 / static_cast<double>(n-1);
+
+    double r = sqrt(x*x + y*y);
+
+    // Initialize accumulator for integration.
+    ComplexType sum(0.0, 0.0);
+
+    // Compute initial terms in Simpson quadrature method.
+    sum += functor(r, z, a);
+    sum += functor(r, z, b);
+
+    for (int k = 1; k <= m-1; k++)
+      {
+      sum += 2.0 * functor(r, z, (2*k)*h);
+      }
+
+    for (int k = 1; k <= m; k++)
+      {
+      sum += 4.0 * functor(r, z, (2*k-1)*h);
+      }
+
+    sum *= h / 3.0;
+
+    return sum;
+  }
 
   double m_DesignCoverSlipRefractiveIndex;
   double m_ActualCoverSlipRefractiveIndex;
