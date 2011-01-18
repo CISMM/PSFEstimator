@@ -21,10 +21,31 @@
 #include <complex>
 
 #include "itkOPDBasedWidefieldMicroscopePointSpreadFunctionImageSource.h"
+#include "itkOPDBasedWidefieldMicroscopePointSpreadFunctionIntegrand.h"
 #include "itkNumericTraits.h"
 
 namespace itk
 {
+namespace Functor
+{
+
+class GibsonLanniPointSpreadFunctionIntegrand :
+    public OPDBasedWidefieldMicroscopePointSpreadFunctionIntegrand
+{
+public:
+  typedef OPDBasedWidefieldMicroscopePointSpreadFunctionIntegrand::ComplexType ComplexType;
+
+  ComplexType operator()(double r, double z, double rho) const
+  {
+    double bessel = j0(m_K * m_A * rho * r / (0.160 + z));
+
+    return bessel * exp(ComplexType(0.0, 1.0) * this->OPD(rho, z) * m_K) * rho;
+  }
+
+};
+
+} // end namespace Functor
+
 
 /** \class GibsonLanniPointSpreadFunctionImageSource
  * \brief Generate a synthetic point-spread function according to the
@@ -68,6 +89,9 @@ public:
   /** Typedef for complex type. */
   typedef std::complex<double> ComplexType;
 
+  /** Typedef for functor. */
+  typedef Functor::GibsonLanniPointSpreadFunctionIntegrand FunctorType;
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(GibsonLanniPointSpreadFunctionImageSource, ParametricImageSource);
 
@@ -97,29 +121,17 @@ protected:
   ~GibsonLanniPointSpreadFunctionImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
+  void BeforeThreadedGenerateData();
   virtual void ThreadedGenerateData(const RegionType& outputRegionForThread, int threadId );
 
-  ComplexType OPD_term(double NA, double n_oil, double rho, double n, double t);
-
-  ComplexType OPD(double rho, double delta_z, double a);
-
-  void PrecomputeOPDTerms(ComplexType* opdCache, double z_o);
-
-  inline ComplexType IntegralTerm(ComplexType* opdCache, double K, double a, double z_d,
-                                  int rhoIndex, double h, double r_o, double z_o);
-
   /** Computes the light intensity at a specified point. */
-  double ComputeSampleValue(ComplexType* opdCache, PointType& point);
-
-  /** Computes the integrated light intensity over a CCD pixel centered at
-      point. */
-  double ComputeIntegratedPixelValue(ComplexType* opdCache,
-				    PointType& point);
+  double ComputeSampleValue(PointType& point);
 
 private:
   GibsonLanniPointSpreadFunctionImageSource(const GibsonLanniPointSpreadFunctionImageSource&); //purposely not implemented
   void operator=(const GibsonLanniPointSpreadFunctionImageSource&); //purposely not implemented
 
+  FunctorType m_IntegrandFunctor;
 };
 } // end namespace itk
 
