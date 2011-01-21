@@ -40,6 +40,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
   this->m_ShearY = 0.0f;
   this->m_UseCustomZCoordinates = false;
   this->m_NumberOfIntegrationSamples.Fill(1);
+  this->m_WeightIntegrationByArea = false;
 
   m_ScanImageFilter = ScanImageFilterType::New();
   m_ScanImageFilter->SetScanDimension(2);
@@ -237,6 +238,16 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 
   ImageRegionIteratorWithIndex<TOutputImage> it(image, outputRegionForThread);
 
+  SpacingType dx;
+  double volume = 1.0;
+  unsigned int dimension = this->m_WeightIntegrationByArea ? ImageDimension - 1 : ImageDimension;
+  for ( unsigned int i = 0; i < dimension; i++ )
+    {
+    dx[i] = this->GetSpacing()[i]
+      / static_cast< SpacingValueType >(m_NumberOfIntegrationSamples[i]);
+    volume *= dx[i];
+    }
+
   for (; !it.IsAtEnd(); ++it)
     {
     OutputImageIndexType index = it.GetIndex();
@@ -253,7 +264,7 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
     point[0] -= m_ShearX * (point[2] - m_SphereCenter[2]);
     point[1] -= m_ShearY * (point[2] - m_SphereCenter[2]);
 
-    it.Set( ComputeIntegratedVoxelValue(point) );
+    it.Set( volume * ComputeIntegratedVoxelValue(point, dx) );
     progress.CompletedPixel();
     }
 }
@@ -344,32 +355,24 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 double
 SphereConvolutionFilter<TInputImage,TOutputImage>
-::ComputeIntegratedVoxelValue(OutputImagePointType& point)
+::ComputeIntegratedVoxelValue(OutputImagePointType& point, const SpacingType& dx)
 {
   // Riemannian integration over a voxel
   double sum = 0.0;
-
-  double dx = this->GetSpacing()[0] /
-    static_cast<double>(m_NumberOfIntegrationSamples[0]);
-  double dy = this->GetSpacing()[1] /
-    static_cast<double>(m_NumberOfIntegrationSamples[1]);
-  double dz = this->GetSpacing()[2] /
-    static_cast<double>(m_NumberOfIntegrationSamples[2]);
-  double volume = dx*dy*dz;
 
   // TODO - make this support an arbitrary number of dimensions
   OutputImagePointType samplePoint;
   for ( SizeValueType k = 0; k < m_NumberOfIntegrationSamples[2]; k++ )
     {
-    samplePoint[2] = point[2]-(0.5*this->GetSpacing()[2]) + (k+0.5)*dz;
+    samplePoint[2] = point[2]-(0.5*this->GetSpacing()[2]) + (k+0.5)*dx[2];
     for ( SizeValueType j = 0; j < m_NumberOfIntegrationSamples[1]; j++ )
       {
-      samplePoint[1] = point[1]-(0.5*this->GetSpacing()[1]) + (j+0.5)*dy;
+      samplePoint[1] = point[1]-(0.5*this->GetSpacing()[1]) + (j+0.5)*dx[1];
       for ( SizeValueType i = 0; i < m_NumberOfIntegrationSamples[0]; i++ )
         {
-        samplePoint[0] = point[0]-(0.5*this->GetSpacing()[0]) + (i+0.5)*dx;
+        samplePoint[0] = point[0]-(0.5*this->GetSpacing()[0]) + (i+0.5)*dx[0];
 
-        sum += volume * ComputeSampleValue(samplePoint);
+        sum += ComputeSampleValue(samplePoint);
         }
       }
     }

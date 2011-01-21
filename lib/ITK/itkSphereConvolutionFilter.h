@@ -71,25 +71,28 @@ public:
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
-  typedef TInputImage                          InputImageType;
-  typedef typename InputImageType::Pointer     InputImagePointer;
-  typedef typename InputImageType::IndexType   InputImageIndexType;
-  typedef typename InputImageType::SizeType    InputImageSizeType;
-  typedef typename InputImageType::RegionType  InputImageRegionType;
-  typedef typename InputImageType::PixelType   InputImagePixelType;
-  typedef typename InputImageType::PointType   InputImagePointType;
+  typedef TInputImage                               InputImageType;
+  typedef typename InputImageType::Pointer          InputImagePointer;
+  typedef typename InputImageType::IndexType        InputImageIndexType;
+  typedef typename InputImageType::SizeType         InputImageSizeType;
+  typedef typename InputImageType::RegionType       InputImageRegionType;
+  typedef typename InputImageType::SpacingType      InputImageSpacingType;
+  typedef typename InputImageType::PixelType        InputImagePixelType;
+  typedef typename InputImageType::PointType        InputImagePointType;
 
-  typedef TOutputImage                          OutputImageType;
-  typedef typename OutputImageType::Pointer     OutputImagePointer;
-  typedef typename OutputImageType::IndexType   OutputImageIndexType;
-  typedef typename OutputImageType::SizeType    OutputImageSizeType;
-  typedef typename OutputImageType::RegionType  OutputImageRegionType;
-  typedef typename OutputImageType::PixelType   OutputImagePixelType;
-  typedef typename OutputImageType::SpacingType OutputImageSpacingType;
-  typedef typename OutputImageType::PointType   OutputImagePointType;
+  typedef TOutputImage                              OutputImageType;
+  typedef typename OutputImageType::Pointer         OutputImagePointer;
+  typedef typename OutputImageType::IndexType       OutputImageIndexType;
+  typedef typename OutputImageType::SizeType        OutputImageSizeType;
+  typedef typename OutputImageType::RegionType      OutputImageRegionType;
+  typedef typename OutputImageType::SpacingType     OutputImageSpacingType;
+  typedef typename OutputImageType::PixelType       OutputImagePixelType;
+  typedef typename OutputImageType::PointType       OutputImagePointType;
 
-  typedef InputImageSizeType                    SizeType;
-  typedef typename SizeType::SizeValueType      SizeValueType;
+  typedef InputImageSpacingType                     SpacingType;
+  typedef typename InputImageType::SpacingValueType SpacingValueType;
+  typedef InputImageSizeType                        SizeType;
+  typedef typename SizeType::SizeValueType          SizeValueType;
 
   typedef Function::SumAccumulator<InputImagePixelType,OutputImagePixelType>
     AccumulatorType;
@@ -196,24 +199,49 @@ public:
   itkSetMacro(UseCustomZCoordinates, bool);
   itkGetMacro(UseCustomZCoordinates, bool);
 
-  /** Get/set number of voxel samples per dimension. */
+  /** Get/set number of voxel samples per dimension used to compute
+   * the integrated voxel intensity. */
   itkSetMacro(NumberOfIntegrationSamples, SizeType);
   itkGetMacro(NumberOfIntegrationSamples, SizeType);
+
+  /** Determines whether the voxel intensity is integrated over the
+   * area (defined as the product of the subsample spacing in x and y)
+   * or the volume (defined as the product of all spatial
+   * dimensions). */
+  itkSetMacro(WeightIntegrationByArea, bool);
+  itkGetMacro(WeightIntegrationByArea, bool);
+  itkBooleanMacro(WeightIntegrationByArea);
 
 protected:
   SphereConvolutionFilter();
   ~SphereConvolutionFilter();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  OutputImageSizeType    m_Size;         // the number of voxels in each dimension
-  OutputImageSpacingType m_Spacing;      // the spacing of the voxels
-  OutputImagePointType   m_Origin;       // the origin of the image
-  OutputImagePointType   m_SphereCenter; // the center of the sphere
-  double                 m_SphereRadius; // the radius of the sphere
+  /** Standard output image settings. */
+  OutputImageSizeType    m_Size;
+  OutputImageSpacingType m_Spacing;
+  OutputImagePointType   m_Origin;
 
-  double                 m_ShearX;      // shear in the x direction w.r.t. z
-  double                 m_ShearY;      // shear in the y direction w.r.t. z
-  std::vector<double>    m_ZCoordinate; // z-slice coordinates
+  /** The center of the sphere. */
+  OutputImagePointType   m_SphereCenter;
+
+  /** The radius of the sphere. */
+  double                 m_SphereRadius;
+
+  /** If set to true, use area weighting in integrated voxel intensity
+    calculation, otherise use volume weighting. */
+  bool                   m_WeightIntegrationByArea;
+
+  /** Shear in the x direction w.r.t. z. */
+  double                 m_ShearX;
+
+  /** Shear in the y direction w.r.t. z. */
+  double                 m_ShearY;
+
+  /** Z-slice coordinates. */
+  std::vector<double>    m_ZCoordinate;
+
+  /** Decides whether to use the custom z coordinates. */
   bool                   m_UseCustomZCoordinates;
 
   /** Defines the number of samples in each dimension to use to
@@ -259,7 +287,7 @@ protected:
   double ComputeSampleValue(OutputImagePointType& point);
 
   /** Computes the integrated light intensity over multipe samples per voxel.*/
-  double ComputeIntegratedVoxelValue(OutputImagePointType& point);
+  double ComputeIntegratedVoxelValue(OutputImagePointType& point, const SpacingType& dx);
 
 private:
   SphereConvolutionFilter(const SphereConvolutionFilter&); // purposely not implemented
