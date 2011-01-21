@@ -35,7 +35,9 @@ BeadSpreadFunctionImageSource< TOutputImage >
   m_KernelIsRadiallySymmetric = false;
 
   m_Convolver = ConvolverType::New();
-  typename ConvolverType::SizeType voxelSamples = {{1, 1, 1}};
+
+  // Specify multiple integration samples in x and y but not z.
+  typename ConvolverType::SizeType voxelSamples = {{8, 8, 1}};
   m_Convolver->SetNumberOfIntegrationSamples(voxelSamples);
 
   m_RescaleFilter = RescaleImageFilterType::New();
