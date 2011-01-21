@@ -31,15 +31,15 @@ SphereConvolutionFilter<TInputImage,TOutputImage>
 {
   this->SetNumberOfRequiredInputs(1);
 
-  m_Size.Fill(1);
-  m_Spacing.Fill(1.0);
-  m_Origin.Fill(0.0);
-  m_SphereCenter.Fill(0.0);
-  m_SphereRadius = 1.0f;
-  m_ShearX = 0.0f;
-  m_ShearY = 0.0f;
-  m_UseCustomZCoordinates = false;
-  m_VoxelSamplesPerDimension = 2;
+  this->m_Size.Fill(1);
+  this->m_Spacing.Fill(1.0);
+  this->m_Origin.Fill(0.0);
+  this->m_SphereCenter.Fill(0.0);
+  this->m_SphereRadius = 1.0f;
+  this->m_ShearX = 0.0f;
+  this->m_ShearY = 0.0f;
+  this->m_UseCustomZCoordinates = false;
+  this->m_NumberOfIntegrationSamples.Fill(1);
 
   m_ScanImageFilter = ScanImageFilterType::New();
   m_ScanImageFilter->SetScanDimension(2);
@@ -346,26 +346,31 @@ double
 SphereConvolutionFilter<TInputImage,TOutputImage>
 ::ComputeIntegratedVoxelValue(OutputImagePointType& point)
 {
-  // Take 9 samples over the CCD element centered at the point
-  // parameter.
+  // Riemannian integration over a voxel
   double sum = 0.0;
 
-  int numSamples = this->m_VoxelSamplesPerDimension;
   double dx = this->GetSpacing()[0] /
-    static_cast<double>(numSamples);
+    static_cast<double>(m_NumberOfIntegrationSamples[0]);
   double dy = this->GetSpacing()[1] /
-    static_cast<double>(numSamples);
+    static_cast<double>(m_NumberOfIntegrationSamples[1]);
+  double dz = this->GetSpacing()[2] /
+    static_cast<double>(m_NumberOfIntegrationSamples[2]);
+  double volume = dx*dy*dz;
 
+  // TODO - make this support an arbitrary number of dimensions
   OutputImagePointType samplePoint;
-  samplePoint[2] = point[2];
-  for (int j = 0; j < numSamples; j++)
+  for ( SizeValueType k = 0; k < m_NumberOfIntegrationSamples[2]; k++ )
     {
-    samplePoint[1] = point[1]-(0.5*this->GetSpacing()[1]) + (j+0.5)*dy;
-    for (int i = 0; i < numSamples; i++)
+    samplePoint[2] = point[2]-(0.5*this->GetSpacing()[2]) + (k+0.5)*dz;
+    for ( SizeValueType j = 0; j < m_NumberOfIntegrationSamples[1]; j++ )
       {
-      samplePoint[0] = point[0]-(0.5*this->GetSpacing()[0]) + (i+0.5)*dx;
+      samplePoint[1] = point[1]-(0.5*this->GetSpacing()[1]) + (j+0.5)*dy;
+      for ( SizeValueType i = 0; i < m_NumberOfIntegrationSamples[0]; i++ )
+        {
+        samplePoint[0] = point[0]-(0.5*this->GetSpacing()[0]) + (i+0.5)*dx;
 
-      sum += ComputeSampleValue(samplePoint);
+        sum += volume * ComputeSampleValue(samplePoint);
+        }
       }
     }
 

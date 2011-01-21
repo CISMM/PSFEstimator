@@ -71,7 +71,6 @@ public:
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
-  /** Typedef for the output image PixelType. */
   typedef TInputImage                          InputImageType;
   typedef typename InputImageType::Pointer     InputImagePointer;
   typedef typename InputImageType::IndexType   InputImageIndexType;
@@ -88,6 +87,9 @@ public:
   typedef typename OutputImageType::PixelType   OutputImagePixelType;
   typedef typename OutputImageType::SpacingType OutputImageSpacingType;
   typedef typename OutputImageType::PointType   OutputImagePointType;
+
+  typedef InputImageSizeType                    SizeType;
+  typedef typename SizeType::SizeValueType      SizeValueType;
 
   typedef Function::SumAccumulator<InputImagePixelType,OutputImagePixelType>
     AccumulatorType;
@@ -107,6 +109,7 @@ public:
 
   itkStaticConstMacro(ImageDimension, unsigned int,
 		      TOutputImage::ImageDimension);
+
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SphereConvolutionFilter, ImageToImageFilter);
@@ -194,8 +197,8 @@ public:
   itkGetMacro(UseCustomZCoordinates, bool);
 
   /** Get/set number of voxel samples per dimension. */
-  itkSetMacro(VoxelSamplesPerDimension, int);
-  itkGetMacro(VoxelSamplesPerDimension, int);
+  itkSetMacro(NumberOfIntegrationSamples, SizeType);
+  itkGetMacro(NumberOfIntegrationSamples, SizeType);
 
 protected:
   SphereConvolutionFilter();
@@ -213,9 +216,9 @@ protected:
   std::vector<double>    m_ZCoordinate; // z-slice coordinates
   bool                   m_UseCustomZCoordinates;
 
-  /** Defines the number of samples per dimension to use to
+  /** Defines the number of samples in each dimension to use to
    *  approximate the integrated intensity in a voxel. */
-  int                    m_VoxelSamplesPerDimension;
+  SizeType               m_NumberOfIntegrationSamples;
 
   ScanImageFilterPointer m_ScanImageFilter;
   InterpolatorPointer    m_TableInterpolator;

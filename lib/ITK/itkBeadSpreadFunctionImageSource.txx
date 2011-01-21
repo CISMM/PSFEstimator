@@ -35,6 +35,8 @@ BeadSpreadFunctionImageSource< TOutputImage >
   m_KernelIsRadiallySymmetric = false;
 
   m_Convolver = ConvolverType::New();
+  typename ConvolverType::SizeType voxelSamples = {{1, 1, 1}};
+  m_Convolver->SetNumberOfIntegrationSamples(voxelSamples);
 
   m_RescaleFilter = RescaleImageFilterType::New();
   m_RescaleFilter->SetInput(m_Convolver->GetOutput());
@@ -490,7 +492,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
   // Set the PSF sampling spacing and size parameters, and update.
   PointType   psfTableOrigin;
   SizeType    psfTableSize;
-  SpacingType psfTableSpacing(40.0); // An arbitrary spacing
+  SpacingType psfTableSpacing(10.0); // An arbitrary spacing
 
   // Determine necessary spatial extent of PSF table.
   PointType minExtent(this->GetOrigin());
