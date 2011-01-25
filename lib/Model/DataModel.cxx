@@ -158,10 +158,18 @@ DataModel
 
   // Read the settings from the configuration structure
   std::string imageFileName = config.GetValue("FileInfo", "FileName");
-
-  bool success = LoadImageFile(imageFileName);
-  if (!success) {
-    return false;
+  if (imageFileName.compare("")) {
+    bool success = LoadImageFile(imageFileName);
+    if (!success) {
+      return false;
+    }
+  } else {
+    CreateImageFile(config.GetValueAsInt("FileInfo", "SizeX"),
+                    config.GetValueAsInt("FileInfo", "SizeY"),
+                    config.GetValueAsInt("FileInfo", "SizeZ"),
+                    config.GetValueAsDouble("BeadSpreadFunctionSettings", "XPixelSize"),
+                    config.GetValueAsDouble("BeadSpreadFunctionSettings", "YPixelSize"),
+                    config.GetValueAsDouble("BeadSpreadFunctionSettings", "ZSliceSpacing"));
   }
 
   SetConfiguration(config);
@@ -556,6 +564,11 @@ DataModel
   // Dump the settings into the configuration structure
   std::string sec("FileInfo");
   c.SetValue(sec, "FileName", m_ImageFileName);
+  int dims[3];
+  GetBSFImageDimensions(dims);
+  c.SetValueFromInt(sec, "SizeX", dims[0]);
+  c.SetValueFromInt(sec, "SizeY", dims[1]);
+  c.SetValueFromInt(sec, "SizeZ", dims[2]);
 
   sec = std::string("BeadSpreadFunctionSettings");
 
