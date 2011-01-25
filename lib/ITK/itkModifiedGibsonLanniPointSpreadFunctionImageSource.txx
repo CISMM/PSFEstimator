@@ -87,7 +87,7 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
       case 3:
       case 4:
       case 5:
-        sigma[index + 3] = value;
+        sigma[index - 3] = value;
         m_GaussianSource->SetSigma(sigma);
         break;
 
