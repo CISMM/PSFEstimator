@@ -10,6 +10,7 @@
 #include <itkGridImageSource.h>
 #include <itkGaussianPointSpreadFunctionImageSource.h>
 #include <itkGibsonLanniPointSpreadFunctionImageSource.h>
+#include <itkModifiedGibsonLanniPointSpreadFunctionImageSource.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMinimumMaximumImageCalculator.h>
@@ -34,6 +35,7 @@ public:
   typedef enum {
     GAUSSIAN_PSF = 0,
     GIBSON_LANNI_PSF,
+    MODIFIED_GIBSON_LANNI_PSF,
     HAEBERLE_PSF
   } PointSpreadFunctionType;
 
@@ -63,6 +65,10 @@ public:
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
+  typedef itk::ModifiedGibsonLanniPointSpreadFunctionImageSource<Float3DImageType>
+    ModifiedGibsonLanniPSFImageSourceType;
+  typedef ModifiedGibsonLanniPSFImageSourceType::Pointer
+    ModifiedGibsonLanniPSFImageSourcePointer;
   typedef itk::GaussianPointSpreadFunctionImageSource<Float3DImageType>
     GaussianPSFImageSourceType;
   typedef GaussianPSFImageSourceType::Pointer
@@ -266,21 +272,25 @@ protected:
   TImage::Pointer m_MeasuredImageData;
 
   // The different point-spread function types
-  ParametricImageSourcePointer     m_PointSpreadFunctionSource;
-  GaussianPSFImageSourcePointer    m_GaussianPSFSource;
-  GaussianPSFImageSourcePointer    m_GaussianPSFKernelSource;
-  GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFSource;
-  GibsonLanniPSFImageSourcePointer m_GibsonLanniPSFKernelSource;
+  ParametricImageSourcePointer             m_PointSpreadFunctionSource;
+  GaussianPSFImageSourcePointer            m_GaussianPSFSource;
+  GaussianPSFImageSourcePointer            m_GaussianPSFKernelSource;
+  GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFSource;
+  GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFKernelSource;
+  ModifiedGibsonLanniPSFImageSourcePointer m_ModifiedGibsonLanniPSFSource;
+  ModifiedGibsonLanniPSFImageSourcePointer m_ModifiedGibsonLanniPSFKernelSource;
 
   // Lists of parameter names for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterNames;
   std::vector<std::string> m_GaussianPSFParameterNames;
   std::vector<std::string> m_OPDBasedPSFParameterNames;
+  std::vector<std::string> m_ModifiedGibsonLanniPSFParameterNames;
 
   // Lists of units for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterUnits;
   std::vector<std::string> m_GaussianPSFParameterUnits;
   std::vector<std::string> m_OPDBasedPSFParameterUnits;
+  std::vector<std::string> m_ModifiedGibsonLanniPSFParameterUnits;
 
   // The bead-spread function
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;

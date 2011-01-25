@@ -13,8 +13,9 @@
 #include <itkImageFileWriter.h>
 
 #include <itkBeadSpreadFunctionImageSource.txx>
-#include <itkGibsonLanniPointSpreadFunctionImageSource.txx>
 #include <itkGaussianPointSpreadFunctionImageSource.txx>
+#include <itkGibsonLanniPointSpreadFunctionImageSource.txx>
+#include <itkModifiedGibsonLanniPointSpreadFunctionImageSource.txx>
 #include <itkGridImageSource.txx>
 #include <itkImageFileReader.txx>
 #include <itkImageFileWriter.txx>
@@ -49,11 +50,13 @@ DataModel
 
   m_MeasuredImageData = NULL;
 
-  m_GaussianPSFSource                = GaussianPSFImageSourceType::New();
-  m_GaussianPSFKernelSource          = GaussianPSFImageSourceType::New();
-  m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
-  m_GibsonLanniPSFKernelSource       = GibsonLanniPSFImageSourceType::New();
-  m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
+  m_GaussianPSFSource                  = GaussianPSFImageSourceType::New();
+  m_GaussianPSFKernelSource            = GaussianPSFImageSourceType::New();
+  m_GibsonLanniPSFSource               = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniPSFKernelSource         = GibsonLanniPSFImageSourceType::New();
+  m_ModifiedGibsonLanniPSFSource       = ModifiedGibsonLanniPSFImageSourceType::New();
+  m_ModifiedGibsonLanniPSFKernelSource = ModifiedGibsonLanniPSFImageSourceType::New();
+  m_BeadSpreadFunctionSource           = BeadSpreadFunctionImageSourceType::New();
 
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
@@ -105,6 +108,12 @@ DataModel
     m_BeadSpreadFunctionSource->SetKernelSource(m_GibsonLanniPSFKernelSource);
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
     m_PointSpreadFunctionSource = m_GibsonLanniPSFSource;
+    break;
+
+  case MODIFIED_GIBSON_LANNI_PSF:
+    m_BeadSpreadFunctionSource->SetKernelSource(m_ModifiedGibsonLanniPSFKernelSource);
+    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
+    m_PointSpreadFunctionSource = m_ModifiedGibsonLanniPSFSource;
     break;
 
   case HAEBERLE_PSF:
@@ -238,6 +247,25 @@ DataModel
   m_OPDBasedPSFParameterUnits.push_back("-");
   m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
   m_OPDBasedPSFParameterUnits.push_back("micrometers");
+
+  // Modified Gibson-Lanni PSF parameters
+  m_ModifiedGibsonLanniPSFParameterNames = m_OPDBasedPSFParameterNames;
+  m_ModifiedGibsonLanniPSFParameterUnits = m_OPDBasedPSFParameterUnits;
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Origin X");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Origin Y");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Origin Z");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma X");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma Y");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma Z");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Intensity Scale");
+  m_ModifiedGibsonLanniPSFParameterUnits.push_back("-");
+
 }
 
 
@@ -272,6 +300,7 @@ DataModel
     break;
 
   case GIBSON_LANNI_PSF:
+  case MODIFIED_GIBSON_LANNI_PSF:
   case HAEBERLE_PSF:
     m_ParameterScales[index++] = 5.0;   // Emission wavelength
     m_ParameterScales[index++] = 0.05;  // NA
@@ -287,6 +316,16 @@ DataModel
     m_ParameterScales[index++] = 0.001; // Actual specimen layer RI
     m_ParameterScales[index++] = 1.0;   // Actual point source depth
     break;
+  }
+
+  if (psfType == MODIFIED_GIBSON_LANNI_PSF) {
+    m_ParameterScales[index++] = 10.0;
+    m_ParameterScales[index++] = 10.0;
+    m_ParameterScales[index++] = 10.0;
+    m_ParameterScales[index++] = 10.0;
+    m_ParameterScales[index++] = 10.0;
+    m_ParameterScales[index++] = 10.0;
+    m_ParameterScales[index++] = 5.0;
   }
 }
 
@@ -460,30 +499,40 @@ DataModel
   unsigned int numBSFParameters = m_BeadSpreadFunctionSource->
     GetNumberOfBeadSpreadFunctionParameters();
   for (unsigned int i = 0; i < numBSFParameters; i++)
-    {
+  {
     SetParameterValue(i, c.GetValueAsDouble(sec, SqueezeString(GetParameterName(i)),
                                             GetParameterValue(i)));
-    }
+  }
 
   // Set the PSF parameter values for the Gaussian model
   sec = std::string("GaussianModelSettings");
   for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
-    {
+  {
     double value = c.GetValueAsDouble(sec, SqueezeString(m_GaussianPSFParameterNames[i]),
                                       m_GaussianPSFSource->GetParameter(i));
     m_GaussianPSFSource->SetParameter(i, value);
     m_GaussianPSFKernelSource->SetParameter(i, value);
-    }
+  }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
-    {
+  {
     double value = c.GetValueAsDouble(sec, SqueezeString(m_OPDBasedPSFParameterNames[i]),
                                       m_GibsonLanniPSFSource->GetParameter(i));
     m_GibsonLanniPSFSource->SetParameter(i, value);
     m_GibsonLanniPSFKernelSource->SetParameter(i, value);
-    }
+  }
+
+  // Get the PSF parameter values for the modified Gibson-Lanni model
+  sec = std::string("ModifiedGibsonLanniModelSettings");
+  for (unsigned int i = 0; i < m_ModifiedGibsonLanniPSFSource->GetNumberOfParameters(); i++)
+  {
+    double value = c.GetValueAsDouble(sec, SqueezeString(m_ModifiedGibsonLanniPSFParameterNames[i]),
+                                      m_ModifiedGibsonLanniPSFSource->GetParameter(i));
+    m_ModifiedGibsonLanniPSFSource->SetParameter(i, value);
+    m_ModifiedGibsonLanniPSFKernelSource->SetParameter(i, value);
+  }
 
   sec = std::string("ZSliceCoordinates");
 
@@ -512,26 +561,34 @@ DataModel
   unsigned int numBSFParameters = m_BeadSpreadFunctionSource->
     GetNumberOfBeadSpreadFunctionParameters();
   for (unsigned int i = 0; i < numBSFParameters; i++)
-    {
+  {
     c.SetValueFromDouble(sec, SqueezeString(GetParameterName(i)),
                          GetParameterValue(i));
-    }
+  }
 
   // Get the PSF parameter values for the Gaussian model
   sec = std::string("GaussianModelSettings");
   for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
-    {
+  {
     c.SetValueFromDouble(sec, SqueezeString(m_GaussianPSFParameterNames[i]),
                          m_GaussianPSFSource->GetParameters()[i]);
-    }
+  }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
-    {
+  {
     c.SetValueFromDouble(sec, SqueezeString(m_OPDBasedPSFParameterNames[i]),
                          m_GibsonLanniPSFSource->GetParameters()[i]);
-    }
+  }
+
+  // Get the PSF parameter values for the modified Gibson-Lanni model
+  sec = std::string("ModifiedGibsonLanniModelSettings");
+  for (unsigned int i = 0; i < m_ModifiedGibsonLanniPSFKernelSource->GetNumberOfParameters(); i++)
+  {
+    c.SetValueFromDouble(sec, SqueezeString(m_ModifiedGibsonLanniPSFParameterNames[i]),
+                         m_ModifiedGibsonLanniPSFSource->GetParameters()[i]);
+  }
 
   // TODO - Get the PSF parameter values for the Haeberle model
 
@@ -1183,6 +1240,10 @@ DataModel
       return m_OPDBasedPSFParameterNames[index - numBSFParameters];
       break;
 
+    case MODIFIED_GIBSON_LANNI_PSF:
+      return m_ModifiedGibsonLanniPSFParameterNames[index - numBSFParameters];
+      break;
+
     default:
       return std::string("unknown");
       break;
@@ -1237,6 +1298,10 @@ DataModel
     case GIBSON_LANNI_PSF:
     case HAEBERLE_PSF:
       return m_OPDBasedPSFParameterUnits[index - numBSFParameters];
+      break;
+
+    case MODIFIED_GIBSON_LANNI_PSF:
+      return m_ModifiedGibsonLanniPSFParameterUnits[index - numBSFParameters];
       break;
 
     default:

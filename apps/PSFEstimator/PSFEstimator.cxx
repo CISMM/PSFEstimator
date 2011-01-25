@@ -677,6 +677,10 @@ PSFEstimator
     m_DataModel->SetPointSpreadFunctionType(DataModel::GIBSON_LANNI_PSF);
     break;
 
+  case DataModel::MODIFIED_GIBSON_LANNI_PSF:
+    m_DataModel->SetPointSpreadFunctionType(DataModel::MODIFIED_GIBSON_LANNI_PSF);
+    break;
+
   case DataModel::HAEBERLE_PSF:
     m_DataModel->SetPointSpreadFunctionType(DataModel::HAEBERLE_PSF);
     break;

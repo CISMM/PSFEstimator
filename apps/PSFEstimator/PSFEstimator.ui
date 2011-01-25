@@ -699,7 +699,7 @@
   <widget class="QDockWidget" name="psfSettingsDockWidget">
    <property name="minimumSize">
     <size>
-     <width>311</width>
+     <width>320</width>
      <height>524</height>
     </size>
    </property>
@@ -751,7 +751,7 @@
               <bool>false</bool>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <item>
               <property name="text">
@@ -761,6 +761,11 @@
              <item>
               <property name="text">
                <string>Gibson-Lanni Widefield</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Modified Gibson-Lanni Widefield</string>
               </property>
              </item>
             </widget>
