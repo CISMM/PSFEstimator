@@ -39,9 +39,9 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
   m_SubtractFilter->SetInput1( m_GibsonLanniSource->GetOutput() );
   m_SubtractFilter->SetInput2( m_GaussianSource->GetOutput() );
 
-  typename GaussianSourceType::PointType origin;
-  origin.Fill(0.0);
-  m_GaussianSource->SetOrigin(origin);
+  typename GaussianSourceType::ArrayType mean;
+  mean.Fill(0.0);
+  m_GaussianSource->SetMean(mean);
 
   typename GaussianSourceType::ArrayType sigma;
   sigma.Fill(10.0);
@@ -72,7 +72,7 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
   else
     {
     // Set Gaussian parameter
-    typename GaussianSourceType::PointType origin = m_GaussianSource->GetOrigin();
+    typename GaussianSourceType::ArrayType mean  = m_GaussianSource->GetMean();
     typename GaussianSourceType::ArrayType sigma = m_GaussianSource->GetSigma();
     index -= numGibsonLanniParameters;
     switch ( index )
@@ -80,8 +80,8 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
       case 0:
       case 1:
       case 2:
-        origin[index] = value;
-        m_GaussianSource->SetOrigin(origin);
+        mean[index] = value;
+        m_GaussianSource->SetMean(mean);
         break;
 
       case 3:
@@ -115,7 +115,7 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
   else
     {
     // Get Gaussian parameter
-    typename GaussianSourceType::PointType origin = m_GaussianSource->GetOrigin();
+    typename GaussianSourceType::ArrayType mean  = m_GaussianSource->GetMean();
     typename GaussianSourceType::ArrayType sigma = m_GaussianSource->GetSigma();
     index -= numGibsonLanniParameters;
     switch ( index )
@@ -123,7 +123,7 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
       case 0:
       case 1:
       case 2:
-        return origin[index];
+        return mean[index];
         break;
 
       case 3:
@@ -153,13 +153,13 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
   m_GibsonLanniSource->SetParameters(parameters);
 
   // Set the Gaussian parameters
-  typename GaussianSourceType::PointType origin = m_GaussianSource->GetOrigin();
+  typename GaussianSourceType::ArrayType mean  = m_GaussianSource->GetMean();
   typename GaussianSourceType::ArrayType sigma = m_GaussianSource->GetSigma();
 
   int index = m_GibsonLanniSource->GetNumberOfParameters();
-  origin[0] = parameters[index++];
-  origin[1] = parameters[index++];
-  origin[2] = parameters[index++];
+  mean[0] = parameters[index++];
+  mean[1] = parameters[index++];
+  mean[2] = parameters[index++];
 
   sigma[0] = parameters[index++];
   sigma[1] = parameters[index++];
@@ -185,12 +185,12 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
     }
 
   // Get the Gaussian parameters
-  typename GaussianSourceType::PointType origin = m_GaussianSource->GetOrigin();
+  typename GaussianSourceType::ArrayType mean  = m_GaussianSource->GetMean();
   typename GaussianSourceType::ArrayType sigma = m_GaussianSource->GetSigma();
 
-  parameters[index++] = origin[0];
-  parameters[index++] = origin[1];
-  parameters[index++] = origin[2];
+  parameters[index++] = mean[0];
+  parameters[index++] = mean[1];
+  parameters[index++] = mean[2];
 
   parameters[index++] = sigma[0];
   parameters[index++] = sigma[1];

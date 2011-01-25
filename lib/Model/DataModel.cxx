@@ -157,7 +157,9 @@ DataModel
   config.Parse(fileName);
 
   // Read the settings from the configuration structure
-  bool success = LoadImageFile(config.GetValue("FileInfo", "FileName"));
+  std::string imageFileName = config.GetValue("FileInfo", "FileName");
+
+  bool success = LoadImageFile(imageFileName);
   if (!success) {
     return false;
   }
@@ -251,11 +253,11 @@ DataModel
   // Modified Gibson-Lanni PSF parameters
   m_ModifiedGibsonLanniPSFParameterNames = m_OPDBasedPSFParameterNames;
   m_ModifiedGibsonLanniPSFParameterUnits = m_OPDBasedPSFParameterUnits;
-  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Origin X");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Center X");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
-  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Origin Y");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Center Y");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
-  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Origin Z");
+  m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Center Z");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma X");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
