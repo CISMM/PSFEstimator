@@ -326,6 +326,9 @@ DataModel
     m_ParameterScales[index++] = 0.001; // Actual specimen layer RI
     m_ParameterScales[index++] = 1.0;   // Actual point source depth
     break;
+
+  default:
+    break;
   }
 
   if (psfType == MODIFIED_GIBSON_LANNI_PSF) {
@@ -335,7 +338,7 @@ DataModel
     m_ParameterScales[index++] = 10.0;
     m_ParameterScales[index++] = 10.0;
     m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 5.0;
+    m_ParameterScales[index++] = 0.1;
   }
 }
 
@@ -450,8 +453,8 @@ DataModel
   m_BSFImageMinMaxFilter->SetImage(m_BeadSpreadFunctionSource->GetOutput());
   m_BSFImageITKToVTKFilter->SetInput(m_BeadSpreadFunctionSource->GetOutput());
 
-  m_BSFDifferenceImageFilter->SetInput1(m_MeasuredImageData);
-  m_BSFDifferenceImageFilter->SetInput2(m_BeadSpreadFunctionSource->GetOutput());
+  m_BSFDifferenceImageFilter->SetInput1(m_BeadSpreadFunctionSource->GetOutput());
+  m_BSFDifferenceImageFilter->SetInput2(m_MeasuredImageData);
 
   m_BSFDifferenceImageMinMaxFilter->SetImage(m_BSFDifferenceImageFilter->GetOutput());
   m_BSFDifferenceImageITKToVTKFilter->SetInput(m_BSFDifferenceImageFilter->GetOutput());

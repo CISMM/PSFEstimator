@@ -223,7 +223,7 @@ PSFEstimator
   gui->measuredBSFRadioButton->setEnabled(hasMeasuredImage);
   gui->calculatedPSFRadioButton->setEnabled(true);
   gui->calculatedBSFRadioButton->setEnabled(true);
-  gui->measuredMinusCalculatedBSFRadioButton->setEnabled(hasMeasuredImage);
+  gui->calculatedMinusMeasuredBSFRadioButton->setEnabled(hasMeasuredImage);
 
   gui->psfModelComboBox->setEnabled(true);
   gui->noiseTypeWidget->setEnabled(true);
@@ -451,7 +451,7 @@ PSFEstimator
 
 void
 PSFEstimator
-::on_measuredMinusCalculatedBSFRadioButton_clicked(bool state) {
+::on_calculatedMinusMeasuredBSFRadioButton_clicked(bool state) {
   SetDisplayedImageToBSFDifference();
 }
 
@@ -761,7 +761,7 @@ PSFEstimator
     m_DataModel->UpdatePSFImage();
   } else if (gui->calculatedBSFRadioButton->isChecked()) {
     m_DataModel->UpdateBSFImage();
-  } else if (gui->measuredMinusCalculatedBSFRadioButton->isChecked()) {
+  } else if (gui->calculatedMinusMeasuredBSFRadioButton->isChecked()) {
     m_DataModel->UpdateBSFDifferenceImage();
   }
 

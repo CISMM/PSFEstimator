@@ -47,7 +47,7 @@ public slots:
   virtual void on_measuredBSFRadioButton_clicked(bool state);
   virtual void on_calculatedPSFRadioButton_clicked(bool state);
   virtual void on_calculatedBSFRadioButton_clicked(bool state);
-  virtual void on_measuredMinusCalculatedBSFRadioButton_clicked(bool state);
+  virtual void on_calculatedMinusMeasuredBSFRadioButton_clicked(bool state);
 
   virtual void on_showXPlaneCheckBox_toggled(bool show);
   virtual void on_xPlaneSlider_valueChanged(int value);

@@ -211,12 +211,12 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="measuredMinusCalculatedBSFRadioButton">
+             <widget class="QRadioButton" name="calculatedMinusMeasuredBSFRadioButton">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Measured Minus Calculated BSF</string>
+               <string>Calculated Minus Measured BSF</string>
               </property>
              </widget>
             </item>
@@ -751,7 +751,7 @@
               <bool>false</bool>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <item>
               <property name="text">
