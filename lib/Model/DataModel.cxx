@@ -95,6 +95,9 @@ DataModel
 void
 DataModel
 ::SetPointSpreadFunctionType(PointSpreadFunctionType psfType) {
+  if (psfType == m_PointSpreadFunctionType)
+    return;
+
   m_PointSpreadFunctionType = psfType;
 
   switch (psfType) {
@@ -517,6 +520,17 @@ DataModel
                                             GetParameterValue(i)));
   }
 
+  std::string modelName = c.GetValue(sec, "PointSpreadFunctionModel");
+  if (!modelName.compare("Gaussian")) {
+    SetPointSpreadFunctionType(GAUSSIAN_PSF);
+  } else if (!modelName.compare("ModifiedGibsonLanni")) {
+    SetPointSpreadFunctionType(MODIFIED_GIBSON_LANNI_PSF);
+  } else if (!modelName.compare("Haeberle")) {
+    SetPointSpreadFunctionType(HAEBERLE_PSF);
+  } else { // GibsonLanni
+    SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+  }
+
   // Set the PSF parameter values for the Gaussian model
   sec = std::string("GaussianModelSettings");
   for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
@@ -583,6 +597,30 @@ DataModel
     c.SetValueFromDouble(sec, SqueezeString(GetParameterName(i)),
                          GetParameterValue(i));
   }
+
+  std::string modelName;
+  switch (GetPointSpreadFunctionType()) {
+  case GAUSSIAN_PSF:
+    modelName = "Gaussian";
+    break;
+
+  case GIBSON_LANNI_PSF:
+    modelName = "GibsonLanni";
+    break;
+
+  case MODIFIED_GIBSON_LANNI_PSF:
+    modelName = "ModifiedGibsonLanni";
+    break;
+
+  case HAEBERLE_PSF:
+    modelName = "Haeberle";
+    break;
+
+  default:
+    break;
+  }
+
+  c.SetValue(sec, "PointSpreadFunctionModel", modelName);
 
   // Get the PSF parameter values for the Gaussian model
   sec = std::string("GaussianModelSettings");

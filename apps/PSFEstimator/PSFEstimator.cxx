@@ -966,6 +966,9 @@ PSFEstimator
   gui->imageDataView->setModel(NULL);
   gui->imageDataView->setModel(m_ImageInformationTableModel);
 
+  ///////////////// PSF model type /////////////////////////////
+  gui->psfModelComboBox->setCurrentIndex(m_DataModel->GetPointSpreadFunctionType());
+
   ///////////////// Other widgets //////////////////////////////
   gui->useCustomZSlicePositions->
     setCheckState(m_DataModel->GetUseCustomZCoordinates() ? Qt::Checked : Qt::Unchecked);
