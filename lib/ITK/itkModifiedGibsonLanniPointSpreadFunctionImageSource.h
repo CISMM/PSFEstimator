@@ -20,12 +20,16 @@
 
 #include "itkGibsonLanniPointSpreadFunctionImageSource.h"
 
+#include "itkGaussianImageSource.h"
 #include "itkSubtractImageFilter.h"
+#include "itkCommand.h"
+
 
 namespace itk
 {
 
 /** \class ModifiedGibsonLanniPointSpreadFunctionImageSource
+ *
  * \brief Generate a synthetic point-spread function according to the
  * Gibson-Lanni model modified by subtracting a 3D Gaussian.
  *
@@ -79,6 +83,9 @@ public:
   /** Gets the total number of parameters. */
   virtual unsigned int GetNumberOfParameters() const;
 
+  /** Callback evoked whenever the source filters are modified. */
+  virtual void ModifiedCallback();
+
 protected:
   ModifiedGibsonLanniPointSpreadFunctionImageSource();
   virtual ~ModifiedGibsonLanniPointSpreadFunctionImageSource();
@@ -94,6 +101,11 @@ private:
   GaussianSourcePointer      m_GaussianSource;
   SubtractImageFilterPointer m_SubtractFilter;
 
+  typedef SimpleMemberCommand< Self > MemberCommandType;
+  typedef typename MemberCommandType::Pointer MemberCommandPointer;
+  MemberCommandPointer m_ModifiedEventCommand;
+  unsigned long        m_GibsonLanniSourceObserverTag;
+  unsigned long        m_GaussianSourceObserverTag;
 };
 } // end namespace itk
 

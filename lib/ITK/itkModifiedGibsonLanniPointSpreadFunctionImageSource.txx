@@ -26,7 +26,6 @@
 namespace itk
 {
 
-
 template< class TOutputImage >
 ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
 ::ModifiedGibsonLanniPointSpreadFunctionImageSource()
@@ -46,8 +45,15 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
   typename GaussianSourceType::ArrayType sigma;
   sigma.Fill(10.0);
   m_GaussianSource->SetSigma(sigma);
-
   m_GaussianSource->SetScale(0.0);
+
+  m_ModifiedEventCommand = MemberCommandType::New();
+  m_ModifiedEventCommand->SetCallbackFunction(this, &Self::ModifiedCallback);
+
+  m_GibsonLanniSourceObserverTag = m_GibsonLanniSource->
+    AddObserver(ModifiedEvent(), m_ModifiedEventCommand);
+  m_GaussianSourceObserverTag = m_GaussianSource->
+    AddObserver(ModifiedEvent(), m_ModifiedEventCommand);
 }
 
 
@@ -55,7 +61,17 @@ template< class TOutputImage >
 ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
 ::~ModifiedGibsonLanniPointSpreadFunctionImageSource()
 {
+  m_GibsonLanniSource->RemoveObserver(m_GibsonLanniSourceObserverTag);
+  m_GaussianSource->RemoveObserver(m_GaussianSourceObserverTag);
+}
 
+
+template< class TOutputImage >
+void
+ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
+::ModifiedCallback()
+{
+  this->Modified();
 }
 
 
