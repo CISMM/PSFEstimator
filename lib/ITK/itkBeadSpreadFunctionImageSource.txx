@@ -37,7 +37,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
   m_Convolver = ConvolverType::New();
 
   // Specify multiple integration samples in x and y but not z.
-  typename ConvolverType::SizeType voxelSamples = {{8, 8, 1}};
+  typename ConvolverType::SizeType voxelSamples = {{1, 1, 1}};
   m_Convolver->SetNumberOfIntegrationSamples(voxelSamples);
   m_Convolver->WeightIntegrationByAreaOn();
 
@@ -45,9 +45,8 @@ BeadSpreadFunctionImageSource< TOutputImage >
   m_RescaleFilter->SetInput(m_Convolver->GetOutput());
 
   m_ModifiedEventCommand = MemberCommandType::New();
-  m_ModifiedEventCommand->SetCallbackFunction(this,
-                                              &Self::KernelModified);
-  m_ObserverTag = NULL;
+  m_ModifiedEventCommand->SetCallbackFunction(this, &Self::KernelModified);
+  m_ObserverTag = 0;
 }
 
 
@@ -55,6 +54,7 @@ template< class TOutputImage >
 BeadSpreadFunctionImageSource< TOutputImage >
 ::~BeadSpreadFunctionImageSource()
 {
+  this->m_KernelSource->RemoveObserver(this->m_ObserverTag);
 }
 
 
@@ -495,7 +495,7 @@ BeadSpreadFunctionImageSource< TOutputImage >
   // Set the PSF sampling spacing and size parameters, and update.
   PointType   psfTableOrigin;
   SizeType    psfTableSize;
-  SpacingType psfTableSpacing(10.0); // An arbitrary spacing
+  SpacingType psfTableSpacing(50.0); // An arbitrary spacing
 
   // Determine necessary spatial extent of PSF table.
   PointType minExtent(this->GetOrigin());
