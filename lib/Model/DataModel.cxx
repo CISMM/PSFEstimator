@@ -554,7 +554,7 @@ DataModel
 
   for (unsigned int i = 0; i < m_BeadSpreadFunctionSource->GetSize()[2]; i++) {
     char name[128];
-    sprintf(name, "ZCoordinate%d", i);
+    sprintf(name, "ZCoordinate%03d", i);
     SetZCoordinate(i, c.GetValueAsDouble(sec, name));
   }
 
