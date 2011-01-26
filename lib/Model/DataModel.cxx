@@ -198,6 +198,8 @@ DataModel
 ::Initialize() {
   // BSF parameters
   m_BSFParameterNames.clear();
+  m_BSFParameterUnits.clear();
+  m_BSFParameterMask.clear();
   m_BSFParameterNames.push_back("X Pixel Size");
   m_BSFParameterUnits.push_back("nanometers");
   m_BSFParameterNames.push_back("Y Pixel Size");
@@ -221,6 +223,11 @@ DataModel
   m_BSFParameterNames.push_back("Intensity Scale");
   m_BSFParameterUnits.push_back("-");
 
+  typedef std::vector<bool>::size_type SizeType;
+  for ( SizeType i = 0; i < m_BSFParameterNames.size(); i++) {
+    m_BSFParameterMask.push_back(false);
+  }
+
   // Gaussian parameters
   m_GaussianPSFParameterNames.clear();
   m_GaussianPSFParameterNames.push_back("Standard Deviation X");
@@ -231,6 +238,11 @@ DataModel
   m_GaussianPSFParameterUnits.push_back("nanometers");
   m_GaussianPSFParameterNames.push_back("Intensity Scale");
   m_GaussianPSFParameterUnits.push_back("-");
+
+  for ( SizeType i = 0; i < m_GaussianPSFParameterNames.size(); i++) {
+    m_GaussianPSFParameterMask.push_back(false);
+  }
+
 
   // OPD-based PSF parameters
   m_OPDBasedPSFParameterNames.clear();
@@ -261,6 +273,11 @@ DataModel
   m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
   m_OPDBasedPSFParameterUnits.push_back("micrometers");
 
+  for ( SizeType i = 0; i < m_OPDBasedPSFParameterNames.size(); i++) {
+    m_GibsonLanniPSFParameterMask.push_back(false);
+  }
+
+
   // Modified Gibson-Lanni PSF parameters
   m_ModifiedGibsonLanniPSFParameterNames = m_OPDBasedPSFParameterNames;
   m_ModifiedGibsonLanniPSFParameterUnits = m_OPDBasedPSFParameterUnits;
@@ -278,6 +295,10 @@ DataModel
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Intensity Scale");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("-");
+
+  for ( SizeType i = 0; i < m_ModifiedGibsonLanniPSFParameterNames.size(); i++) {
+    m_ModifiedGibsonLanniPSFParameterMask.push_back(false);
+  }
 
 }
 
@@ -516,8 +537,11 @@ DataModel
     GetNumberOfBeadSpreadFunctionParameters();
   for (unsigned int i = 0; i < numBSFParameters; i++)
   {
-    SetParameterValue(i, c.GetValueAsDouble(sec, SqueezeString(GetParameterName(i)),
+    std::string paramName = SqueezeString(GetParameterName(i));
+    SetParameterValue(i, c.GetValueAsDouble(sec, paramName,
                                             GetParameterValue(i)));
+    m_BSFParameterMask[i] =
+      c.GetValueAsBool(sec, paramName + "-Optimize", m_BSFParameterMask[i]);
   }
 
   std::string modelName = c.GetValue(sec, "PointSpreadFunctionModel");
@@ -535,30 +559,41 @@ DataModel
   sec = std::string("GaussianModelSettings");
   for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
   {
-    double value = c.GetValueAsDouble(sec, SqueezeString(m_GaussianPSFParameterNames[i]),
-                                      m_GaussianPSFSource->GetParameter(i));
+    std::string paramName = SqueezeString(m_GaussianPSFParameterNames[i]);
+    double value = c.GetValueAsDouble(sec, paramName, m_GaussianPSFSource->GetParameter(i));
     m_GaussianPSFSource->SetParameter(i, value);
     m_GaussianPSFKernelSource->SetParameter(i, value);
+    m_GaussianPSFParameterMask[i] =
+      c.GetValueAsBool(sec, paramName + "-Optimize",
+                       m_GaussianPSFParameterMask[i]);
   }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
   {
-    double value = c.GetValueAsDouble(sec, SqueezeString(m_OPDBasedPSFParameterNames[i]),
+    std::string paramName = SqueezeString(m_OPDBasedPSFParameterNames[i]);
+    double value = c.GetValueAsDouble(sec, paramName,
                                       m_GibsonLanniPSFSource->GetParameter(i));
     m_GibsonLanniPSFSource->SetParameter(i, value);
     m_GibsonLanniPSFKernelSource->SetParameter(i, value);
+    m_GibsonLanniPSFParameterMask[i] =
+      c.GetValueAsBool(sec, paramName + "-Optimize",
+                       m_GibsonLanniPSFParameterMask[i]);
   }
 
   // Get the PSF parameter values for the modified Gibson-Lanni model
   sec = std::string("ModifiedGibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_ModifiedGibsonLanniPSFSource->GetNumberOfParameters(); i++)
   {
-    double value = c.GetValueAsDouble(sec, SqueezeString(m_ModifiedGibsonLanniPSFParameterNames[i]),
+    std::string paramName = SqueezeString(m_ModifiedGibsonLanniPSFParameterNames[i]);
+    double value = c.GetValueAsDouble(sec, paramName,
                                       m_ModifiedGibsonLanniPSFSource->GetParameter(i));
     m_ModifiedGibsonLanniPSFSource->SetParameter(i, value);
     m_ModifiedGibsonLanniPSFKernelSource->SetParameter(i, value);
+    m_ModifiedGibsonLanniPSFParameterMask[i] =
+      c.GetValueAsBool(sec, paramName + "-Optimize",
+                       m_ModifiedGibsonLanniPSFParameterMask[i]);
   }
 
   sec = std::string("ZSliceCoordinates");
@@ -594,8 +629,9 @@ DataModel
     GetNumberOfBeadSpreadFunctionParameters();
   for (unsigned int i = 0; i < numBSFParameters; i++)
   {
-    c.SetValueFromDouble(sec, SqueezeString(GetParameterName(i)),
-                         GetParameterValue(i));
+    std::string paramName = SqueezeString(GetParameterName(i));
+    c.SetValueFromDouble(sec, paramName, GetParameterValue(i));
+    c.SetValueFromBool(sec, paramName + "-Optimize", m_BSFParameterMask[i]);
   }
 
   std::string modelName;
@@ -626,24 +662,30 @@ DataModel
   sec = std::string("GaussianModelSettings");
   for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
   {
-    c.SetValueFromDouble(sec, SqueezeString(m_GaussianPSFParameterNames[i]),
-                         m_GaussianPSFSource->GetParameters()[i]);
+    std::string paramName = SqueezeString(m_GaussianPSFParameterNames[i]);
+    c.SetValueFromDouble(sec, paramName, m_GaussianPSFSource->GetParameters()[i]);
+    c.SetValueFromBool(sec, paramName + "-Optimize",
+                       m_GaussianPSFParameterMask[i]);
   }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
   {
-    c.SetValueFromDouble(sec, SqueezeString(m_OPDBasedPSFParameterNames[i]),
-                         m_GibsonLanniPSFSource->GetParameters()[i]);
+    std::string paramName = SqueezeString(m_OPDBasedPSFParameterNames[i]);
+    c.SetValueFromDouble(sec, paramName, m_GibsonLanniPSFSource->GetParameters()[i]);
+    c.SetValueFromBool(sec, paramName + "-Optimize",
+                       m_GibsonLanniPSFParameterMask[i]);
   }
 
   // Get the PSF parameter values for the modified Gibson-Lanni model
   sec = std::string("ModifiedGibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_ModifiedGibsonLanniPSFKernelSource->GetNumberOfParameters(); i++)
   {
-    c.SetValueFromDouble(sec, SqueezeString(m_ModifiedGibsonLanniPSFParameterNames[i]),
-                         m_ModifiedGibsonLanniPSFSource->GetParameters()[i]);
+    std::string paramName = SqueezeString(m_ModifiedGibsonLanniPSFParameterNames[i]);
+    c.SetValueFromDouble(sec, paramName, m_ModifiedGibsonLanniPSFSource->GetParameters()[i]);
+    c.SetValueFromBool(sec, paramName + "-Optimize",
+                       m_ModifiedGibsonLanniPSFParameterMask[i]);
   }
 
   // TODO - Get the PSF parameter values for the Haeberle model
@@ -1372,18 +1414,47 @@ DataModel
 void
 DataModel
 ::SetParameterEnabled(unsigned int index, bool enabled) {
+#if 0
   try {
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
     if (index < parametersMask->Size()) {
       parametersMask->SetElement(index, enabled ? 1 : 0);
     }
   } catch (...) {}
+#endif
+
+  if (index < m_BSFParameterMask.size()) {
+    m_BSFParameterMask[index] = enabled;
+  } else {
+
+    index -= m_BSFParameterMask.size();
+
+    switch (m_PointSpreadFunctionType) {
+    case GAUSSIAN_PSF:
+      m_GaussianPSFParameterMask[index] = enabled;
+      break;
+
+    case GIBSON_LANNI_PSF:
+      m_GibsonLanniPSFParameterMask[index] = enabled;
+      break;
+
+    case MODIFIED_GIBSON_LANNI_PSF:
+      m_ModifiedGibsonLanniPSFParameterMask[index] = enabled;
+      break;
+
+    default:
+      break;
+    }
+
+
+  }
 }
 
 
 bool
 DataModel
 ::GetParameterEnabled(unsigned int index) {
+#if 0
   bool enabled = false;
   try {
     ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
@@ -1393,6 +1464,34 @@ DataModel
   } catch (...) {}
 
   return enabled;
+#endif
+
+  if (index < m_BSFParameterMask.size()) {
+    return m_BSFParameterMask[index];
+  } else {
+
+    index -= m_BSFParameterMask.size();
+
+    switch (m_PointSpreadFunctionType) {
+    case GAUSSIAN_PSF:
+      return m_GaussianPSFParameterMask[index];
+      break;
+
+    case GIBSON_LANNI_PSF:
+      return m_GibsonLanniPSFParameterMask[index];
+      break;
+
+    case MODIFIED_GIBSON_LANNI_PSF:
+      return m_ModifiedGibsonLanniPSFParameterMask[index];
+      break;
+
+    default:
+      return false;
+      break;
+    }
+
+  }
+
 }
 
 
@@ -1424,9 +1523,51 @@ DataModel
 }
 
 
+void
+DataModel
+::UpdateMetricParameterMask() {
+  ParametersMaskType* mask = m_CostFunction->GetParametersMask();
+
+  int index = 0;
+  typedef std::vector<bool>::size_type SizeType;
+
+  SizeType i;
+  for (i = 0; i < m_BSFParameterMask.size(); i++) {
+    mask->SetElement(index++, m_BSFParameterMask[i] ? 1 : 0);
+  }
+
+  switch (m_PointSpreadFunctionType) {
+
+  case GAUSSIAN_PSF:
+    for (i = 0; i < m_GaussianPSFParameterMask.size(); i++) {
+      mask->SetElement(index++, m_GaussianPSFParameterMask[i] ? 1 : 0);
+    }
+    break;
+
+  case GIBSON_LANNI_PSF:
+    for (i = 0; i < m_GibsonLanniPSFParameterMask.size(); i++) {
+      mask->SetElement(index++, m_GibsonLanniPSFParameterMask[i] ? 1 : 0);
+    }
+    break;
+
+  case MODIFIED_GIBSON_LANNI_PSF:
+    for (i = 0; i < m_ModifiedGibsonLanniPSFParameterMask.size(); i++) {
+      mask->SetElement(index++, m_ModifiedGibsonLanniPSFParameterMask[i] ? 1 : 0);
+    }
+    break;
+
+  default:
+  break;
+
+  }
+}
+
+
 double
 DataModel
 ::GetImageComparisonMetricValue() {
+  UpdateMetricParameterMask();
+
   // Pass only the active parameter values to the cost function
   try {
     ParametersMaskType* mask = m_CostFunction->GetParametersMask();
@@ -1451,6 +1592,8 @@ DataModel
 void
 DataModel
 ::Optimize() {
+  UpdateMetricParameterMask();
+
   ParametersMaskType* mask = m_CostFunction->GetParametersMask();
 
   // Pluck out the active parameters

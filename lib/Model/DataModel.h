@@ -258,6 +258,8 @@ public:
   void   SetUseCustomZCoordinates(bool use);
   bool   GetUseCustomZCoordinates();
 
+  void   UpdateMetricParameterMask();
+
   double GetImageComparisonMetricValue();
 
   void Optimize();
@@ -291,6 +293,12 @@ protected:
   std::vector<std::string> m_GaussianPSFParameterUnits;
   std::vector<std::string> m_OPDBasedPSFParameterUnits;
   std::vector<std::string> m_ModifiedGibsonLanniPSFParameterUnits;
+
+  // Parameter optimization masks
+  std::vector<bool> m_BSFParameterMask;
+  std::vector<bool> m_GaussianPSFParameterMask;
+  std::vector<bool> m_GibsonLanniPSFParameterMask;
+  std::vector<bool> m_ModifiedGibsonLanniPSFParameterMask;
 
   // The bead-spread function
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;
