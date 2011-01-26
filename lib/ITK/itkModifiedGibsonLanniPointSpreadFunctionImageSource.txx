@@ -176,10 +176,12 @@ ModifiedGibsonLanniPointSpreadFunctionImageSource< TOutputImage >
   mean[0] = parameters[index++];
   mean[1] = parameters[index++];
   mean[2] = parameters[index++];
+  m_GaussianSource->SetMean(mean);
 
   sigma[0] = parameters[index++];
   sigma[1] = parameters[index++];
   sigma[2] = parameters[index++];
+  m_GaussianSource->SetSigma(sigma);
 
   m_GaussianSource->SetScale(parameters[index++]);
 }
