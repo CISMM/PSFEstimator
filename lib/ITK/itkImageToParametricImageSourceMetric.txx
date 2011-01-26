@@ -60,7 +60,8 @@ ImageToParametricImageSourceMetric<TFixedImage,TMovingImageSource>
 ::SetMovingImageSource(MovingImageSourceType* source)
 {
   itkDebugMacro("setting MovingImageSource to " << source );
-  if (this->m_MovingImageSource != source)
+  if (m_MovingImageSource != source ||
+      m_MovingImageSource->GetNumberOfParameters() != m_ParametersMask.Size())
     {
     this->m_MovingImageSource = source;
     this->Modified();
