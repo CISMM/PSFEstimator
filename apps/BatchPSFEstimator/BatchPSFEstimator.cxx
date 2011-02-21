@@ -13,12 +13,15 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  std::cout << "Loading session file '" << argv[1] << "'" << std::endl;
   model->LoadSessionFile(std::string(argv[1]));
   model->Optimize();
-  
+
   // Save the results to a different file with a modified name
   std::stringstream ss;
   ss << argv[1] << "-optimized.psfe";
+
+  std::cout << "Saving session file '" << ss.str() << "'" << std::endl;
   model->SaveSessionFile(ss.str());
 
 
