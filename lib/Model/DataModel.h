@@ -5,8 +5,16 @@
 
 #include <Configuration.h>
 
+#define VALIDATE_CONVOLUTION
+
 #define ITK_MANUAL_INSTANTIATION
+
+#ifdef VALIDATE_CONVOLUTION
+#include <itkBeadSpreadFunctionImageSource2.h>
+#else
 #include <itkBeadSpreadFunctionImageSource.h>
+#endif
+
 #include <itkGridImageSource.h>
 #include <itkGaussianPointSpreadFunctionImageSource.h>
 #include <itkGibsonLanniPointSpreadFunctionImageSource.h>
@@ -73,8 +81,15 @@ public:
     GaussianPSFImageSourceType;
   typedef GaussianPSFImageSourceType::Pointer
     GaussianPSFImageSourcePointer;
+
+#ifdef VALIDATE_CONVOLUTION
+  typedef itk::BeadSpreadFunctionImageSource2< Float3DImageType >
+    BeadSpreadFunctionImageSourceType;
+#else
   typedef itk::BeadSpreadFunctionImageSource< Float3DImageType >
     BeadSpreadFunctionImageSourceType;
+#endif
+
   typedef BeadSpreadFunctionImageSourceType::Pointer
     BeadSpreadFunctionImageSourcePointer;
 

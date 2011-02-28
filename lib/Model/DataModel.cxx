@@ -12,7 +12,14 @@
 #include <itkPoint.h>
 #include <itkImageFileWriter.h>
 
+#define VALIDATE_CONVOLUTION
+
+#ifdef VALIDATE_CONVOLUTION
+#include <itkBeadSpreadFunctionImageSource2.txx>
+#else
 #include <itkBeadSpreadFunctionImageSource.txx>
+#endif
+
 #include <itkGaussianPointSpreadFunctionImageSource.txx>
 #include <itkGibsonLanniPointSpreadFunctionImageSource.txx>
 #include <itkModifiedGibsonLanniPointSpreadFunctionImageSource.txx>
@@ -103,24 +110,32 @@ DataModel
   switch (psfType) {
   case GAUSSIAN_PSF:
     m_BeadSpreadFunctionSource->SetKernelSource(m_GaussianPSFKernelSource);
+#ifndef VALIDATE_CONVOLUTION
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
+#endif
     m_PointSpreadFunctionSource = m_GaussianPSFSource;;
     break;
 
   case GIBSON_LANNI_PSF:
     m_BeadSpreadFunctionSource->SetKernelSource(m_GibsonLanniPSFKernelSource);
+#ifndef VALIDATE_CONVOLUTION
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
+#endif
     m_PointSpreadFunctionSource = m_GibsonLanniPSFSource;
     break;
 
   case MODIFIED_GIBSON_LANNI_PSF:
     m_BeadSpreadFunctionSource->SetKernelSource(m_ModifiedGibsonLanniPSFKernelSource);
+#ifndef VALIDATE_CONVOLUTION
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
+#endif
     m_PointSpreadFunctionSource = m_ModifiedGibsonLanniPSFSource;
     break;
 
   case HAEBERLE_PSF:
+#ifndef VALIDATE_CONVOLUTION
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
+#endif
     // TODO - plugin Haeberle PSF source here
     break;
 
@@ -236,8 +251,6 @@ DataModel
   m_GaussianPSFParameterUnits.push_back("nanometers");
   m_GaussianPSFParameterNames.push_back("Standard Deviation Z");
   m_GaussianPSFParameterUnits.push_back("nanometers");
-  m_GaussianPSFParameterNames.push_back("Intensity Scale");
-  m_GaussianPSFParameterUnits.push_back("-");
 
   for ( SizeType i = 0; i < m_GaussianPSFParameterNames.size(); i++) {
     m_GaussianPSFParameterMask.push_back(false);
