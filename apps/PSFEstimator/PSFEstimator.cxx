@@ -192,7 +192,7 @@ PSFEstimator
   // Locate file.
   QString fileName =
     QFileDialog::getOpenFileName
-    (this, "Open Image Data", GetFileChooserDirectory(), "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+    (this, "Open Image Data", GetFileChooserDirectory(), "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm);;MHD Images (*.mhd)");
   if (fileName == "") {
     return;
   }
@@ -275,7 +275,7 @@ PSFEstimator
   QString fileName =
     QFileDialog::getSaveFileName
     (this, "Save PSF Image Data", GetFileChooserDirectory(),
-     "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+     "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm);;MHD Images (*.mhd)");
 
   // Now read the file
   if (fileName == "") {
@@ -295,7 +295,7 @@ PSFEstimator
   QString fileName =
     QFileDialog::getSaveFileName
     (this, "Save BSF Image Data", GetFileChooserDirectory(),
-     "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm)");
+     "TIF Images (*.tif);;VTK Images (*.vtk);;LSM Images (*.lsm);;MHD Images (*.mhd)");
 
   // Now read the file
   if (fileName == "") {
