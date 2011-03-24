@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include <Configuration.h>
+#include "Configuration.h"
 
-#define VALIDATE_CONVOLUTION
+#include "Validation.h"
 
 #define ITK_MANUAL_INSTANTIATION
 

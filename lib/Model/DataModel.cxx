@@ -12,7 +12,7 @@
 #include <itkPoint.h>
 #include <itkImageFileWriter.h>
 
-#define VALIDATE_CONVOLUTION
+#include "Validation.h"
 
 #ifdef VALIDATE_CONVOLUTION
 #include <itkBeadSpreadFunctionImageSource2.txx>
@@ -37,8 +37,8 @@
 
 #include <vtkAlgorithm.h>
 
-#include <DataModel.h>
-#include <StringUtils.h>
+#include "DataModel.h"
+#include "StringUtils.h"
 
 
 DataModel
@@ -118,17 +118,13 @@ DataModel
 
   case GIBSON_LANNI_PSF:
     m_BeadSpreadFunctionSource->SetKernelSource(m_GibsonLanniPSFKernelSource);
-#ifndef VALIDATE_CONVOLUTION
-    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
-#endif
+    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
     m_PointSpreadFunctionSource = m_GibsonLanniPSFSource;
     break;
 
   case MODIFIED_GIBSON_LANNI_PSF:
     m_BeadSpreadFunctionSource->SetKernelSource(m_ModifiedGibsonLanniPSFKernelSource);
-#ifndef VALIDATE_CONVOLUTION
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
-#endif
     m_PointSpreadFunctionSource = m_ModifiedGibsonLanniPSFSource;
     break;
 
@@ -285,6 +281,10 @@ DataModel
   m_OPDBasedPSFParameterUnits.push_back("-");
   m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
   m_OPDBasedPSFParameterUnits.push_back("micrometers");
+  m_OPDBasedPSFParameterNames.push_back("PSF Shear X");
+  m_OPDBasedPSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
+  m_OPDBasedPSFParameterNames.push_back("PSF Shear Y");
+  m_OPDBasedPSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
 
   for ( SizeType i = 0; i < m_OPDBasedPSFParameterNames.size(); i++) {
     m_GibsonLanniPSFParameterMask.push_back(false);
@@ -362,6 +362,8 @@ DataModel
     m_ParameterScales[index++] = 0.001; // Design specimen layer RI
     m_ParameterScales[index++] = 0.001; // Actual specimen layer RI
     m_ParameterScales[index++] = 1.0;   // Actual point source depth
+    m_ParameterScales[index++] = 0.01;  // Shear X
+    m_ParameterScales[index++] = 0.01;  // Shear Y
     break;
 
   default:
