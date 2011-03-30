@@ -675,20 +675,20 @@ DataModel
 
   // Get the PSF parameter values for the Gaussian model
   sec = std::string("GaussianModelSettings");
-  for (unsigned int i = 0; i < m_GaussianPSFSource->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < m_GaussianPSFKernelSource->GetNumberOfParameters(); i++)
   {
     std::string paramName = SqueezeString(m_GaussianPSFParameterNames[i]);
-    c.SetValueFromDouble(sec, paramName, m_GaussianPSFSource->GetParameters()[i]);
+    c.SetValueFromDouble(sec, paramName, m_GaussianPSFKernelSource->GetParameters()[i]);
     c.SetValueFromBool(sec, paramName + "-Optimize",
                        m_GaussianPSFParameterMask[i]);
   }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
-  for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < m_GibsonLanniPSFKernelSource->GetNumberOfParameters(); i++)
   {
     std::string paramName = SqueezeString(m_OPDBasedPSFParameterNames[i]);
-    c.SetValueFromDouble(sec, paramName, m_GibsonLanniPSFSource->GetParameters()[i]);
+    c.SetValueFromDouble(sec, paramName, m_GibsonLanniPSFKernelSource->GetParameters()[i]);
     c.SetValueFromBool(sec, paramName + "-Optimize",
                        m_GibsonLanniPSFParameterMask[i]);
   }
