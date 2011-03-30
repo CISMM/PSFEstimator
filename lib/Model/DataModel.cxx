@@ -1646,6 +1646,18 @@ DataModel
   }
 
   m_BeadSpreadFunctionSource->SetParameters(allParameters);
+
+  // Update the PSF source used for display
+  unsigned int numBSFParameters =
+    m_BeadSpreadFunctionSource->GetNumberOfBeadSpreadFunctionParameters();
+  unsigned int numPSFParameters = m_PointSpreadFunctionSource->GetNumberOfParameters();
+
+  ParametersType psfParameters(numPSFParameters);
+  for (unsigned int i = 0; i < numPSFParameters; i++) {
+    psfParameters[i] = allParameters[i + numBSFParameters];
+  }
+
+  m_PointSpreadFunctionSource->SetParameters(psfParameters);
 }
 
 #endif // _DATA_MODEL_CXX_
