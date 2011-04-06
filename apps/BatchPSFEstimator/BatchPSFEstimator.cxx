@@ -9,7 +9,9 @@ int main(int argc, char* argv[]) {
   DataModel* model = new DataModel();
 
   if (argc < 2) {
-    std::cout << "Usage: BatchPSFOptimizer <VPO settings file name>" << std::endl;
+    std::cout <<
+      "Usage: BatchPSFOptimizer <VPO settings file name> "
+      "[optimized VPO settings file name]" << std::endl;
     return 1;
   }
 
@@ -19,7 +21,11 @@ int main(int argc, char* argv[]) {
 
   // Save the results to a different file with a modified name
   std::stringstream ss;
-  ss << argv[1] << "-optimized.psfe";
+  if (argc > 2) {
+    ss << argv[2];
+  } else {
+    ss << argv[1] << "-optimized.psfe";
+  }
 
   std::cout << "Saving session file '" << ss.str() << "'" << std::endl;
   model->SaveSessionFile(ss.str());
