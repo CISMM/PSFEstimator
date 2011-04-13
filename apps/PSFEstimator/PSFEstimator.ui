@@ -897,6 +897,9 @@
      </item>
      <item>
       <widget class="QWidget" name="optimizerWidget" native="true">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <layout class="QHBoxLayout" name="horizontalLayout_11">
         <property name="margin">
          <number>0</number>

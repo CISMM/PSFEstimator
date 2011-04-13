@@ -229,14 +229,16 @@ PSFEstimator
   gui->noiseTypeWidget->setEnabled(true);
 
   gui->estimatePSFCenterButton->setEnabled(hasMeasuredImage);
+  gui->optimizerWidget->setEnabled(hasMeasuredImage);
   gui->optimizePSFParametersButton->setEnabled(hasMeasuredImage);
   gui->submitOptimizationJobToQueueButton->setEnabled(hasMeasuredImage);
 
-  if (hasMeasuredImage)
+  if (hasMeasuredImage) {
     gui->measuredBSFRadioButton->click();
-  else
+  } else {
     gui->calculatedPSFRadioButton->click();
-}
+  }
+ }
 
 
 void
