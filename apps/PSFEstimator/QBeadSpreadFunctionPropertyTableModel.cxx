@@ -44,7 +44,7 @@ QBeadSpreadFunctionPropertyTableModel
   if (col == 1) {
 
     if (row < numPSFProperties) {
-      m_PropertyValues[row] = value.toDouble();
+      m_ParameterValues[row] = value.toDouble();
     } else {
       if (m_DataModel->GetUseCustomZCoordinates())
         m_DataModel->SetZCoordinate(row - numPSFProperties, value.toDouble());
@@ -52,6 +52,8 @@ QBeadSpreadFunctionPropertyTableModel
 
   } else if (col == 3) {
     m_OptimizeValues[row] = value.toBool();
+  } else if (col == 4) {
+    m_ParameterScales[row] = value.toDouble();
   }
 
   // Notify Qt items that the data has changed.
@@ -88,7 +90,7 @@ QBeadSpreadFunctionPropertyTableModel
     } else if (col == 1) { /** Property value **/
 
       if (row < numPSFProperties) {
-        return QVariant(m_PropertyValues[row]);
+        return QVariant(m_ParameterValues[row]);
       } else {
         if (m_DataModel->GetUseCustomZCoordinates())
           return QVariant(m_DataModel->GetZCoordinate(row - numPSFProperties));
@@ -101,6 +103,12 @@ QBeadSpreadFunctionPropertyTableModel
       } else {
         if (m_DataModel->GetUseCustomZCoordinates())
           return QString("nanometers");
+      }
+
+    } else if (col == 4) { /** Property scale **/
+
+      if (row < numPSFProperties) {
+        return QVariant(m_ParameterScales[row]);
       }
 
     } else {
@@ -125,11 +133,11 @@ QBeadSpreadFunctionPropertyTableModel
 ::flags(const QModelIndex& index) const {
   Qt::ItemFlags flag = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 
-  if (index.column() == 1) {
+  if (index.column() == 1 || index.column() == 4) {
     flag = flag | Qt::ItemIsEditable;
     return flag;
   } else if (index.column() == 3) {
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable; 
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
   }
 
   return Qt::ItemIsEnabled;
@@ -145,6 +153,7 @@ QBeadSpreadFunctionPropertyTableModel
     case 1: return QVariant("Value"); break;
     case 2: return QVariant("Units"); break;
     case 3: return QVariant("Optimize?"); break;
+    case 4: return QVariant("Scale"); break;
     default: return QVariant(section); break;
     }
   } else if (orientation == Qt::Vertical && role == Qt::DisplayRole) {
@@ -175,7 +184,7 @@ QBeadSpreadFunctionPropertyTableModel
 int
 QBeadSpreadFunctionPropertyTableModel
 ::columnCount(const QModelIndex& parent) const {
-  return 4;
+  return 5;
 }
 
 
@@ -189,12 +198,14 @@ QBeadSpreadFunctionPropertyTableModel
 void
 QBeadSpreadFunctionPropertyTableModel
 ::InitializeSettingsCache() {
-  m_PropertyValues.clear();
+  m_ParameterValues.clear();
   m_OptimizeValues.clear();
+  m_ParameterScales.clear();
 
   for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
-    m_PropertyValues.append(m_DataModel->GetParameterValue(i));
+    m_ParameterValues.append(m_DataModel->GetParameterValue(i));
     m_OptimizeValues.append(m_DataModel->GetParameterEnabled(i));
+    m_ParameterScales.append(m_DataModel->GetParameterScale(i));
   }
 }
 
@@ -218,7 +229,8 @@ QBeadSpreadFunctionPropertyTableModel
 
 
   for (int i = 0; i < m_DataModel->GetNumberOfProperties(); i++) {
-    m_DataModel->SetParameterValue(i, m_PropertyValues[i]);
+    m_DataModel->SetParameterValue(i, m_ParameterValues[i]);
     m_DataModel->SetParameterEnabled(i, m_OptimizeValues[i]);
+    m_DataModel->SetParameterScale(i, m_ParameterScales[i]);
   }
 }

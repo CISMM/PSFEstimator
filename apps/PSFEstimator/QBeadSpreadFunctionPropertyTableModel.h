@@ -18,7 +18,7 @@ class QBeadSpreadFunctionPropertyTableModel : public QAbstractTableModel {
   DataModel* GetDataModel();
 
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-\
+
   QVariant data(const QModelIndex& index, int role) const;
 
   Qt::ItemFlags flags(const QModelIndex& index) const;
@@ -37,8 +37,9 @@ class QBeadSpreadFunctionPropertyTableModel : public QAbstractTableModel {
  protected:
   DataModel* m_DataModel;
 
-  QList<double>   m_PropertyValues;
+  QList<double>   m_ParameterValues;
   QList<bool>     m_OptimizeValues;
+  QList<double>   m_ParameterScales;
 
 };
 

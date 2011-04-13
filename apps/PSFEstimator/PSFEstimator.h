@@ -80,6 +80,7 @@ public slots:
   virtual void on_resetCustomSlicePositionsButton_clicked();
   virtual void on_estimatePSFCenterButton_clicked();
   virtual void on_applyButton_clicked();
+  virtual void on_optimizerComboBox_currentIndexChanged(int index);
   virtual void on_optimizePSFParametersButton_clicked();
   virtual void on_submitOptimizationJobToQueueButton_clicked();
 

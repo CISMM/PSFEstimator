@@ -29,6 +29,7 @@
 #include <itkImageToParametricImageSourceMetric.txx>
 #include <itkMeanSquaresImageToImageMetric.txx>
 #include <itkMinimumMaximumImageCalculator.txx>
+#include <itkNormalVariateGenerator.h>
 //#include <itkPoissonNoiseImageToImageMetric.cxx>
 #include <itkShiftScaleImageFilter.txx>
 #include <itkSubtractImageFilter.h>
@@ -85,8 +86,11 @@ DataModel
   // Default to Gibson-Lanni PSF type.
   SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
 
+  // Default to Amoeba optimizer.
+  //SetOptimizerType(GRADIENT_DESCENT_OPTIMIZER);
+  SetOptimizerType(ONE_PLUS_ONE_EVOLUTIONARY_OPTIMIZER);
+
   Initialize();
-  InitializeParameterScales(GetPointSpreadFunctionType());
 }
 
 
@@ -137,8 +141,6 @@ DataModel
 
   }
 
-  InitializeParameterScales(psfType);
-
   m_CostFunction->SetMovingImageSource(m_BeadSpreadFunctionSource);
 
   m_PSFImageMinMaxFilter->SetImage(m_PointSpreadFunctionSource->GetOutput());
@@ -161,6 +163,20 @@ DataModel::PointSpreadFunctionType
 DataModel
 ::GetPointSpreadFunctionType() const {
   return m_PointSpreadFunctionType;
+}
+
+
+void
+DataModel
+::SetOptimizerType(OptimizerType optimizerType) {
+  m_OptimizerType = optimizerType;
+}
+
+
+DataModel::OptimizerType
+DataModel
+::GetOptimizerType() const {
+  return m_OptimizerType;
 }
 
 
@@ -210,29 +226,52 @@ DataModel
   // BSF parameters
   m_BSFParameterNames.clear();
   m_BSFParameterUnits.clear();
+  m_BSFParameterScales.clear();
   m_BSFParameterMask.clear();
+
   m_BSFParameterNames.push_back("X Pixel Size");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Y Pixel Size");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Z Slice Spacing");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Bead Radius");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Bead Center X");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Bead Center Y");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Bead Center Z");
   m_BSFParameterUnits.push_back("nanometers");
+  m_BSFParameterScales.push_back(1.0);
+
   m_BSFParameterNames.push_back("Shear X");
   m_BSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
+  m_BSFParameterScales.push_back(0.001);
+
   m_BSFParameterNames.push_back("Shear Y");
   m_BSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
+  m_BSFParameterScales.push_back(0.001);
+
   m_BSFParameterNames.push_back("Intensity Shift");
   m_BSFParameterUnits.push_back("-");
+  m_BSFParameterScales.push_back(1e-4);
+
   m_BSFParameterNames.push_back("Intensity Scale");
   m_BSFParameterUnits.push_back("-");
+  m_BSFParameterScales.push_back(100);
 
   typedef std::vector<bool>::size_type SizeType;
   for ( SizeType i = 0; i < m_BSFParameterNames.size(); i++) {
@@ -243,142 +282,125 @@ DataModel
   m_GaussianPSFParameterNames.clear();
   m_GaussianPSFParameterNames.push_back("Standard Deviation X");
   m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterScales.push_back(1.0);
+
   m_GaussianPSFParameterNames.push_back("Standard Deviation Y");
   m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterScales.push_back(1.0);
+
   m_GaussianPSFParameterNames.push_back("Standard Deviation Z");
   m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterScales.push_back(1.0);
 
   for ( SizeType i = 0; i < m_GaussianPSFParameterNames.size(); i++) {
     m_GaussianPSFParameterMask.push_back(false);
   }
 
 
-  // OPD-based PSF parameters
-  m_OPDBasedPSFParameterNames.clear();
-  m_OPDBasedPSFParameterNames.push_back("Emission Wavelength");
-  m_OPDBasedPSFParameterUnits.push_back("nanometers");
-  m_OPDBasedPSFParameterNames.push_back("Numerical Aperture");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Magnification");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Design Cover Slip Refractive Index");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Actual Cover Slip Refractive Index");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Design Cover Slip Thickness");
-  m_OPDBasedPSFParameterUnits.push_back("micrometers");
-  m_OPDBasedPSFParameterNames.push_back("Actual Cover Slip Thickness");
-  m_OPDBasedPSFParameterUnits.push_back("micrometers");
-  m_OPDBasedPSFParameterNames.push_back("Design Immersion Oil Refractive Index");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Actual Immersion Oil Refractive Index");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Design Immersion Oil Thickness");
-  m_OPDBasedPSFParameterUnits.push_back("micrometers");
-  m_OPDBasedPSFParameterNames.push_back("Design Specimen Layer Refractive Index");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Actual Specimen Layer Refractive Index");
-  m_OPDBasedPSFParameterUnits.push_back("-");
-  m_OPDBasedPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
-  m_OPDBasedPSFParameterUnits.push_back("micrometers");
-  m_OPDBasedPSFParameterNames.push_back("PSF Shear X");
-  m_OPDBasedPSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
-  m_OPDBasedPSFParameterNames.push_back("PSF Shear Y");
-  m_OPDBasedPSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
+  // Gibson-Lanni PSF parameters
+  m_GibsonLanniPSFParameterNames.clear();
+  m_GibsonLanniPSFParameterNames.push_back("Emission Wavelength");
+  m_GibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
 
-  for ( SizeType i = 0; i < m_OPDBasedPSFParameterNames.size(); i++) {
+  m_GibsonLanniPSFParameterNames.push_back("Numerical Aperture");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Magnification");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Design Cover Slip Refractive Index");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Actual Cover Slip Refractive Index");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Design Cover Slip Thickness");
+  m_GibsonLanniPSFParameterUnits.push_back("micrometers");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Actual Cover Slip Thickness");
+  m_GibsonLanniPSFParameterUnits.push_back("micrometers");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Design Immersion Oil Refractive Index");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Actual Immersion Oil Refractive Index");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Design Immersion Oil Thickness");
+  m_GibsonLanniPSFParameterUnits.push_back("micrometers");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Design Specimen Layer Refractive Index");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Actual Specimen Layer Refractive Index");
+  m_GibsonLanniPSFParameterUnits.push_back("-");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
+  m_GibsonLanniPSFParameterUnits.push_back("micrometers");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("PSF Shear X");
+  m_GibsonLanniPSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  m_GibsonLanniPSFParameterNames.push_back("PSF Shear Y");
+  m_GibsonLanniPSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
+  m_GibsonLanniPSFParameterScales.push_back(2.0);
+
+  for ( SizeType i = 0; i < m_GibsonLanniPSFParameterNames.size(); i++) {
     m_GibsonLanniPSFParameterMask.push_back(false);
   }
 
 
   // Modified Gibson-Lanni PSF parameters
-  m_ModifiedGibsonLanniPSFParameterNames = m_OPDBasedPSFParameterNames;
-  m_ModifiedGibsonLanniPSFParameterUnits = m_OPDBasedPSFParameterUnits;
+  m_ModifiedGibsonLanniPSFParameterNames  = m_GibsonLanniPSFParameterNames;
+  m_ModifiedGibsonLanniPSFParameterUnits  = m_GibsonLanniPSFParameterUnits;
+  m_ModifiedGibsonLanniPSFParameterScales = m_GibsonLanniPSFParameterScales;
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Center X");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Center Y");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Center Z");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma X");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma Y");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Sigma Z");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("nanometers");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
+
   m_ModifiedGibsonLanniPSFParameterNames.push_back("Gaussian Intensity Scale");
   m_ModifiedGibsonLanniPSFParameterUnits.push_back("-");
+  m_ModifiedGibsonLanniPSFParameterScales.push_back(1.0);
 
   for ( SizeType i = 0; i < m_ModifiedGibsonLanniPSFParameterNames.size(); i++) {
     m_ModifiedGibsonLanniPSFParameterMask.push_back(false);
   }
 
-}
-
-
-void
-DataModel
-::InitializeParameterScales(PointSpreadFunctionType psfType) {
-  m_ParameterScales.clear();
-  int numParameters = m_BeadSpreadFunctionSource->GetNumberOfParameters();
-  m_ParameterScales.SetSize(numParameters);
-
-  // BSF parameter scales
-  int index = 0;
-  m_ParameterScales[index++] = 1.0; // X-spacing
-  m_ParameterScales[index++] = 1.0; // Y-spacing
-  m_ParameterScales[index++] = 1.0; // Z-spacing
-  m_ParameterScales[index++] = 10.0; // Bead radius
-  m_ParameterScales[index++] = 100.0; // Bead center X
-  m_ParameterScales[index++] = 100.0; // Bead center Y
-  m_ParameterScales[index++] = 100.0; // Bead center Z
-  m_ParameterScales[index++] = 0.1; // Shear X
-  m_ParameterScales[index++] = 0.1; // Shear Y
-  m_ParameterScales[index++] = 1.0;   // Intensity shift
-  m_ParameterScales[index++] = 1.0;   // Intensity scale
-
-  // PSF parameter scales
-  switch (psfType) {
-
-  case GAUSSIAN_PSF:
-    m_ParameterScales[index++] = 5.0;
-    m_ParameterScales[index++] = 5.0;
-    m_ParameterScales[index++] = 5.0;
-    break;
-
-  case GIBSON_LANNI_PSF:
-  case MODIFIED_GIBSON_LANNI_PSF:
-  case HAEBERLE_PSF:
-    m_ParameterScales[index++] = 5.0;   // Emission wavelength
-    m_ParameterScales[index++] = 0.05;  // NA
-    m_ParameterScales[index++] = 1.0;   // Magnification
-    m_ParameterScales[index++] = 0.001; // Design cover slip RI
-    m_ParameterScales[index++] = 0.001; // Actual cover slip RI
-    m_ParameterScales[index++] = 1.0;   // Design cover slip thickness
-    m_ParameterScales[index++] = 1.0;   // Actual cover slip thickness
-    m_ParameterScales[index++] = 0.001; // Design immersion oil RI
-    m_ParameterScales[index++] = 0.001; // Actual immersion oil RI
-    m_ParameterScales[index++] = 1.0;   // Design immersion oil thickness
-    m_ParameterScales[index++] = 0.001; // Design specimen layer RI
-    m_ParameterScales[index++] = 0.001; // Actual specimen layer RI
-    m_ParameterScales[index++] = 1.0;   // Actual point source depth
-    m_ParameterScales[index++] = 0.01;  // Shear X
-    m_ParameterScales[index++] = 0.01;  // Shear Y
-    break;
-
-  default:
-    break;
-  }
-
-  if (psfType == MODIFIED_GIBSON_LANNI_PSF) {
-    m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 10.0;
-    m_ParameterScales[index++] = 0.1;
-  }
 }
 
 
@@ -557,6 +579,8 @@ DataModel
                                             GetParameterValue(i)));
     m_BSFParameterMask[i] =
       c.GetValueAsBool(sec, paramName + "-Optimize", m_BSFParameterMask[i]);
+    m_BSFParameterScales[i] =
+      c.GetValueAsDouble(sec, paramName + "-Scale", m_BSFParameterScales[i]);
   }
 
   std::string modelName = c.GetValue(sec, "PointSpreadFunctionModel");
@@ -581,13 +605,16 @@ DataModel
     m_GaussianPSFParameterMask[i] =
       c.GetValueAsBool(sec, paramName + "-Optimize",
                        m_GaussianPSFParameterMask[i]);
+    m_GaussianPSFParameterScales[i] =
+      c.GetValueAsDouble(sec, paramName + "-Scale",
+                         m_GaussianPSFParameterScales[i]);
   }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_GibsonLanniPSFSource->GetNumberOfParameters(); i++)
   {
-    std::string paramName = SqueezeString(m_OPDBasedPSFParameterNames[i]);
+    std::string paramName = SqueezeString(m_GibsonLanniPSFParameterNames[i]);
     double value = c.GetValueAsDouble(sec, paramName,
                                       m_GibsonLanniPSFSource->GetParameter(i));
     m_GibsonLanniPSFSource->SetParameter(i, value);
@@ -595,6 +622,9 @@ DataModel
     m_GibsonLanniPSFParameterMask[i] =
       c.GetValueAsBool(sec, paramName + "-Optimize",
                        m_GibsonLanniPSFParameterMask[i]);
+    m_GibsonLanniPSFParameterScales[i] =
+      c.GetValueAsDouble(sec, paramName + "-Scale",
+                         m_GibsonLanniPSFParameterScales[i]);
   }
 
   // Get the PSF parameter values for the modified Gibson-Lanni model
@@ -609,6 +639,9 @@ DataModel
     m_ModifiedGibsonLanniPSFParameterMask[i] =
       c.GetValueAsBool(sec, paramName + "-Optimize",
                        m_ModifiedGibsonLanniPSFParameterMask[i]);
+    m_ModifiedGibsonLanniPSFParameterScales[i] =
+      c.GetValueAsDouble(sec, paramName + "-Scale",
+                         m_ModifiedGibsonLanniPSFParameterScales[i]);
   }
 
   sec = std::string("ZSliceCoordinates");
@@ -647,6 +680,7 @@ DataModel
     std::string paramName = SqueezeString(GetParameterName(i));
     c.SetValueFromDouble(sec, paramName, GetParameterValue(i));
     c.SetValueFromBool(sec, paramName + "-Optimize", m_BSFParameterMask[i]);
+    c.SetValueFromDouble(sec, paramName + "-Scale", m_BSFParameterScales[i]);
   }
 
   std::string modelName;
@@ -681,16 +715,20 @@ DataModel
     c.SetValueFromDouble(sec, paramName, m_GaussianPSFKernelSource->GetParameters()[i]);
     c.SetValueFromBool(sec, paramName + "-Optimize",
                        m_GaussianPSFParameterMask[i]);
+    c.SetValueFromDouble(sec, paramName + "-Scale",
+                         m_GaussianPSFParameterScales[i]);
   }
 
   // Get the PSF parameter values for the Gibson-Lanni model
   sec = std::string("GibsonLanniModelSettings");
   for (unsigned int i = 0; i < m_GibsonLanniPSFKernelSource->GetNumberOfParameters(); i++)
   {
-    std::string paramName = SqueezeString(m_OPDBasedPSFParameterNames[i]);
+    std::string paramName = SqueezeString(m_GibsonLanniPSFParameterNames[i]);
     c.SetValueFromDouble(sec, paramName, m_GibsonLanniPSFKernelSource->GetParameters()[i]);
     c.SetValueFromBool(sec, paramName + "-Optimize",
                        m_GibsonLanniPSFParameterMask[i]);
+    c.SetValueFromDouble(sec, paramName + "-Scale",
+                         m_GibsonLanniPSFParameterScales[i]);
   }
 
   // Get the PSF parameter values for the modified Gibson-Lanni model
@@ -701,6 +739,8 @@ DataModel
     c.SetValueFromDouble(sec, paramName, m_ModifiedGibsonLanniPSFSource->GetParameters()[i]);
     c.SetValueFromBool(sec, paramName + "-Optimize",
                        m_ModifiedGibsonLanniPSFParameterMask[i]);
+    c.SetValueFromDouble(sec,  paramName + "-Scale",
+                         m_ModifiedGibsonLanniPSFParameterScales[i]);
   }
 
   // TODO - Get the PSF parameter values for the Haeberle model
@@ -1350,7 +1390,7 @@ DataModel
 
     case GIBSON_LANNI_PSF:
     case HAEBERLE_PSF:
-      return m_OPDBasedPSFParameterNames[index - numBSFParameters];
+      return m_GibsonLanniPSFParameterNames[index - numBSFParameters];
       break;
 
     case MODIFIED_GIBSON_LANNI_PSF:
@@ -1410,7 +1450,7 @@ DataModel
 
     case GIBSON_LANNI_PSF:
     case HAEBERLE_PSF:
-      return m_OPDBasedPSFParameterUnits[index - numBSFParameters];
+      return m_GibsonLanniPSFParameterUnits[index - numBSFParameters];
       break;
 
     case MODIFIED_GIBSON_LANNI_PSF:
@@ -1429,14 +1469,6 @@ DataModel
 void
 DataModel
 ::SetParameterEnabled(unsigned int index, bool enabled) {
-#if 0
-  try {
-    ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
-    if (index < parametersMask->Size()) {
-      parametersMask->SetElement(index, enabled ? 1 : 0);
-    }
-  } catch (...) {}
-#endif
 
   if (index < m_BSFParameterMask.size()) {
     m_BSFParameterMask[index] = enabled;
@@ -1460,8 +1492,6 @@ DataModel
     default:
       break;
     }
-
-
   }
 }
 
@@ -1469,17 +1499,6 @@ DataModel
 bool
 DataModel
 ::GetParameterEnabled(unsigned int index) {
-#if 0
-  bool enabled = false;
-  try {
-    ParametersMaskType* parametersMask = m_CostFunction->GetParametersMask();
-    if (index < parametersMask->Size()) {
-      enabled = parametersMask->GetElement(index) != 0;
-    }
-  } catch (...) {}
-
-  return enabled;
-#endif
 
   if (index < m_BSFParameterMask.size()) {
     return m_BSFParameterMask[index];
@@ -1504,7 +1523,68 @@ DataModel
       return false;
       break;
     }
+  }
 
+}
+
+
+void
+DataModel
+::SetParameterScale(unsigned int index, double scale) {
+
+  if (index < m_BSFParameterScales.size()) {
+    m_BSFParameterScales[index] = scale;
+  } else {
+
+    index -= m_BSFParameterScales.size();
+
+    switch (m_PointSpreadFunctionType) {
+    case GAUSSIAN_PSF:
+      m_GaussianPSFParameterScales[index] = scale;
+      break;
+
+    case GIBSON_LANNI_PSF:
+      m_GibsonLanniPSFParameterScales[index] = scale;
+      break;
+
+    case MODIFIED_GIBSON_LANNI_PSF:
+      m_ModifiedGibsonLanniPSFParameterScales[index] = scale;
+      break;
+
+    default:
+      break;
+    }
+  }
+}
+
+
+double
+DataModel
+::GetParameterScale(unsigned int index) {
+
+  if (index < m_BSFParameterScales.size()) {
+    return m_BSFParameterScales[index];
+  } else {
+
+    index -= m_BSFParameterScales.size();
+
+    switch (m_PointSpreadFunctionType) {
+    case GAUSSIAN_PSF:
+      return m_GaussianPSFParameterScales[index];
+      break;
+
+    case GIBSON_LANNI_PSF:
+      return m_GibsonLanniPSFParameterScales[index];
+      break;
+
+    case MODIFIED_GIBSON_LANNI_PSF:
+      return m_ModifiedGibsonLanniPSFParameterScales[index];
+      break;
+
+    default:
+      return false;
+      break;
+    }
   }
 
 }
@@ -1606,6 +1686,63 @@ DataModel
 
 void
 DataModel
+::SetUpOptimizer(const ParametersType & parameterScales) {
+
+  m_Optimizer = NULL;
+
+  if (m_OptimizerType == AMOEBA_OPTIMIZER) {
+
+    AmoebaOptimizerType::Pointer optimizer = AmoebaOptimizerType::New();
+    //optimizer->AutomaticInitialSimplexOff();
+    optimizer->SetFunctionConvergenceTolerance(1e-1);
+    //optimizer->SetInitialSimplexDelta(parameterScales);
+    optimizer->MinimizeOn();
+
+    m_Optimizer = optimizer;
+
+  } else if (m_OptimizerType == CONJUGATE_GRADIENT_OPTIMIZER) {
+
+  } else if (m_OptimizerType == GRADIENT_DESCENT_OPTIMIZER) {
+
+    GradientDescentOptimizerType::Pointer optimizer =
+      GradientDescentOptimizerType::New();
+    optimizer->MinimizeOn();
+    optimizer->SetNumberOfIterations(20);
+    optimizer->SetLearningRate(1.0);
+
+    m_Optimizer = optimizer;
+
+  } else if (m_OptimizerType == LBFGSB_OPTIMIZER) {
+
+  } else if (m_OptimizerType == ONE_PLUS_ONE_EVOLUTIONARY_OPTIMIZER) {
+
+    OnePlusOneEvolutionaryOptimizerType::Pointer optimizer =
+      OnePlusOneEvolutionaryOptimizerType::New();
+    optimizer->MinimizeOn();
+    itk::Statistics::NormalVariateGenerator::Pointer generator =
+      itk::Statistics::NormalVariateGenerator::New();
+    generator->Initialize(523);
+    optimizer->SetNormalVariateGenerator(generator);
+    //optimizer->SetInitialRadius(100.0);
+    //optimizer->SetGrowthFactor(1.5);
+    //optimizer->SetMaximumIteration(20);
+
+    m_Optimizer = optimizer;
+
+  } else if (m_OptimizerType == POWELL_OPTIMIZER) {
+
+  } else {
+
+    std::cout << "Unknown optimizer type. Using AmoebaOptimizer" << std::endl;
+    m_OptimizerType = AMOEBA_OPTIMIZER;
+    this->SetUpOptimizer(parameterScales);
+
+  }
+}
+
+
+void
+DataModel
 ::Optimize() {
   UpdateMetricParameterMask();
 
@@ -1617,22 +1754,21 @@ DataModel
   int activeIndex = 0;
   for (unsigned int i = 0; i < mask->Size(); i++) {
     if (mask->GetElement(i)) {
-      activeParameters[activeIndex] = m_BeadSpreadFunctionSource->GetParameters()[i];
-      parameterScales[activeIndex++] = m_ParameterScales[i];
+      activeParameters[activeIndex]  = m_BeadSpreadFunctionSource->GetParameters()[i];
+      parameterScales[activeIndex++] = this->GetParameterScale(i);
     }
   }
 
   // Connect to the cost function, set the initial parameters, and optimize.
-  m_ImageToImageCostFunction
-    ->SetFixedImageRegion(m_BeadSpreadFunctionSource->GetOutput()->GetLargestPossibleRegion());
+  m_ImageToImageCostFunction->SetFixedImageRegion
+    (m_BeadSpreadFunctionSource->GetOutput()->GetLargestPossibleRegion());
+  m_CostFunction->SetDerivativeStepSize(1e-3);
 
-  m_Optimizer = OptimizerType::New();
-  m_Optimizer->AutomaticInitialSimplexOff();
+  this->SetUpOptimizer(parameterScales);
+
   m_Optimizer->SetCostFunction(m_CostFunction);
-  m_Optimizer->SetFunctionConvergenceTolerance(1e-1);
   m_Optimizer->SetInitialPosition(activeParameters);
-  m_Optimizer->SetInitialSimplexDelta(parameterScales);
-
+  m_Optimizer->SetScales(parameterScales);
   m_Optimizer->StartOptimization();
 
   // Write the parameters back to the source object

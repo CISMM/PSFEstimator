@@ -781,6 +781,13 @@ PSFEstimator
 
 void
 PSFEstimator
+::on_optimizerComboBox_currentIndexChanged(int index) {
+  m_DataModel->SetOptimizerType(static_cast<DataModel::OptimizerType>(index));
+}
+
+
+void
+PSFEstimator
 ::on_optimizePSFParametersButton_clicked() {
   m_DataModel->Optimize();
 

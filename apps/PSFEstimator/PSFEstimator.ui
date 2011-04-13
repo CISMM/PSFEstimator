@@ -72,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>1002</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -157,8 +157,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>299</width>
-          <height>529</height>
+          <width>302</width>
+          <height>580</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -699,7 +699,7 @@
   <widget class="QDockWidget" name="psfSettingsDockWidget">
    <property name="minimumSize">
     <size>
-     <width>320</width>
+     <width>323</width>
      <height>524</height>
     </size>
    </property>
@@ -893,6 +893,59 @@
        <property name="checkable">
         <bool>false</bool>
        </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="optimizerWidget" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_11">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="optimizerLabel">
+          <property name="text">
+           <string>Optimizer:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="optimizerComboBox">
+          <item>
+           <property name="text">
+            <string>Amoeba</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Conjugate Gradient</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Gradient Descent</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>LBFGSB</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>One Plus One Evolutionary</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Powell</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>

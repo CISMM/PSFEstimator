@@ -15,21 +15,35 @@
 #include <itkBeadSpreadFunctionImageSource.h>
 #endif
 
-#include <itkGridImageSource.h>
+// IO
+#include <itkImageFileReader.h>
+#include <itkImageFileWriter.h>
+
+// PSF sources
 #include <itkGaussianPointSpreadFunctionImageSource.h>
 #include <itkGibsonLanniPointSpreadFunctionImageSource.h>
 #include <itkModifiedGibsonLanniPointSpreadFunctionImageSource.h>
-#include <itkImageFileReader.h>
-#include <itkImageFileWriter.h>
-#include <itkMinimumMaximumImageCalculator.h>
-#include <itkShiftScaleImageFilter.h>
-#include <itkSubtractImageFilter.h>
 
+// Optimizers
 #include <itkAmoebaOptimizer.h>
+#include <itkConjugateGradientOptimizer.h>
+#include <itkGradientDescentOptimizer.h>
+#include <itkLBFGSBOptimizer.h>
+#include <itkOnePlusOneEvolutionaryOptimizer.h>
+#include <itkPowellOptimizer.h>
+
+// Metrics
 #include <itkMeanSquaresImageToImageMetric.h>
 //#include <itkPoissonNoiseImageToImageMetric.h>
 #include <itkImageToParametricImageSourceMetric.h>
+
+// Misc
+#include <itkGridImageSource.h>
+#include <itkMinimumMaximumImageCalculator.h>
 #include <itkNearestNeighborInterpolateImageFunction.h>
+#include <itkShiftScaleImageFilter.h>
+#include <itkSubtractImageFilter.h>
+
 #include <ITKImageToVTKImage.h>
 #undef ITK_MANUAL_INSTANTIATION
 
@@ -46,6 +60,15 @@ public:
     MODIFIED_GIBSON_LANNI_PSF,
     HAEBERLE_PSF
   } PointSpreadFunctionType;
+
+  typedef enum {
+    AMOEBA_OPTIMIZER = 0,
+    CONJUGATE_GRADIENT_OPTIMIZER,
+    GRADIENT_DESCENT_OPTIMIZER,
+    LBFGSB_OPTIMIZER,
+    ONE_PLUS_ONE_EVOLUTIONARY_OPTIMIZER,
+    POWELL_OPTIMIZER
+  } OptimizerType;
 
   typedef float                                   FloatPixelType;
   static const unsigned int                       Dimension3 = 3;
@@ -122,18 +145,22 @@ public:
   // Types for optimization.
   typedef itk::ImageToParametricImageSourceMetric<TImage, BeadSpreadFunctionImageSourceType>
     ParametricCostFunctionType;
-  typedef ParametricCostFunctionType::ParametersMaskType
-    ParametersMaskType;
-  typedef ParametricCostFunctionType::ParametersType
-    ParametersType;
+  typedef ParametricCostFunctionType::ParametersMaskType ParametersMaskType;
+  typedef ParametricCostFunctionType::ParametersType     ParametersType;
+
+  typedef itk::SingleValuedNonLinearOptimizer  OptimizerBaseType;
+  typedef itk::AmoebaOptimizer                 AmoebaOptimizerType;
+  typedef itk::ConjugateGradientOptimizer      ConjugateGradientOptimizerType;
+  typedef itk::GradientDescentOptimizer        GradientDescentOptimizerType;
+  typedef itk::LBFGSBOptimizer                 LBFGSBOptimizerType;
+  typedef itk::OnePlusOneEvolutionaryOptimizer OnePlusOneEvolutionaryOptimizerType;
+  typedef itk::PowellOptimizer                 PowellOptimizerType;
 
   typedef itk::NearestNeighborInterpolateImageFunction<TImage, double>
     InterpolatorType;
   //  typedef itk::PoissonNoiseImageToImageMetric<TImage, TImage>
   typedef itk::MeanSquaresImageToImageMetric<TImage, TImage>
     ImageToImageCostFunctionType;
-  typedef itk::AmoebaOptimizer
-    OptimizerType;
 
   DataModel();
   virtual ~DataModel();
@@ -141,13 +168,13 @@ public:
   void SetPointSpreadFunctionType(PointSpreadFunctionType psfType);
   PointSpreadFunctionType GetPointSpreadFunctionType() const;
 
+  void SetOptimizerType(OptimizerType optimizerType);
+  OptimizerType GetOptimizerType() const;
+
   bool LoadSessionFile(const std::string& fileName);
   bool SaveSessionFile(const std::string& fileName);
 
   void Initialize();
-  void InitializeParameterScales(PointSpreadFunctionType psfType);
-
-  void SetInitialSimplexDeltas();
 
   void CreateImageFile(int xSize, int ySize, int zSize,
                        double xSpacing, double ySpacing, double zSpacing);
@@ -267,6 +294,9 @@ public:
   void   SetParameterEnabled(unsigned int index, bool enabled);
   bool   GetParameterEnabled(unsigned int index);
 
+  void   SetParameterScale(unsigned int index, double scale);
+  double GetParameterScale(unsigned int index);
+
   void   SetZCoordinate(unsigned int index, double coordinate);
   double GetZCoordinate(unsigned int index);
 
@@ -277,10 +307,12 @@ public:
 
   double GetImageComparisonMetricValue();
 
+  void SetUpOptimizer(const ParametersType & parameterScales);
   void Optimize();
 
 protected:
   PointSpreadFunctionType m_PointSpreadFunctionType;
+  OptimizerType m_OptimizerType;
 
   Configuration m_Configuration;
 
@@ -300,13 +332,13 @@ protected:
   // Lists of parameter names for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterNames;
   std::vector<std::string> m_GaussianPSFParameterNames;
-  std::vector<std::string> m_OPDBasedPSFParameterNames;
+  std::vector<std::string> m_GibsonLanniPSFParameterNames;
   std::vector<std::string> m_ModifiedGibsonLanniPSFParameterNames;
 
   // Lists of units for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterUnits;
   std::vector<std::string> m_GaussianPSFParameterUnits;
-  std::vector<std::string> m_OPDBasedPSFParameterUnits;
+  std::vector<std::string> m_GibsonLanniPSFParameterUnits;
   std::vector<std::string> m_ModifiedGibsonLanniPSFParameterUnits;
 
   // Parameter optimization masks
@@ -314,6 +346,14 @@ protected:
   std::vector<bool> m_GaussianPSFParameterMask;
   std::vector<bool> m_GibsonLanniPSFParameterMask;
   std::vector<bool> m_ModifiedGibsonLanniPSFParameterMask;
+
+  // Parameter scales. It is important to set these appropriately
+  // because small changes to some parameters (e.g. actual refractive
+  // index) produce huge changes in the shape of the PSF.
+  std::vector<double> m_BSFParameterScales;
+  std::vector<double> m_GaussianPSFParameterScales;
+  std::vector<double> m_GibsonLanniPSFParameterScales;
+  std::vector<double> m_ModifiedGibsonLanniPSFParameterScales;
 
   // The bead-spread function
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;
@@ -336,14 +376,9 @@ protected:
   ImageToImageCostFunctionType::Pointer  m_ImageToImageCostFunction;
 
   // The optimizer
-  OptimizerType::Pointer m_Optimizer;
+  OptimizerBaseType::Pointer m_Optimizer;
+  //OptimizerType::Pointer m_Optimizer;
 
-  // Optimizer initial simplex deltas. These specify the starting size of the
-  // search simplex in the Nelder-Mead (Amoeba) optimization algorithm. It is
-  // important to set these appropriately because small changes to some
-  // parameters (e.g. actual refractive index) produce huge changes in the
-  // shape of the PSF.
-  ParametersType m_ParameterScales;
 };
 
 // _DATA_MODEL_H_
