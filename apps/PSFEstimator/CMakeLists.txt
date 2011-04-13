@@ -74,11 +74,7 @@ TARGET_LINK_LIBRARIES( PSFEstimator
   vtkImaging
   vtkRendering
   vtkVolumeRendering
-  itksys
-  ITKCommon
-  ITKBasicFilters
-  ITKIO
-  ITKNumerics
+  ${ITK_LIBRARIES}
   psfeModel
   psfeIO
   psfeVisualization
