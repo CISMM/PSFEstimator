@@ -1008,6 +1008,11 @@ PSFEstimator
 
   this->RefreshObjectiveFunctionValue();
 
+  gui->objectiveFunctionComboBox->setCurrentIndex
+    (static_cast<int>(m_DataModel->GetObjectiveFunctionType()));
+  gui->optimizerComboBox->setCurrentIndex
+    (static_cast<int>(m_DataModel->GetOptimizerType()));
+
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();
 
