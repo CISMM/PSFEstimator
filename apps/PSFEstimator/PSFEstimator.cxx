@@ -803,6 +803,16 @@ PSFEstimator
 void
 PSFEstimator
 ::on_optimizePSFParametersButton_clicked() {
+  QMessageBox messageBox(this);
+  messageBox.setText(tr("WARNING: Optimization may take a long time. Run the optimizer?"));
+  messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+  messageBox.setDefaultButton(QMessageBox::Yes);
+
+  int selected = messageBox.exec();
+  if (selected == QMessageBox::No) {
+    return;
+  }
+
   m_DataModel->Optimize();
 
   Sully();
