@@ -391,7 +391,10 @@ protected:
 
   // The optimizer
   OptimizerBaseType::Pointer m_Optimizer;
-  //OptimizerType::Pointer m_Optimizer;
+
+  // Objective function and optimizer names
+  std::vector< std::string > m_ObjectiveFunctionNames;
+  std::vector< std::string > m_OptimizerNames;
 
 };
 

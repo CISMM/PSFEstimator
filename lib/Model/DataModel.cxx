@@ -435,6 +435,18 @@ DataModel
     m_ModifiedGibsonLanniPSFParameterMask.push_back(false);
   }
 
+  m_ObjectiveFunctionNames.clear();
+  m_ObjectiveFunctionNames.push_back("MeanSquaredError");
+  m_ObjectiveFunctionNames.push_back("NormalizedCorrelation");
+
+  m_OptimizerNames.clear();
+  m_OptimizerNames.push_back("Amoeba");
+  m_OptimizerNames.push_back("ConjugateGradient");
+  m_OptimizerNames.push_back("GradientDescent");
+  m_OptimizerNames.push_back("LBFGSSB");
+  m_OptimizerNames.push_back("OnePlusOneEvolutionary");
+  m_OptimizerNames.push_back("Powell");
+
 }
 
 
@@ -689,6 +701,24 @@ DataModel
     SetZCoordinate(i, c.GetValueAsDouble(sec, name));
   }
 
+  sec = std::string("OptimizerSettings");
+
+  std::string objectiveFunctionName =
+    c.GetValue(sec, std::string("ObjectiveFunction"));
+  for (size_t i = 0; i < m_ObjectiveFunctionNames.size(); i++) {
+    if (objectiveFunctionName == m_ObjectiveFunctionNames[i]) {
+      this->SetObjectiveFunctionType(static_cast<ObjectiveFunctionType>(i));
+      break;
+    }
+  }
+
+  std::string optimizerName = c.GetValue(sec, std::string("Optimizer"));
+  for (size_t i = 0; i < m_OptimizerNames.size(); i++) {
+    if (optimizerName == m_OptimizerNames[i]) {
+      this->SetOptimizerType(static_cast<OptimizerType>(i));
+      break;
+    }
+  }
 }
 
 
@@ -788,6 +818,16 @@ DataModel
     sprintf(name, "ZCoordinate%03d", i);
     c.SetValueFromDouble(sec, name, GetZCoordinate(i));
   }
+
+  sec = std::string("OptimizerSettings");
+
+  std::string objectiveFunctionName =
+    m_ObjectiveFunctionNames[this->GetObjectiveFunctionType()];
+  c.SetValue(sec, "ObjectiveFunction", objectiveFunctionName);
+
+  std::string optimizerName =
+    m_OptimizerNames[this->GetOptimizerType()];
+  c.SetValue(sec, "Optimizer", optimizerName);
 
 }
 
