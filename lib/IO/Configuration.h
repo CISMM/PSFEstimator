@@ -5,9 +5,9 @@
 #include <string>
 #include <map>
 
-/** 
+/**
  * Loads and parses a configuration file and provides methods for accessing
- * settings values. Also writes configuration files. The format of a 
+ * settings values. Also writes configuration files. The format of a
  * configuration file follows the INI de facto standard
  * (http://en.wikipedia.org/wiki/Ini_file). Keys must contain no spaces,
  * but values can.

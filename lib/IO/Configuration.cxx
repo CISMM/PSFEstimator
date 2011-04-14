@@ -12,7 +12,7 @@ Configuration
 
 Configuration
 ::~Configuration() {
-  
+
 }
 
 
@@ -79,7 +79,7 @@ Configuration
     }
     os << std::endl;
   }
-  
+
 }
 
 
