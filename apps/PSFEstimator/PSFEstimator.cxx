@@ -47,7 +47,7 @@ PSFEstimator
   gui->setupUi(this);
 
   // Disable these widgets for now
-  gui->noiseTypeWidget->setVisible(false);
+  //gui->objectiveFunctionWidget->setVisible(false);
 
   // Hide queue submission button if domain is not bass.cs.unc.edu
   QString hostName = QHostInfo::localHostName();
@@ -226,9 +226,11 @@ PSFEstimator
   gui->calculatedMinusMeasuredBSFRadioButton->setEnabled(hasMeasuredImage);
 
   gui->psfModelComboBox->setEnabled(true);
-  gui->noiseTypeWidget->setEnabled(true);
 
   gui->estimatePSFCenterButton->setEnabled(hasMeasuredImage);
+  gui->objectiveFunctionWidget->setEnabled(hasMeasuredImage);
+  gui->objectiveFunctionLabel->setEnabled(hasMeasuredImage);
+  gui->objectiveFunctionComboBox->setEnabled(hasMeasuredImage);
   gui->optimizerWidget->setEnabled(hasMeasuredImage);
   gui->optimizePSFParametersButton->setEnabled(hasMeasuredImage);
   gui->submitOptimizationJobToQueueButton->setEnabled(hasMeasuredImage);
@@ -612,6 +614,13 @@ PSFEstimator
 
 void
 PSFEstimator
+::on_comparisonModeCheckBox_toggled(bool value) {
+  this->RefreshUI();
+}
+
+
+void
+PSFEstimator
 ::on_showDataOutlineCheckBox_toggled(bool show) {
   m_Visualization->SetShowOutline(show);
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -696,6 +705,16 @@ PSFEstimator
 
 void
 PSFEstimator
+::on_objectiveFunctionComboBox_currentIndexChanged(int index) {
+  m_DataModel->SetObjectiveFunctionType
+    (static_cast<DataModel::ObjectiveFunctionType>(index));
+
+  this->RefreshObjectiveFunctionValue();
+}
+
+
+void
+PSFEstimator
 ::on_useCustomZSlicePositions_toggled(bool use) {
   m_DataModel->SetUseCustomZCoordinates(use);
   gui->resetCustomSlicePositionsButton->setEnabled(use);
@@ -768,13 +787,6 @@ PSFEstimator
   }
 
   RefreshUI();
-
-  if (gui->measuredBSFRadioButton->isEnabled()) {
-    double value = m_DataModel->GetImageComparisonMetricValue();
-    gui->objectiveFunctionValueEdit->setText(QString().sprintf("%.3f", value));
-  } else {
-    gui->objectiveFunctionValueEdit->setText(QString("-"));
-  }
 
   m_Visualization->Update();
   gui->qvtkWidget->GetRenderWindow()->Render();
@@ -901,6 +913,18 @@ PSFEstimator
 
 void
 PSFEstimator
+::RefreshObjectiveFunctionValue() {
+  if (gui->measuredBSFRadioButton->isEnabled()) {
+    double value = m_DataModel->GetImageComparisonMetricValue();
+    gui->objectiveFunctionValueEdit->setText(QString().sprintf("%.3f", value));
+  } else {
+    gui->objectiveFunctionValueEdit->setText(QString("-"));
+  }
+}
+
+
+void
+PSFEstimator
 ::RefreshUI() {
 
   ///////////////// Update window title /////////////////
@@ -982,6 +1006,8 @@ PSFEstimator
   gui->useCustomZSlicePositions->
     setCheckState(m_DataModel->GetUseCustomZCoordinates() ? Qt::Checked : Qt::Unchecked);
 
+  this->RefreshObjectiveFunctionValue();
+
   ///////////////// Update visualization stuff /////////////////
   m_Renderer->RemoveAllViewProps();
 
@@ -1001,12 +1027,12 @@ PSFEstimator
   double value = 0.0;
   if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
     value = m_DataModel->GetMeasuredImageDataMinimum();
-  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
-    value = m_DataModel->GetPSFImageDataMinimum();
   } else if (m_DisplayedImage == CALCULATED_BSF_IMAGE) {
     value = m_DataModel->GetBSFImageDataMinimum();
   } else if (m_DisplayedImage == BSF_DIFFERENCE_IMAGE) {
     value = m_DataModel->GetBSFDifferenceImageDataMinimum();
+  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
+    value = m_DataModel->GetPSFImageDataMinimum();
   }
   return value;
 }
@@ -1018,10 +1044,58 @@ PSFEstimator
   double value = 0.0;
   if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
     value = m_DataModel->GetMeasuredImageDataMaximum();
-  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
-    value = m_DataModel->GetPSFImageDataMaximum();
   } else if (m_DisplayedImage == CALCULATED_BSF_IMAGE) {
     value = m_DataModel->GetBSFImageDataMaximum();
+  } else if (m_DisplayedImage == BSF_DIFFERENCE_IMAGE) {
+    value = m_DataModel->GetBSFDifferenceImageDataMaximum();
+  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
+    value = m_DataModel->GetPSFImageDataMaximum();
+  }
+  return value;
+}
+
+
+double
+PSFEstimator
+::GetContrastMinimum() {
+  double value = 0.0;
+  if (m_DisplayedImage == MEASURED_PSF_IMAGE ||
+      m_DisplayedImage == CALCULATED_BSF_IMAGE) {
+    bool comparisonMode = gui->comparisonModeCheckBox->isChecked();
+    if (comparisonMode) {
+      value = std::min(m_DataModel->GetMeasuredImageDataMinimum(),
+                       m_DataModel->GetBSFImageDataMinimum());
+    } else if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
+      value = m_DataModel->GetMeasuredImageDataMinimum();
+    } else {
+      value = m_DataModel->GetBSFImageDataMinimum();
+    }
+  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
+    value = m_DataModel->GetPSFImageDataMinimum();
+  } else if (m_DisplayedImage == BSF_DIFFERENCE_IMAGE) {
+    value = m_DataModel->GetBSFDifferenceImageDataMinimum();
+  }
+  return value;
+}
+
+
+double
+PSFEstimator
+::GetContrastMaximum() {
+  double value = 0.0;
+  if (m_DisplayedImage == MEASURED_PSF_IMAGE ||
+      m_DisplayedImage == CALCULATED_BSF_IMAGE) {
+    bool comparisonMode = gui->comparisonModeCheckBox->isChecked();
+    if (comparisonMode) {
+      value = std::max(m_DataModel->GetMeasuredImageDataMaximum(),
+                       m_DataModel->GetBSFImageDataMaximum());
+    } else if (m_DisplayedImage == MEASURED_PSF_IMAGE) {
+      value = m_DataModel->GetMeasuredImageDataMaximum();
+    } else {
+      value = m_DataModel->GetBSFImageDataMaximum();
+    }
+  } else if (m_DisplayedImage == CALCULATED_PSF_IMAGE) {
+    value = m_DataModel->GetPSFImageDataMaximum();
   } else if (m_DisplayedImage == BSF_DIFFERENCE_IMAGE) {
     value = m_DataModel->GetBSFDifferenceImageDataMaximum();
   }
@@ -1032,8 +1106,8 @@ PSFEstimator
 void
 PSFEstimator
 ::SetMapsToBlackValueFromSliderPosition(int position) {
-  double dataMin = GetDisplayedImageDataMinimum();
-  double dataMax = GetDisplayedImageDataMaximum();
+  double dataMin = GetContrastMinimum();
+  double dataMax = GetContrastMaximum();
   double dd = dataMax - dataMin;
   double sliderMax = static_cast<double>(gui->mapsToBlackSlider->maximum());
   double dvalue = static_cast<double>(position);
@@ -1045,8 +1119,8 @@ PSFEstimator
 void
 PSFEstimator
 ::SetMapsToWhiteValueFromSliderPosition(int position) {
-  double dataMin = GetDisplayedImageDataMinimum();
-  double dataMax = GetDisplayedImageDataMaximum();
+  double dataMin = GetContrastMinimum();
+  double dataMax = GetContrastMaximum();
   double dd = dataMax - dataMin;
   double sliderMax = static_cast<double>(gui->mapsToWhiteSlider->maximum());
   double dvalue = static_cast<double>(position);

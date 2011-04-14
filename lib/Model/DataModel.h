@@ -34,6 +34,7 @@
 
 // Metrics
 #include <itkMeanSquaresImageToImageMetric.h>
+#include <itkNormalizedCorrelationImageToImageMetric.h>
 //#include <itkPoissonNoiseImageToImageMetric.h>
 #include <itkImageToParametricImageSourceMetric.h>
 
@@ -60,6 +61,11 @@ public:
     MODIFIED_GIBSON_LANNI_PSF,
     HAEBERLE_PSF
   } PointSpreadFunctionType;
+
+  typedef enum {
+    MEAN_SQUARED_ERROR = 0,
+    NORMALIZED_CORRELATION
+  } ObjectiveFunctionType;
 
   typedef enum {
     AMOEBA_OPTIMIZER = 0,
@@ -159,14 +165,21 @@ public:
   typedef itk::NearestNeighborInterpolateImageFunction<TImage, double>
     InterpolatorType;
   //  typedef itk::PoissonNoiseImageToImageMetric<TImage, TImage>
-  typedef itk::MeanSquaresImageToImageMetric<TImage, TImage>
-    ImageToImageCostFunctionType;
+  typedef itk::ImageToImageMetric< TImage, TImage >
+    ImageToImageCostFunctionBaseType;
+  typedef itk::MeanSquaresImageToImageMetric< TImage, TImage >
+    MeanSquaredCostFunctionType;
+  typedef itk::NormalizedCorrelationImageToImageMetric< TImage, TImage >
+    NormalizedCorrelationCostFunctionType;
 
   DataModel();
   virtual ~DataModel();
 
   void SetPointSpreadFunctionType(PointSpreadFunctionType psfType);
   PointSpreadFunctionType GetPointSpreadFunctionType() const;
+
+  void                  SetObjectiveFunctionType(ObjectiveFunctionType ofType);
+  ObjectiveFunctionType GetObjectiveFunctionType() const;
 
   void SetOptimizerType(OptimizerType optimizerType);
   OptimizerType GetOptimizerType() const;
@@ -312,7 +325,8 @@ public:
 
 protected:
   PointSpreadFunctionType m_PointSpreadFunctionType;
-  OptimizerType m_OptimizerType;
+  ObjectiveFunctionType   m_ObjectiveFunctionType;
+  OptimizerType           m_OptimizerType;
 
   Configuration m_Configuration;
 
@@ -373,7 +387,7 @@ protected:
   ParametricCostFunctionType::Pointer m_CostFunction;
 
   // The delegate cost function used by m_CostFunction
-  ImageToImageCostFunctionType::Pointer  m_ImageToImageCostFunction;
+  ImageToImageCostFunctionBaseType::Pointer  m_ImageToImageCostFunction;
 
   // The optimizer
   OptimizerBaseType::Pointer m_Optimizer;

@@ -63,6 +63,7 @@ public slots:
 
   virtual void on_mapsToBlackSlider_valueChanged(int value);
   virtual void on_mapsToWhiteSlider_valueChanged(int value);
+  virtual void on_comparisonModeCheckBox_toggled(bool value);
 
   virtual void on_showDataOutlineCheckBox_toggled(bool show);
 
@@ -74,6 +75,7 @@ public slots:
   virtual void on_zMinusButton_clicked();
 
   virtual void on_psfModelComboBox_currentIndexChanged(int index);
+  virtual void on_objectiveFunctionComboBox_currentIndexChanged(int index);
 
   virtual void on_useCustomZSlicePositions_toggled(bool use);
 
@@ -125,10 +127,14 @@ protected:
   void SetDisplayedImageToCalculatedBSF();
   void SetDisplayedImageToBSFDifference();
 
+  void RefreshObjectiveFunctionValue();
   void RefreshUI();
 
   double GetDisplayedImageDataMinimum();
   double GetDisplayedImageDataMaximum();
+
+  double GetContrastMinimum();
+  double GetContrastMaximum();
 
   void SetMapsToBlackValueFromSliderPosition(int position);
   void SetMapsToWhiteValueFromSliderPosition(int position);

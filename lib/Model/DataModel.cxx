@@ -20,17 +20,24 @@
 #include <itkBeadSpreadFunctionImageSource.txx>
 #endif
 
+// IO
+#include <itkImageFileReader.txx>
+#include <itkImageFileWriter.txx>
+
+// PSF sources
 #include <itkGaussianPointSpreadFunctionImageSource.txx>
 #include <itkGibsonLanniPointSpreadFunctionImageSource.txx>
 #include <itkModifiedGibsonLanniPointSpreadFunctionImageSource.txx>
-#include <itkGridImageSource.txx>
-#include <itkImageFileReader.txx>
-#include <itkImageFileWriter.txx>
-#include <itkImageToParametricImageSourceMetric.txx>
+
+// Metrics
 #include <itkMeanSquaresImageToImageMetric.txx>
+#include <itkNormalizedCorrelationImageToImageMetric.txx>
+#include <itkImageToParametricImageSourceMetric.txx>
+
+// Misc
+#include <itkGridImageSource.txx>
 #include <itkMinimumMaximumImageCalculator.txx>
 #include <itkNormalVariateGenerator.h>
-//#include <itkPoissonNoiseImageToImageMetric.cxx>
 #include <itkShiftScaleImageFilter.txx>
 #include <itkSubtractImageFilter.h>
 
@@ -78,13 +85,15 @@ DataModel
   m_BSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
   m_BSFDifferenceImageITKToVTKFilter = new ITKImageToVTKImage<TImage>();
 
-  m_ImageToImageCostFunction = ImageToImageCostFunctionType::New();
+
   m_CostFunction = ParametricCostFunctionType::New();
   m_CostFunction->SetInterpolator(InterpolatorType::New());
-  m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
 
   // Default to Gibson-Lanni PSF type.
   SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+
+  // Default to MSE objective function type.
+  SetObjectiveFunctionType(MEAN_SQUARED_ERROR);
 
   // Default to Amoeba optimizer.
   //SetOptimizerType(GRADIENT_DESCENT_OPTIMIZER);
@@ -163,6 +172,31 @@ DataModel::PointSpreadFunctionType
 DataModel
 ::GetPointSpreadFunctionType() const {
   return m_PointSpreadFunctionType;
+}
+
+
+void
+DataModel
+::SetObjectiveFunctionType(ObjectiveFunctionType ofType) {
+  m_ObjectiveFunctionType = ofType;
+
+  if (m_ObjectiveFunctionType == MEAN_SQUARED_ERROR) {
+    m_ImageToImageCostFunction = MeanSquaredCostFunctionType::New();
+  } else if (m_ObjectiveFunctionType == NORMALIZED_CORRELATION) {
+    NormalizedCorrelationCostFunctionType::Pointer costFunction =
+      NormalizedCorrelationCostFunctionType::New();
+    costFunction->SubtractMeanOn();
+    m_ImageToImageCostFunction = costFunction;
+  }
+
+  m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
+}
+
+
+DataModel::ObjectiveFunctionType
+DataModel
+::GetObjectiveFunctionType() const {
+  return m_ObjectiveFunctionType;
 }
 
 
@@ -1765,6 +1799,8 @@ DataModel
   m_CostFunction->SetDerivativeStepSize(1e-3);
 
   this->SetUpOptimizer(parameterScales);
+
+  m_CostFunction->SetDelegateMetric(m_ImageToImageCostFunction);
 
   m_Optimizer->SetCostFunction(m_CostFunction);
   m_Optimizer->SetInitialPosition(activeParameters);
