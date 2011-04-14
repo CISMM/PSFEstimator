@@ -293,19 +293,19 @@ DataModel
 
   m_BSFParameterNames.push_back("Shear X");
   m_BSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
-  m_BSFParameterScales.push_back(0.001);
+  m_BSFParameterScales.push_back(5000);
 
   m_BSFParameterNames.push_back("Shear Y");
   m_BSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
-  m_BSFParameterScales.push_back(0.001);
+  m_BSFParameterScales.push_back(5000);
 
   m_BSFParameterNames.push_back("Intensity Shift");
   m_BSFParameterUnits.push_back("-");
-  m_BSFParameterScales.push_back(1e-4);
+  m_BSFParameterScales.push_back(10000);
 
   m_BSFParameterNames.push_back("Intensity Scale");
   m_BSFParameterUnits.push_back("-");
-  m_BSFParameterScales.push_back(100);
+  m_BSFParameterScales.push_back(5000);
 
   typedef std::vector<bool>::size_type SizeType;
   for ( SizeType i = 0; i < m_BSFParameterNames.size(); i++) {
@@ -335,63 +335,63 @@ DataModel
   m_GibsonLanniPSFParameterNames.clear();
   m_GibsonLanniPSFParameterNames.push_back("Emission Wavelength");
   m_GibsonLanniPSFParameterUnits.push_back("nanometers");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(1);
 
   m_GibsonLanniPSFParameterNames.push_back("Numerical Aperture");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(100);
 
   m_GibsonLanniPSFParameterNames.push_back("Magnification");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(1);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Cover Slip Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(5000);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Cover Slip Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(5000);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Cover Slip Thickness");
   m_GibsonLanniPSFParameterUnits.push_back("micrometers");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(1);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Cover Slip Thickness");
   m_GibsonLanniPSFParameterUnits.push_back("micrometers");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(1);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Immersion Oil Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(5000);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Immersion Oil Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(5000);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Immersion Oil Thickness");
   m_GibsonLanniPSFParameterUnits.push_back("micrometers");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(10);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Specimen Layer Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(100);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Specimen Layer Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(100);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Point Source Depth in Specimen Layer");
   m_GibsonLanniPSFParameterUnits.push_back("micrometers");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(10);
 
   m_GibsonLanniPSFParameterNames.push_back("PSF Shear X");
   m_GibsonLanniPSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(5000);
 
   m_GibsonLanniPSFParameterNames.push_back("PSF Shear Y");
   m_GibsonLanniPSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
-  m_GibsonLanniPSFParameterScales.push_back(2.0);
+  m_GibsonLanniPSFParameterScales.push_back(5000);
 
   for ( SizeType i = 0; i < m_GibsonLanniPSFParameterNames.size(); i++) {
     m_GibsonLanniPSFParameterMask.push_back(false);
