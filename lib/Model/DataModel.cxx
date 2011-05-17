@@ -265,31 +265,31 @@ DataModel
 
   m_BSFParameterNames.push_back("X Pixel Size");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Y Pixel Size");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Z Slice Spacing");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Bead Radius");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Bead Center X");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Bead Center Y");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Bead Center Z");
   m_BSFParameterUnits.push_back("nanometers");
-  m_BSFParameterScales.push_back(1.0);
+  m_BSFParameterScales.push_back(1.0 / 5.0);
 
   m_BSFParameterNames.push_back("Shear X");
   m_BSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
@@ -347,11 +347,11 @@ DataModel
 
   m_GibsonLanniPSFParameterNames.push_back("Design Cover Slip Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(5000);
+  m_GibsonLanniPSFParameterScales.push_back(1000);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Cover Slip Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(5000);
+  m_GibsonLanniPSFParameterScales.push_back(1000);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Cover Slip Thickness");
   m_GibsonLanniPSFParameterUnits.push_back("micrometers");
@@ -363,11 +363,11 @@ DataModel
 
   m_GibsonLanniPSFParameterNames.push_back("Design Immersion Oil Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(5000);
+  m_GibsonLanniPSFParameterScales.push_back(1000);
 
   m_GibsonLanniPSFParameterNames.push_back("Actual Immersion Oil Refractive Index");
   m_GibsonLanniPSFParameterUnits.push_back("-");
-  m_GibsonLanniPSFParameterScales.push_back(5000);
+  m_GibsonLanniPSFParameterScales.push_back(1000);
 
   m_GibsonLanniPSFParameterNames.push_back("Design Immersion Oil Thickness");
   m_GibsonLanniPSFParameterUnits.push_back("micrometers");
@@ -387,11 +387,11 @@ DataModel
 
   m_GibsonLanniPSFParameterNames.push_back("PSF Shear X");
   m_GibsonLanniPSFParameterUnits.push_back("nanometers in X vs. nanometers in Z");
-  m_GibsonLanniPSFParameterScales.push_back(5000);
+  m_GibsonLanniPSFParameterScales.push_back(500);
 
   m_GibsonLanniPSFParameterNames.push_back("PSF Shear Y");
   m_GibsonLanniPSFParameterUnits.push_back("nanometers in Y vs. nanometers in Z");
-  m_GibsonLanniPSFParameterScales.push_back(5000);
+  m_GibsonLanniPSFParameterScales.push_back(500);
 
   for ( SizeType i = 0; i < m_GibsonLanniPSFParameterNames.size(); i++) {
     m_GibsonLanniPSFParameterMask.push_back(false);
@@ -1767,9 +1767,15 @@ DataModel
   if (m_OptimizerType == AMOEBA_OPTIMIZER) {
 
     AmoebaOptimizerType::Pointer optimizer = AmoebaOptimizerType::New();
-    //optimizer->AutomaticInitialSimplexOff();
-    optimizer->SetFunctionConvergenceTolerance(1e-1);
-    //optimizer->SetInitialSimplexDelta(parameterScales);
+
+    // Make this big so that only the function convergence tolerance
+    // criterion is used.
+    optimizer->SetParametersConvergenceTolerance(1e-2);
+    optimizer->SetFunctionConvergenceTolerance(1e9);
+    optimizer->AutomaticInitialSimplexOff();
+    ParametersType initialSimplexDelta( parameterScales.GetSize() );
+    initialSimplexDelta.Fill(1.0);
+    optimizer->SetInitialSimplexDelta(initialSimplexDelta);
     optimizer->MinimizeOn();
 
     m_Optimizer = optimizer;
