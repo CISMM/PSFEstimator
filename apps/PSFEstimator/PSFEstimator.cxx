@@ -231,7 +231,7 @@ PSFEstimator
   gui->objectiveFunctionWidget->setEnabled(hasMeasuredImage);
   gui->objectiveFunctionLabel->setEnabled(hasMeasuredImage);
   gui->objectiveFunctionComboBox->setEnabled(hasMeasuredImage);
-  gui->optimizerWidget->setEnabled(hasMeasuredImage);
+  gui->optimizationWidget->setEnabled(hasMeasuredImage);
   gui->optimizePSFParametersButton->setEnabled(hasMeasuredImage);
   gui->submitOptimizationJobToQueueButton->setEnabled(hasMeasuredImage);
 
@@ -926,7 +926,7 @@ PSFEstimator
 ::RefreshObjectiveFunctionValue() {
   if (gui->measuredBSFRadioButton->isEnabled()) {
     double value = m_DataModel->GetImageComparisonMetricValue();
-    gui->objectiveFunctionValueEdit->setText(QString().sprintf("%.3f", value));
+    gui->objectiveFunctionValueEdit->setText(QString().sprintf("%.7f", value));
   } else {
     gui->objectiveFunctionValueEdit->setText(QString("-"));
   }
