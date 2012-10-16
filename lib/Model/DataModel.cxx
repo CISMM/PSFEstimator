@@ -322,6 +322,22 @@ DataModel
   m_GaussianPSFParameterUnits.push_back("nanometers");
   m_GaussianPSFParameterScales.push_back(1.0);
 
+  m_GaussianPSFParameterNames.push_back("Mean X");
+  m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterScales.push_back(1.0);
+
+  m_GaussianPSFParameterNames.push_back("Mean Y");
+  m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterScales.push_back(1.0);
+
+  m_GaussianPSFParameterNames.push_back("Mean Z");
+  m_GaussianPSFParameterUnits.push_back("nanometers");
+  m_GaussianPSFParameterScales.push_back(1.0);
+
+  m_GaussianPSFParameterNames.push_back("Scale");
+  m_GaussianPSFParameterUnits.push_back("-");
+  m_GaussianPSFParameterScales.push_back(1.0);
+
   for ( SizeType i = 0; i < m_GaussianPSFParameterNames.size(); i++) {
     m_GaussianPSFParameterMask.push_back(false);
   }
