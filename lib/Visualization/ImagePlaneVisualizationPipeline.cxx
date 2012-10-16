@@ -29,7 +29,7 @@ ImagePlaneVisualizationPipeline
 
   m_ImageActor = vtkSmartPointer<vtkImageActor>::New();
   m_ImageActor->InterpolateOff();
-  m_ImageActor->SetInput(m_ShiftScaler->GetOutput());
+  m_ImageActor->SetInputData(m_ShiftScaler->GetOutput());
 }
 
 
@@ -111,7 +111,7 @@ ImagePlaneVisualizationPipeline
 void
 ImagePlaneVisualizationPipeline
 ::SetSliceNumber(int sliceNumber) {
-  int* extent = m_ImageActor->GetInput()->GetWholeExtent();
+  int* extent = m_ImageActor->GetInput()->GetExtent();
   
   if (m_PlaneDimension == X_PLANE) {
     m_ImageActor->SetDisplayExtent(sliceNumber, sliceNumber,

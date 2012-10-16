@@ -1,5 +1,5 @@
 PROJECT (PSFEstimator)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 # Set version information. Bump this up with every release.
 SET (PSFEstimator_MAJOR_NUMBER "1")

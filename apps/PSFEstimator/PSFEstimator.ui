@@ -72,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>1002</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -157,8 +157,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>604</height>
+          <width>299</width>
+          <height>545</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -732,7 +732,7 @@
   <widget class="QDockWidget" name="psfSettingsDockWidget">
    <property name="minimumSize">
     <size>
-     <width>323</width>
+     <width>378</width>
      <height>524</height>
     </size>
    </property>
@@ -781,10 +781,13 @@
            <item>
             <widget class="QComboBox" name="psfModelComboBox">
              <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="editable">
               <bool>false</bool>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <item>
               <property name="text">
@@ -798,7 +801,7 @@
              </item>
              <item>
               <property name="text">
-               <string>Modified Gibson-Lanni Widefield</string>
+               <string>Haeberle Widefield</string>
               </property>
              </item>
             </widget>

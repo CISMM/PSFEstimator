@@ -20,9 +20,11 @@
 #include <itkImageFileWriter.h>
 
 // PSF sources
-#include <itkGaussianPointSpreadFunctionImageSource.h>
-#include <itkGibsonLanniPointSpreadFunctionImageSource.h>
-#include <itkModifiedGibsonLanniPointSpreadFunctionImageSource.h>
+//#include <itkGaussianPointSpreadFunctionImageSource.h>
+//#include <itkGibsonLanniPointSpreadFunctionImageSource.h>
+#include <itkGaussianImageSource.hxx>
+#include <itkGibsonLanniCOSMOSPointSpreadFunctionImageSource.h>
+#include <itkHaeberleCOSMOSPointSpreadFunctionImageSource.h>
 
 // Optimizers
 #include <itkAmoebaOptimizer.h>
@@ -58,7 +60,6 @@ public:
   typedef enum {
     GAUSSIAN_PSF = 0,
     GIBSON_LANNI_PSF,
-    MODIFIED_GIBSON_LANNI_PSF,
     HAEBERLE_PSF
   } PointSpreadFunctionType;
 
@@ -98,15 +99,11 @@ public:
     ParametricImageSourceType;
   typedef ParametricImageSourceType::Pointer
     ParametricImageSourcePointer;
-  typedef itk::GibsonLanniPointSpreadFunctionImageSource<Float3DImageType>
+  typedef itk::GibsonLanniCOSMOSPointSpreadFunctionImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
   typedef GibsonLanniPSFImageSourceType::Pointer
     GibsonLanniPSFImageSourcePointer;
-  typedef itk::ModifiedGibsonLanniPointSpreadFunctionImageSource<Float3DImageType>
-    ModifiedGibsonLanniPSFImageSourceType;
-  typedef ModifiedGibsonLanniPSFImageSourceType::Pointer
-    ModifiedGibsonLanniPSFImageSourcePointer;
-  typedef itk::GaussianPointSpreadFunctionImageSource<Float3DImageType>
+  typedef itk::GaussianImageSource<Float3DImageType>
     GaussianPSFImageSourceType;
   typedef GaussianPSFImageSourceType::Pointer
     GaussianPSFImageSourcePointer;
@@ -340,26 +337,21 @@ protected:
   GaussianPSFImageSourcePointer            m_GaussianPSFKernelSource;
   GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFSource;
   GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFKernelSource;
-  ModifiedGibsonLanniPSFImageSourcePointer m_ModifiedGibsonLanniPSFSource;
-  ModifiedGibsonLanniPSFImageSourcePointer m_ModifiedGibsonLanniPSFKernelSource;
 
   // Lists of parameter names for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterNames;
   std::vector<std::string> m_GaussianPSFParameterNames;
   std::vector<std::string> m_GibsonLanniPSFParameterNames;
-  std::vector<std::string> m_ModifiedGibsonLanniPSFParameterNames;
 
   // Lists of units for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterUnits;
   std::vector<std::string> m_GaussianPSFParameterUnits;
   std::vector<std::string> m_GibsonLanniPSFParameterUnits;
-  std::vector<std::string> m_ModifiedGibsonLanniPSFParameterUnits;
 
   // Parameter optimization masks
   std::vector<bool> m_BSFParameterMask;
   std::vector<bool> m_GaussianPSFParameterMask;
   std::vector<bool> m_GibsonLanniPSFParameterMask;
-  std::vector<bool> m_ModifiedGibsonLanniPSFParameterMask;
 
   // Parameter scales. It is important to set these appropriately
   // because small changes to some parameters (e.g. actual refractive
@@ -367,7 +359,6 @@ protected:
   std::vector<double> m_BSFParameterScales;
   std::vector<double> m_GaussianPSFParameterScales;
   std::vector<double> m_GibsonLanniPSFParameterScales;
-  std::vector<double> m_ModifiedGibsonLanniPSFParameterScales;
 
   // The bead-spread function
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;
