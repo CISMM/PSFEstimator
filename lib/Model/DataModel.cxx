@@ -71,6 +71,19 @@ DataModel
 
   m_GaussianPSFSource                  = GaussianPSFImageSourceType::New();
   m_GaussianPSFKernelSource            = GaussianPSFImageSourceType::New();
+
+  GaussianPSFImageSourceType::ParametersType gaussianParameters =
+    m_GaussianPSFSource->GetParameters();
+  gaussianParameters[0] = 200.0;
+  gaussianParameters[1] = 200.0;
+  gaussianParameters[2] = 400.0;
+  gaussianParameters[3] = 0.0;
+  gaussianParameters[4] = 0.0;
+  gaussianParameters[5] = 0.0;
+  gaussianParameters[6] = 1.0;
+  m_GaussianPSFSource->SetParameters(gaussianParameters);
+  m_GaussianPSFKernelSource->SetParameters(gaussianParameters);
+
   m_GibsonLanniPSFSource               = GibsonLanniPSFImageSourceType::New();
   m_GibsonLanniPSFKernelSource         = GibsonLanniPSFImageSourceType::New();
   m_BeadSpreadFunctionSource           = BeadSpreadFunctionImageSourceType::New();
