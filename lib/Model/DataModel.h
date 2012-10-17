@@ -95,18 +95,26 @@ public:
     DummyImageSourceType;
   typedef DummyImageSourceType::Pointer
     DummyImageSourcePointer;
+
   typedef itk::ParametricImageSource<Float3DImageType>
     ParametricImageSourceType;
   typedef ParametricImageSourceType::Pointer
     ParametricImageSourcePointer;
-  typedef itk::GibsonLanniCOSMOSPointSpreadFunctionImageSource<Float3DImageType>
-    GibsonLanniPSFImageSourceType;
-  typedef GibsonLanniPSFImageSourceType::Pointer
-    GibsonLanniPSFImageSourcePointer;
+
   typedef itk::GaussianImageSource<Float3DImageType>
     GaussianPSFImageSourceType;
   typedef GaussianPSFImageSourceType::Pointer
     GaussianPSFImageSourcePointer;
+
+  typedef itk::GibsonLanniCOSMOSPointSpreadFunctionImageSource<Float3DImageType>
+    GibsonLanniPSFImageSourceType;
+  typedef GibsonLanniPSFImageSourceType::Pointer
+    GibsonLanniPSFImageSourcePointer;
+
+  typedef itk::HaeberleCOSMOSPointSpreadFunctionImageSource<Float3DImageType>
+    HaeberlePSFImageSourceType;
+  typedef HaeberlePSFImageSourceType::Pointer
+    HaeberlePSFImageSourcePointer;
 
 #ifdef VALIDATE_CONVOLUTION
   typedef itk::BeadSpreadFunctionImageSource2< Float3DImageType >
@@ -337,21 +345,26 @@ protected:
   GaussianPSFImageSourcePointer            m_GaussianPSFKernelSource;
   GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFSource;
   GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFKernelSource;
+  HaeberlePSFImageSourcePointer            m_HaeberlePSFSource;
+  HaeberlePSFImageSourcePointer            m_HaeberlePSFKernelSource;
 
   // Lists of parameter names for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterNames;
   std::vector<std::string> m_GaussianPSFParameterNames;
   std::vector<std::string> m_GibsonLanniPSFParameterNames;
+  std::vector<std::string> m_HaeberlePSFParameterNames;
 
   // Lists of units for the BSF and the different PSFs
   std::vector<std::string> m_BSFParameterUnits;
   std::vector<std::string> m_GaussianPSFParameterUnits;
   std::vector<std::string> m_GibsonLanniPSFParameterUnits;
+  std::vector<std::string> m_HaeberlePSFParameterUnits;
 
   // Parameter optimization masks
   std::vector<bool> m_BSFParameterMask;
   std::vector<bool> m_GaussianPSFParameterMask;
   std::vector<bool> m_GibsonLanniPSFParameterMask;
+  std::vector<bool> m_HaeberlePSFParameterMask;
 
   // Parameter scales. It is important to set these appropriately
   // because small changes to some parameters (e.g. actual refractive
@@ -359,6 +372,7 @@ protected:
   std::vector<double> m_BSFParameterScales;
   std::vector<double> m_GaussianPSFParameterScales;
   std::vector<double> m_GibsonLanniPSFParameterScales;
+  std::vector<double> m_HaeberlePSFParameterScales;
 
   // The bead-spread function
   BeadSpreadFunctionImageSourcePointer m_BeadSpreadFunctionSource;

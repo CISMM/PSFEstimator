@@ -84,9 +84,13 @@ DataModel
   m_GaussianPSFSource->SetParameters(gaussianParameters);
   m_GaussianPSFKernelSource->SetParameters(gaussianParameters);
 
-  m_GibsonLanniPSFSource               = GibsonLanniPSFImageSourceType::New();
-  m_GibsonLanniPSFKernelSource         = GibsonLanniPSFImageSourceType::New();
-  m_BeadSpreadFunctionSource           = BeadSpreadFunctionImageSourceType::New();
+  m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniPSFKernelSource       = GibsonLanniPSFImageSourceType::New();
+
+  m_HaeberlePSFSource                = HaeberlePSFImageSourceType::New();
+  m_HaeberlePSFKernelSource          = HaeberlePSFImageSourceType::New();
+
+  m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
 
   m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
 
@@ -154,7 +158,9 @@ DataModel
 #ifndef VALIDATE_CONVOLUTION
     m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(true);
 #endif
-    // TODO - plugin Haeberle PSF source here
+    m_BeadSpreadFunctionSource->SetKernelSource(m_HaeberlePSFKernelSource);
+    m_BeadSpreadFunctionSource->SetKernelIsRadiallySymmetric(false);
+    m_PointSpreadFunctionSource = m_HaeberlePSFSource;
     break;
 
   }
@@ -422,6 +428,11 @@ DataModel
     m_GibsonLanniPSFParameterMask.push_back(false);
   }
 
+  // Haeberle model PSF parameters (same as Gibson-Lanni parameters)
+  m_HaeberlePSFParameterNames  = m_GibsonLanniPSFParameterNames;
+  m_HaeberlePSFParameterUnits  = m_GibsonLanniPSFParameterUnits;
+  m_HaeberlePSFParameterScales = m_GibsonLanniPSFParameterScales;
+  m_HaeberlePSFParameterMask   = m_GibsonLanniPSFParameterMask;
 
   m_ObjectiveFunctionNames.clear();
   m_ObjectiveFunctionNames.push_back("MeanSquaredError");
@@ -650,8 +661,6 @@ DataModel
     double value = c.GetValueAsDouble(sec, paramName, parameters[i]);
     parameters[i] = value;
     m_GaussianPSFSource->SetParameters(parameters);
-    //m_GaussianPSFSource->SetParameter(i, value);
-    //m_GaussianPSFKernelSource->SetParameter(i, value);
     parameters = m_GaussianPSFKernelSource->GetParameters();
     parameters[i] = value;
     m_GaussianPSFKernelSource->SetParameters(parameters);
@@ -676,16 +685,33 @@ DataModel
     parameters = m_GibsonLanniPSFKernelSource->GetParameters();
     parameters[i] = value;
     m_GibsonLanniPSFKernelSource->SetParameters(parameters);
-    //double value = c.GetValueAsDouble(sec, paramName,
-    //                                  m_GibsonLanniPSFSource->GetParameter(i));
-    //m_GibsonLanniPSFSource->SetParameter(i, value);
-    //m_GibsonLanniPSFKernelSource->SetParameter(i, value);
     m_GibsonLanniPSFParameterMask[i] =
       c.GetValueAsBool(sec, paramName + "-Optimize",
                        m_GibsonLanniPSFParameterMask[i]);
     m_GibsonLanniPSFParameterScales[i] =
       c.GetValueAsDouble(sec, paramName + "-Scale",
                          m_GibsonLanniPSFParameterScales[i]);
+  }
+
+  // Get the PSF parameter values for the Haeberle model
+  sec = std::string("HaeberleModelSettings");
+  for (unsigned int i = 0; i < m_HaeberlePSFSource->GetNumberOfParameters(); i++)
+  {
+    std::string paramName = SqueezeString(m_HaeberlePSFParameterNames[i]);
+    HaeberlePSFImageSourceType::ParametersType parameters =
+      m_HaeberlePSFSource->GetParameters();
+    double value = c.GetValueAsDouble(sec, paramName, parameters[i]);
+    parameters[i] = value;
+    m_HaeberlePSFSource->SetParameters(parameters);
+    parameters = m_HaeberlePSFKernelSource->GetParameters();
+    parameters[i] = value;
+    m_HaeberlePSFKernelSource->SetParameters(parameters);
+    m_HaeberlePSFParameterMask[i] =
+      c.GetValueAsBool(sec, paramName + "-Optimize",
+                       m_HaeberlePSFParameterMask[i]);
+    m_HaeberlePSFParameterScales[i] =
+      c.GetValueAsDouble(sec, paramName + "-Scale",
+                         m_HaeberlePSFParameterScales[i]);
   }
 
   sec = std::string("ZSliceCoordinates");
@@ -788,7 +814,17 @@ DataModel
                          m_GibsonLanniPSFParameterScales[i]);
   }
 
-  // TODO - Get the PSF parameter values for the Haeberle model
+  // Get the PSF parameter value for the Haeberle model
+  sec = std::string("HaeberleModelSettings");
+  for (unsigned int i = 0; i < m_HaeberlePSFKernelSource->GetNumberOfParameters(); i++)
+  {
+    std::string paramName = SqueezeString(m_HaeberlePSFParameterNames[i]);
+    c.SetValueFromDouble(sec, paramName, m_HaeberlePSFKernelSource->GetParameters()[i]);
+    c.SetValueFromBool(sec, paramName + "-Optimize",
+                       m_HaeberlePSFParameterMask[i]);
+    c.SetValueFromDouble(sec, paramName + "-Scale",
+                         m_HaeberlePSFParameterScales[i]);
+  }
 
   sec = std::string("ZSliceCoordinates");
 
@@ -1452,8 +1488,11 @@ DataModel
       break;
 
     case GIBSON_LANNI_PSF:
-    case HAEBERLE_PSF:
       return m_GibsonLanniPSFParameterNames[index - numBSFParameters];
+      break;
+
+    case HAEBERLE_PSF:
+      return m_HaeberlePSFParameterNames[index - numBSFParameters];
       break;
 
     default:
@@ -1513,8 +1552,11 @@ DataModel
       break;
 
     case GIBSON_LANNI_PSF:
-    case HAEBERLE_PSF:
       return m_GibsonLanniPSFParameterUnits[index - numBSFParameters];
+      break;
+
+    case HAEBERLE_PSF:
+      return m_HaeberlePSFParameterUnits[index - numBSFParameters];
       break;
 
     default:
@@ -1545,6 +1587,10 @@ DataModel
       m_GibsonLanniPSFParameterMask[index] = enabled;
       break;
 
+    case HAEBERLE_PSF:
+      m_HaeberlePSFParameterMask[index] = enabled;
+      break;
+
     default:
       break;
     }
@@ -1569,6 +1615,10 @@ DataModel
 
     case GIBSON_LANNI_PSF:
       return m_GibsonLanniPSFParameterMask[index];
+      break;
+
+    case HAEBERLE_PSF:
+      return m_HaeberlePSFParameterMask[index];
       break;
 
     default:
@@ -1599,6 +1649,10 @@ DataModel
       m_GibsonLanniPSFParameterScales[index] = scale;
       break;
 
+    case HAEBERLE_PSF:
+      m_HaeberlePSFParameterScales[index] = scale;
+      break;
+
     default:
       break;
     }
@@ -1623,6 +1677,10 @@ DataModel
 
     case GIBSON_LANNI_PSF:
       return m_GibsonLanniPSFParameterScales[index];
+      break;
+
+    case HAEBERLE_PSF:
+      return m_HaeberlePSFParameterScales[index];
       break;
 
     default:
@@ -1686,6 +1744,12 @@ DataModel
   case GIBSON_LANNI_PSF:
     for (i = 0; i < m_GibsonLanniPSFParameterMask.size(); i++) {
       mask->SetElement(index++, m_GibsonLanniPSFParameterMask[i] ? 1 : 0);
+    }
+    break;
+
+  case HAEBERLE_PSF:
+    for (i = 0; i < m_HaeberlePSFParameterMask.size(); i++) {
+      mask->SetElement(index++, m_HaeberlePSFParameterMask[i] ? 1 : 0);
     }
     break;
 
