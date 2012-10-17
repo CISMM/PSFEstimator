@@ -1,7 +1,7 @@
 # Qt frameworks
 SET( QT_FRAMEWORKS
   Qt3Support
-  QtAssistant
+#  QtAssistant
   QtCore
   QtDBus
   QtGui
