@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 # Set version information. Bump this up with every release.
 SET (PSFEstimator_MAJOR_NUMBER "1")
-SET (PSFEstimator_MINOR_NUMBER "0")
+SET (PSFEstimator_MINOR_NUMBER "1")
 SET (PSFEstimator_REVISION_NUMBER "0")
 SET (PSFEstimator_VERSION_STRING "${PSFEstimator_MAJOR_NUMBER}.${PSFEstimator_MINOR_NUMBER}.${PSFEstimator_REVISION_NUMBER}")
 
