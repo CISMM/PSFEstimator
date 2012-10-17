@@ -15,9 +15,9 @@
 #include "Validation.h"
 
 #ifdef VALIDATE_CONVOLUTION
-#include <itkBeadSpreadFunctionImageSource2.txx>
+#include <itkBeadSpreadFunctionImageSource2.hxx>
 #else
-#include <itkBeadSpreadFunctionImageSource.txx>
+#include <itkBeadSpreadFunctionImageSource.hxx>
 #endif
 
 // IO
@@ -35,7 +35,7 @@
 // Metrics
 #include <itkMeanSquaresImageToImageMetric.hxx>
 #include <itkNormalizedCorrelationImageToImageMetric.hxx>
-#include <itkImageToParametricImageSourceMetric.txx>
+#include <itkImageToParametricImageSourceMetric.hxx>
 
 // Misc
 #include <itkGridImageSource.hxx>
@@ -486,7 +486,21 @@ DataModel
   for (int i = 0; i < 3; i++)
     origin[i] = -spacing[i]*static_cast<double>(size[i])*0.5;
   m_PointSpreadFunctionSource->SetOrigin(origin);
+  try {
+    m_PointSpreadFunctionSource->Update();
+  } catch (itk::ExceptionObject & exception) {
+    std::cerr << "Exception during upate of PointSpreadFunctionSource: " << std::endl;
+    std::cerr << exception << std::endl;
+  }
+
   m_BeadSpreadFunctionSource->SetOrigin(origin);
+  try {
+    m_BeadSpreadFunctionSource->Update();
+  } catch (itk::ExceptionObject & exception) {
+    std::cerr << "Exception during upate of BeadSpreadFunctionSource: " << std::endl;
+    std::cerr << exception << std::endl;
+  }
+
   m_MeasuredImageData->SetOrigin(origin);
 
   m_PSFImageMinMaxFilter->SetImage(m_PointSpreadFunctionSource->GetOutput());
