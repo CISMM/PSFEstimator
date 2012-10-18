@@ -20,9 +20,8 @@
 #include <itkImageFileWriter.h>
 
 // PSF sources
-//#include <itkGaussianPointSpreadFunctionImageSource.h>
-//#include <itkGibsonLanniPointSpreadFunctionImageSource.h>
-#include <itkGaussianImageSource.hxx>
+#include <itkGaussianImageSource.h>
+#include <itkMaskedParametricImageSource.h>
 #include <itkGibsonLanniCOSMOSPointSpreadFunctionImageSource.h>
 #include <itkHaeberleCOSMOSPointSpreadFunctionImageSource.h>
 
@@ -105,6 +104,11 @@ public:
     GaussianPSFImageSourceType;
   typedef GaussianPSFImageSourceType::Pointer
     GaussianPSFImageSourcePointer;
+
+  typedef itk::MaskedParametricImageSource<Float3DImageType>
+    MaskedGaussianPSFImageSourceType;
+  typedef MaskedGaussianPSFImageSourceType::Pointer
+    MaskedGaussianPSFImageSourcePointer;
 
   typedef itk::GibsonLanniCOSMOSPointSpreadFunctionImageSource<Float3DImageType>
     GibsonLanniPSFImageSourceType;
@@ -338,8 +342,8 @@ protected:
 
   // The different point-spread function types
   ParametricImageSourcePointer             m_PointSpreadFunctionSource;
-  GaussianPSFImageSourcePointer            m_GaussianPSFSource;
-  GaussianPSFImageSourcePointer            m_GaussianPSFKernelSource;
+  MaskedGaussianPSFImageSourcePointer      m_GaussianPSFSource;
+  MaskedGaussianPSFImageSourcePointer      m_GaussianPSFKernelSource;
   GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFSource;
   GibsonLanniPSFImageSourcePointer         m_GibsonLanniPSFKernelSource;
   HaeberlePSFImageSourcePointer            m_HaeberlePSFSource;

@@ -25,9 +25,8 @@
 #include <itkImageFileWriter.hxx>
 
 // PSF sources
-//#include <itkGaussianPointSpreadFunctionImageSource.txx>
-//#include <itkGibsonLanniPointSpreadFunctionImageSource.txx>
 #include <itkGaussianImageSource.hxx>
+#include <itkMaskedParametricImageSource.hxx>
 #include <itkGibsonLanniCOSMOSPointSpreadFunctionImageSource.hxx>
 #include <itkHaeberleCOSMOSPointSpreadFunctionImageSource.hxx>
 
@@ -72,18 +71,42 @@ DataModel
 
   m_MeasuredImageData = NULL;
 
-  m_GaussianPSFSource       = GaussianPSFImageSourceType::New();
-  m_GaussianPSFKernelSource = GaussianPSFImageSourceType::New();
+  GaussianPSFImageSourceType::Pointer gaussianSource       = GaussianPSFImageSourceType::New();
+  GaussianPSFImageSourceType::Pointer gaussianKernelSource = GaussianPSFImageSourceType::New();
 
-  GaussianPSFImageSourceType::ParametersType gaussianParameters =
+  m_GaussianPSFSource       = MaskedGaussianPSFImageSourceType::New();
+  m_GaussianPSFKernelSource = MaskedGaussianPSFImageSourceType::New();
+
+  GaussianPSFImageSourceType::ArrayType mean;
+  mean.Fill( 0.0 );
+  gaussianSource->SetMean( mean );
+  gaussianKernelSource->SetMean( mean );
+  gaussianSource->SetScale( 1.0 );
+  gaussianKernelSource->SetScale( 1.0 );
+
+  m_GaussianPSFSource->SetDelegateImageSource( gaussianSource );
+  m_GaussianPSFKernelSource->SetDelegateImageSource( gaussianKernelSource );
+
+  // Now mark the last four parameters of the GaussianImageSource as
+  // disabled
+  for ( int i = 3; i < 7; i++ )
+    {
+      m_GaussianPSFSource->SetParameterEnabled( i, false );
+      m_GaussianPSFKernelSource->SetParameterEnabled( i, false );
+    }
+
+  MaskedGaussianPSFImageSourceType::ParametersType gaussianParameters =
     m_GaussianPSFSource->GetParameters();
+  if ( gaussianParameters.size() != 7 )
+  {
+    std::cerr << "Expected 7 parameters, got " << gaussianParameters.size() << " instead."
+              << std::endl;
+  }
+
   gaussianParameters[0] = 200.0;
   gaussianParameters[1] = 200.0;
   gaussianParameters[2] = 400.0;
-  gaussianParameters[3] = 0.0;
-  gaussianParameters[4] = 0.0;
-  gaussianParameters[5] = 0.0;
-  gaussianParameters[6] = 1.0;
+
   m_GaussianPSFSource->SetParameters(gaussianParameters);
   m_GaussianPSFKernelSource->SetParameters(gaussianParameters);
 
@@ -345,22 +368,6 @@ DataModel
 
   m_GaussianPSFParameterNames.push_back("Standard Deviation Z");
   m_GaussianPSFParameterUnits.push_back("nanometers");
-  m_GaussianPSFParameterScales.push_back(1.0);
-
-  m_GaussianPSFParameterNames.push_back("Mean X");
-  m_GaussianPSFParameterUnits.push_back("nanometers");
-  m_GaussianPSFParameterScales.push_back(1.0);
-
-  m_GaussianPSFParameterNames.push_back("Mean Y");
-  m_GaussianPSFParameterUnits.push_back("nanometers");
-  m_GaussianPSFParameterScales.push_back(1.0);
-
-  m_GaussianPSFParameterNames.push_back("Mean Z");
-  m_GaussianPSFParameterUnits.push_back("nanometers");
-  m_GaussianPSFParameterScales.push_back(1.0);
-
-  m_GaussianPSFParameterNames.push_back("Scale");
-  m_GaussianPSFParameterUnits.push_back("-");
   m_GaussianPSFParameterScales.push_back(1.0);
 
   for ( SizeType i = 0; i < m_GaussianPSFParameterNames.size(); i++) {
