@@ -1,3 +1,0 @@
-[submodule "NanoITK"]
-	path = NanoITK
-	url = ssh://git.cs.unc.edu/afs/unc/proj/stm/src/git/NanoITK.git

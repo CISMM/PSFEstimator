@@ -44,9 +44,6 @@ ENDIF (VTK_FOUND)
 # PSFEstimator is split up into several logical groups.
 #######################################
 INCLUDE_DIRECTORIES (
-    ${PSFEstimator_SOURCE_DIR}/NanoITK/Code/Algorithms
-    ${PSFEstimator_SOURCE_DIR}/NanoITK/Code/BasicFilters
-    ${PSFEstimator_SOURCE_DIR}/NanoITK/Code/Common
     ${PSFEstimator_SOURCE_DIR}/lib
     ${PSFEstimator_SOURCE_DIR}/lib/IO
     ${PSFEstimator_SOURCE_DIR}/lib/Model
