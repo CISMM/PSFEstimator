@@ -63,14 +63,17 @@ DataModel
   if (var) {
     int numberOfThreads = atoi(var);
     if (numberOfThreads > 0)
-      SetNumberOfThreads(numberOfThreads);
+      this->SetNumberOfThreads(numberOfThreads);
   }
 
+  m_PointSpreadFunctionType = NUM_PSFS;
+  m_ObjectiveFunctionType   = NUM_OBJECTIVE_FUNCTIONS;
+  m_OptimizerType           = NUM_OPTIMIZERS;
 
   m_MeasuredImageData = NULL;
 
-  m_GaussianPSFSource                  = GaussianPSFImageSourceType::New();
-  m_GaussianPSFKernelSource            = GaussianPSFImageSourceType::New();
+  m_GaussianPSFSource       = GaussianPSFImageSourceType::New();
+  m_GaussianPSFKernelSource = GaussianPSFImageSourceType::New();
 
   GaussianPSFImageSourceType::ParametersType gaussianParameters =
     m_GaussianPSFSource->GetParameters();
@@ -84,20 +87,20 @@ DataModel
   m_GaussianPSFSource->SetParameters(gaussianParameters);
   m_GaussianPSFKernelSource->SetParameters(gaussianParameters);
 
-  m_GibsonLanniPSFSource             = GibsonLanniPSFImageSourceType::New();
-  m_GibsonLanniPSFKernelSource       = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniPSFSource       = GibsonLanniPSFImageSourceType::New();
+  m_GibsonLanniPSFKernelSource = GibsonLanniPSFImageSourceType::New();
 
-  m_HaeberlePSFSource                = HaeberlePSFImageSourceType::New();
-  m_HaeberlePSFKernelSource          = HaeberlePSFImageSourceType::New();
+  m_HaeberlePSFSource          = HaeberlePSFImageSourceType::New();
+  m_HaeberlePSFKernelSource    = HaeberlePSFImageSourceType::New();
 
-  m_BeadSpreadFunctionSource         = BeadSpreadFunctionImageSourceType::New();
+  m_BeadSpreadFunctionSource   = BeadSpreadFunctionImageSourceType::New();
 
-  m_BSFDifferenceImageFilter         = DifferenceFilterType::New();
+  m_BSFDifferenceImageFilter   = DifferenceFilterType::New();
 
-  m_MeasuredImageMinMaxFilter        = MinMaxType::New();
-  m_PSFImageMinMaxFilter             = MinMaxType::New();
-  m_BSFImageMinMaxFilter             = MinMaxType::New();
-  m_BSFDifferenceImageMinMaxFilter   = MinMaxType::New();
+  m_MeasuredImageMinMaxFilter      = MinMaxType::New();
+  m_PSFImageMinMaxFilter           = MinMaxType::New();
+  m_BSFImageMinMaxFilter           = MinMaxType::New();
+  m_BSFDifferenceImageMinMaxFilter = MinMaxType::New();
 
   m_MeasuredImageITKToVTKFilter      = new ITKImageToVTKImage<TImage>();
   m_PSFImageITKToVTKFilter           = new ITKImageToVTKImage<TImage>();
@@ -109,16 +112,15 @@ DataModel
   m_CostFunction->SetInterpolator(InterpolatorType::New());
 
   // Default to Gibson-Lanni PSF type.
-  SetPointSpreadFunctionType(GIBSON_LANNI_PSF);
+  this->SetPointSpreadFunctionType( GAUSSIAN_PSF );
 
   // Default to MSE objective function type.
-  SetObjectiveFunctionType(MEAN_SQUARED_ERROR);
+  this->SetObjectiveFunctionType( MEAN_SQUARED_ERROR );
 
   // Default to Amoeba optimizer.
-  //SetOptimizerType(GRADIENT_DESCENT_OPTIMIZER);
-  SetOptimizerType(ONE_PLUS_ONE_EVOLUTIONARY_OPTIMIZER);
+  this->SetOptimizerType( AMOEBA_OPTIMIZER );
 
-  Initialize();
+  this->Initialize();
 }
 
 
@@ -193,6 +195,10 @@ DataModel
 void
 DataModel
 ::SetObjectiveFunctionType(ObjectiveFunctionType ofType) {
+  if ( ofType == m_ObjectiveFunctionType )
+    {
+    return;
+    }
   m_ObjectiveFunctionType = ofType;
 
   if (m_ObjectiveFunctionType == MEAN_SQUARED_ERROR) {
@@ -1808,8 +1814,6 @@ DataModel
 
     m_Optimizer = optimizer;
 
-  } else if (m_OptimizerType == CONJUGATE_GRADIENT_OPTIMIZER) {
-
   } else if (m_OptimizerType == GRADIENT_DESCENT_OPTIMIZER) {
 
     GradientDescentOptimizerType::Pointer optimizer =
@@ -1819,8 +1823,6 @@ DataModel
     optimizer->SetLearningRate(1.0);
 
     m_Optimizer = optimizer;
-
-  } else if (m_OptimizerType == LBFGSB_OPTIMIZER) {
 
   } else if (m_OptimizerType == ONE_PLUS_ONE_EVOLUTIONARY_OPTIMIZER) {
 
@@ -1836,8 +1838,6 @@ DataModel
     //optimizer->SetMaximumIteration(20);
 
     m_Optimizer = optimizer;
-
-  } else if (m_OptimizerType == POWELL_OPTIMIZER) {
 
   } else {
 

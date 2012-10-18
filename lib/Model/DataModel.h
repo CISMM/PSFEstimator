@@ -60,21 +60,21 @@ public:
   typedef enum {
     GAUSSIAN_PSF = 0,
     GIBSON_LANNI_PSF,
-    HAEBERLE_PSF
+    HAEBERLE_PSF,
+    NUM_PSFS
   } PointSpreadFunctionType;
 
   typedef enum {
     MEAN_SQUARED_ERROR = 0,
-    NORMALIZED_CORRELATION
+    NORMALIZED_CORRELATION,
+    NUM_OBJECTIVE_FUNCTIONS
   } ObjectiveFunctionType;
 
   typedef enum {
     AMOEBA_OPTIMIZER = 0,
-    CONJUGATE_GRADIENT_OPTIMIZER,
     GRADIENT_DESCENT_OPTIMIZER,
-    LBFGSB_OPTIMIZER,
     ONE_PLUS_ONE_EVOLUTIONARY_OPTIMIZER,
-    POWELL_OPTIMIZER
+    NUM_OPTIMIZERS
   } OptimizerType;
 
   typedef float                                   FloatPixelType;
@@ -161,11 +161,8 @@ public:
 
   typedef itk::SingleValuedNonLinearOptimizer  OptimizerBaseType;
   typedef itk::AmoebaOptimizer                 AmoebaOptimizerType;
-  typedef itk::ConjugateGradientOptimizer      ConjugateGradientOptimizerType;
   typedef itk::GradientDescentOptimizer        GradientDescentOptimizerType;
-  typedef itk::LBFGSBOptimizer                 LBFGSBOptimizerType;
   typedef itk::OnePlusOneEvolutionaryOptimizer OnePlusOneEvolutionaryOptimizerType;
-  typedef itk::PowellOptimizer                 PowellOptimizerType;
 
   typedef itk::NearestNeighborInterpolateImageFunction<TImage, double>
     InterpolatorType;

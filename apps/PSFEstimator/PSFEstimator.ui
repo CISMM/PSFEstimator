@@ -962,27 +962,12 @@
           </item>
           <item>
            <property name="text">
-            <string>Conjugate Gradient</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>Gradient Descent</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>LBFGSB</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>One Plus One Evolutionary</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Powell</string>
            </property>
           </item>
          </widget>
