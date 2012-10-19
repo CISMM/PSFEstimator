@@ -24,6 +24,7 @@ git checkout 8ab89ff701ee6dd7d256398867bd0931c26da1ac
 Configure VTK with CMake and build it. You'll need to change these options
 from the default:
 
+BUILD_SHARED_LIBS=ON
 VTK_Group_Imaging=ON
 Module_vtkGUISupportQt=ON
 QT_QMAKE_EXECUTABLE=<path to the qmake executable that came with the Qt SDK you downloaded/built
@@ -34,9 +35,15 @@ the git repository with
 git clone git://itk.org/ITK
 git checkout 9dbde859b0062f0b888129baf264537e6028bca8
 
+Configure ITK with the following options:
+
+BUILD_SHARED_LIBS=ON
+Module_ITKVtkGlue=ON
+VTK_DIR=path to the VTK build directory you specified in step 3>
+
 5. Configure the PSF Estimator project with CMake. Set the following variables:
 
 VTK_DIR=<path to the VTK build directory you specified in step 3>
 ITK_DIR=<path to the ITK build directory you specified in step 4>
 
-
+Build the project, and you are done!
