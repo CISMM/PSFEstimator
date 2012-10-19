@@ -35,6 +35,11 @@ the git repository with
 git clone git://itk.org/ITK
 git checkout 9dbde859b0062f0b888129baf264537e6028bca8
 
+Add the MicroscopyPSFToolkit external module to ITK:
+
+cd ITK/Modules/External/
+git clone git://github.com/cquammen/MicroscopyPSFToolkit.git
+
 Configure ITK with the following options:
 
 BUILD_SHARED_LIBS=ON
