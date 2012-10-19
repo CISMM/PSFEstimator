@@ -46,7 +46,10 @@ INSTALL( FILES
 )
 
 # Include all dynamic libraries from VTK.
-FILE( GLOB VTK_LIBRARIES ${VTK_LIBRARY_DIRS}/*.dylib )
+FILE( GLOB VTK_LIBRARIES ${VTK_DIR}/lib/*.dylib )
+IF ( NOT VTK_LIBRARIES )
+  MESSAGE( WARNING "Could not find VTK libraries. Installer will be invalid!" )
+ENDIF()
 FOREACH( LIBRARY ${VTK_LIBRARIES} )
   INSTALL( FILES
      "${LIBRARY}"
@@ -55,7 +58,10 @@ FOREACH( LIBRARY ${VTK_LIBRARIES} )
 ENDFOREACH( LIBRARY )
 
 # Include all dynamic libraries from ITK.
-FILE (GLOB ITK_LIBRARIES ${ITK_LIBRARY_DIRS}/*.dylib )
+FILE (GLOB ITK_LIBRARIES ${ITK_DIR}/lib/*.dylib )
+IF ( NOT ITK_LIBRARIES )
+  MESSAGE( WARNING "Could not find ITK libraries. Installer will be invalid!" )
+ENDIF()
 FOREACH( LIBRARY ${ITK_LIBRARIES} )
   INSTALL( FILES
     "${LIBRARY}"
@@ -65,13 +71,13 @@ ENDFOREACH( LIBRARY )
 
 # This is a GPL library dependency. Newer versions of VTK should not have this dependency,
 # so remove this in the future.
-FILE( GLOB HISTORY_LIBS /usr/local/lib/libhistory*.dylib )
-FOREACH( LIBRARY ${HISTORY_LIBS} )
-  INSTALL( FILES
-    "${LIBRARY}"
-    DESTINATION lib
-  )
-ENDFOREACH( LIBRARY )
+#FILE( GLOB HISTORY_LIBS /usr/local/lib/libhistory*.dylib )
+#FOREACH( LIBRARY ${HISTORY_LIBS} )
+#  INSTALL( FILES
+#    "${LIBRARY}"
+#    DESTINATION lib
+#  )
+#ENDFOREACH( LIBRARY )
 
 
 SET( USER_GUIDE_FILE "${PSFEstimator_BINARY_DIR}/docs/PSFEstimator-${PSFEstimator_VERSION_STRING}-UserGuide.pdf" )
